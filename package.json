@@ -11,24 +11,25 @@
         "lint": "eslint resources/assets/js"
     },
     "devDependencies": {
-        "cross-env": "^5.0.1",
-        "laravel-mix": "^1.0",
-        "eslint": "^4.7.2",
-        "eslint-plugin-vue-libs": "^1.2.1",
         "babel-plugin-transform-async-to-generator": "^6.24.1",
         "babel-plugin-transform-object-rest-spread": "^6.26.0",
-        "babel-plugin-transform-runtime": "^6.23.0"
+        "babel-plugin-transform-runtime": "^6.23.0",
+        "cross-env": "^5.0.1",
+        "eslint": "^4.7.2",
+        "eslint-plugin-vue-libs": "^1.2.1",
+        "laravel-mix": "^1.0"
     },
     "dependencies": {
         "axios": "^0.16.2",
         "bootstrap": "4.0.0-beta",
         "jquery": "^3.2.1",
-        "popper.js": "^1.12.5",
         "lodash": "^4.17.4",
+        "popper.js": "^1.12.5",
         "vform": "^0.8.1",
         "vue": "^2.4.2",
         "vue-meta": "^1.1.0",
         "vue-router": "^2.7.0",
+        "vuetify": "^0.15.7",
         "vuex": "^2.4.0",
         "vuex-router-sync": "^4.2.0"
     }

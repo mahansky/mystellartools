@@ -1,0 +1,16 @@
+#app aside.navigation-drawer {
+  background-color: $bodyBg;
+
+  ul.list {
+    background-color: $bodyBg;
+
+    .list__tile--highlighted, .list__tile--link:hover {
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .list__tile__title {
+      font-weight: normal;
+      color: #636363;
+    }
+  }
+}

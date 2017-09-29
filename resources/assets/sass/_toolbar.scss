@@ -1,0 +1,26 @@
+#app nav.toolbar {
+  box-shadow: none;
+
+  .account-selector {
+    box-shadow: none;
+    background-color: #3ba5f3;
+
+    .input-group__input {
+      .input-group__selections__comma {
+        color: #fff;
+      }
+
+      i {
+        color: #fff;
+      }
+
+      input {
+        color: #fff;
+      }
+    }
+  }
+
+  .spacer__smaller {
+    flex-grow: 0.3 !important;
+  }
+}
