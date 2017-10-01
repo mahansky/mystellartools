@@ -1,6 +1,6 @@
 <template>
     <v-app id="frontpage">
-        <h1>Interstellar.Tools</h1>
+        <router-view></router-view>
     </v-app>
 </template>
 

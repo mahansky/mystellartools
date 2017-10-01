@@ -1,61 +1,74 @@
 <template>
-  <div>
-    <div class="top-right links">
-      <template v-if="authenticated">
-        <router-link :to="{ name: 'home' }">
-          Home
-        </router-link>
-      </template>
-      <template v-else>
-        <router-link :to="{ name: 'login' }">
-          Login
-        </router-link>
-        <router-link :to="{ name: 'register' }">
-          Register
-        </router-link>
-      </template>
-    </div>
+    <v-container>
+        <v-layout>
+            <v-flex xs-12>
+                <h1 class="text-xs-center">Interstellar.Tools</h1>
 
-    <div class="text-center">
-      <div class="title mb-4">
-        {{ title }}
-      </div>
+                <v-form v-model="valid">
+                    <v-text-field
+                            label="Public or private key of your Stellar account"
+                            v-model="key"
+                            :rules="keyRules"
+                            required
+                    ></v-text-field>
 
-      <div class="links">
-        <a href="https://laravel.com/docs">Documentation</a>
-        <a href="https://laracasts.com">Laracasts</a>
-        <a href="https://laravel-news.com">News</a>
-        <a href="https://forge.laravel.com">Forge</a>
-        <a href="https://github.com/laravel/laravel">GitHub</a>
-      </div>
-    </div>
-  </div>
+                    <v-btn dark @click="enter" :class="{ blue: valid, red: !valid }">enter the interstellar</v-btn>
+                </v-form>
+            </v-flex>
+        </v-layout>
+    </v-container>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+  import { mapGetters } from 'vuex'
 
-export default {
-  layout: 'default',
+  let Stellar = require('stellar-sdk')
 
-  computed: mapGetters({
-    authenticated: 'authCheck'
-  }),
+  export default {
+    layout: 'default',
 
-  data: () => ({
-    title: window.config.appName
-  })
-}
+    computed: mapGetters({
+      authenticated: 'authCheck'
+    }),
+
+    data: () => ({
+      title: window.config.appName,
+      valid: false,
+      key: '',
+      keyRules: [
+        (v) => !!v || 'Key is required',
+        (v) => {
+          let secret = v[0] === 'S'
+
+          try {
+            if (secret) {
+              Stellar.Keypair.fromSecret(v)
+            } else {
+              Stellar.Keypair.fromPublicKey(v)
+            }
+          } catch (e) {
+            return 'Invalid key'
+          }
+
+          return true
+        }
+      ],
+    }),
+
+    methods: {
+      enter () {
+        let secret = this.key[0] === 'S'
+        let keypair = null
+
+        if (secret) {
+          keypair = Stellar.Keypair.fromSecret(this.key)
+        } else {
+          keypair = Stellar.Keypair.fromPublicKey(this.key)
+        }
+
+        this.$store.dispatch('storeKeypair', {keypair})
+        this.$router.push('balance')
+      }
+    }
+  }
 </script>
-
-<style scoped>
-.top-right {
-  position: absolute;
-  right: 10px;
-  top: 18px;
-}
-
-.title {
-  font-size: 85px;
-}
-</style>

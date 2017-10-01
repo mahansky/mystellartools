@@ -9,7 +9,7 @@ Vue.use(Meta)
 Vue.use(Router)
 
 const router = make(
-  routes({ authGuard, guestGuard })
+  routes({keypairGuard, guestGuard})
 )
 
 sync(store, router)
@@ -31,11 +31,11 @@ function make (routes) {
 
   // Register before guard.
   router.beforeEach(async (to, from, next) => {
-    if (!store.getters.authCheck && store.getters.authToken) {
-      try {
-        await store.dispatch('fetchUser')
-      } catch (e) { }
-    }
+    // if (!store.getters.authCheck && store.getters.authToken) {
+    //   try {
+    //     await store.dispatch('fetchUser')
+    //   } catch (e) { }
+    // }
 
     setLayout(router, to)
     next()
@@ -59,7 +59,7 @@ function make (routes) {
  */
 function setLayout (router, to) {
   // Get the first matched component.
-  const [component] = router.getMatchedComponents({ ...to })
+  const [component] = router.getMatchedComponents({...to})
 
   if (component) {
     router.app.$nextTick(() => {
@@ -82,12 +82,23 @@ function setLayout (router, to) {
  */
 function authGuard (routes) {
   return beforeEnter(routes, (to, from, next) => {
+    if (!store.getters.authCheck) {
+      next({name: 'login'})
+    } else {
+      next()
+    }
+  })
+}
+
+function keypairGuard (routes) {
+  return beforeEnter(routes, (to, from, next) => {
     next()
-    // if (!store.getters.authCheck) {
-    //   next({ name: 'login' })
-    // } else {
-    //   next()
-    // }
+    return
+    if (!store.getters.keypair) {
+      next({name: 'welcome'})
+    } else {
+      next()
+    }
   })
 }
 
@@ -100,7 +111,7 @@ function authGuard (routes) {
 function guestGuard (routes) {
   return beforeEnter(routes, (to, from, next) => {
     if (store.getters.authCheck) {
-      next({ name: 'home' })
+      next({name: 'home'})
     } else {
       next()
     }
@@ -116,7 +127,7 @@ function guestGuard (routes) {
  */
 function beforeEnter (routes, beforeEnter) {
   return routes.map(route => {
-    return { ...route, beforeEnter }
+    return {...route, beforeEnter}
   })
 }
 

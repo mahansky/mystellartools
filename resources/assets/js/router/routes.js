@@ -1,10 +1,12 @@
-export default ({ authGuard, guestGuard }) => [
+export default ({ keypairGuard, guestGuard }) => [
   { path: '/', name: 'welcome', component: require('~/pages/welcome.vue') },
 
   // Authenticated routes.
-  ...authGuard([
+  ...keypairGuard([
     { path: '/balance', name: 'balance', component: require('~/pages/wallet/balance.vue') },
     { path: '/payments', name: 'payments', component: require('~/pages/wallet/payments.vue') },
+    { path: '/send', name: 'send', component: require('~/pages/wallet/send.vue') },
+    { path: '/receive', name: 'receive', component: require('~/pages/wallet/receive.vue') },
     // { path: '/settings', component: require('~/pages/settings/index.vue'), children: [
     //   { path: '', redirect: { name: 'settings.profile' }},
     //   { path: 'profile', name: 'settings.profile', component: require('~/pages/settings/profile.vue') },

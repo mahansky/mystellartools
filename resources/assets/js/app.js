@@ -6,8 +6,12 @@ import '~/plugins'
 
 Vue.config.productionTip = false
 
-new Vue({
-    store,
-    router,
-    ...App
+let vue = new Vue({
+  store,
+  router,
+  ...App
 })
+
+// testing
+let Stellar = require('stellar-sdk')
+vue.$store.dispatch('storeKeypair', {keypair: Stellar.Keypair.fromSecret('SCQSS4FGSBORSP2O543GCHECPJGOMVCL7CINLS3YBA4V47AHZ665ZZSG')})

@@ -102,16 +102,17 @@
             <v-toolbar-title>Interstellar.Tools</v-toolbar-title>
             <v-spacer class="spacer__smaller"></v-spacer>
             <v-select
-                class="account-selector"
-                v-bind:items="['GD4KEL2QMSDIHEGIT2SOZSRG55GLWIXUFTD5FVNDUX4WPMONWROJLP5R', 'GDP4SJE5Y5ODX627DO2F7ZNBAPVXRFHKKR3W4UJ6I4XMW3S3OH2XRWYD']"
-                solo
-                autocomplete
+                    class="account-selector"
+                    :items="accounts"
+                    v-model="activeAccount"
+                    solo
+                    autocomplete
             ></v-select>
             <v-spacer class="spacer__smaller"></v-spacer>
             <v-btn icon>
                 <v-icon>account_box</v-icon>
             </v-btn>
-            <v-btn icon>
+            <v-btn icon @click="logout">
                 <v-icon>exit_to_app</v-icon>
             </v-btn>
         </v-toolbar>
@@ -130,6 +131,22 @@
     data () {
       return {
         drawer: true,
+        accounts: [],
+        activeAccount: ''
+      }
+    },
+
+    created () {
+      let pubKey = this.$store.getters.keypair.publicKey()
+
+      this.accounts = [pubKey, {text: 'Become a member to add another accounts', disabled: true}]
+      this.activeAccount = pubKey
+    },
+
+    methods: {
+      logout () {
+        this.$store.dispatch('removeKeypair')
+        this.$router.push({name: 'welcome'})
       }
     }
   }
