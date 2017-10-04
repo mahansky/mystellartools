@@ -5,7 +5,6 @@
                 clipped
                 v-model="drawer"
                 light
-                absolute
                 floating
         >
             <v-list>

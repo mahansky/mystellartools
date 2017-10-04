@@ -5,3 +5,33 @@
 
 @import 'toolbar';
 @import 'navbar';
+
+table.table {
+  .table-row-detail {
+    visibility: hidden;
+  }
+
+  tr:hover {
+    .table-row-detail {
+      visibility: visible;
+    }
+  }
+}
+
+table.send-amount-table {
+  font-size: 120%;
+
+  tr td:first-child {
+    text-align: right;
+  }
+
+  tr td:last-child {
+    padding-left: 10px;
+  }
+
+  tr.total td {
+    border-top: 1px solid #ccc;
+    padding-top: 5px;
+    font-size: 120%;
+  }
+}
