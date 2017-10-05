@@ -5,7 +5,7 @@
                 <v-flex md6>
                     <v-card class="white" v-if="!clickedVerify">
                         <v-card-text>
-                            <v-form v-model="valid">
+                            <v-form v-model="valid" ref="form">
                                 <v-text-field label="Recipient" :rules="recipientRules"
                                               v-model="recipient"></v-text-field>
 
@@ -27,7 +27,7 @@
                                                   v-model="memoType"></v-select>
                                     </v-flex>
                                     <v-flex xs8>
-                                        <v-text-field label="Memo" :rules="memoValueRules"
+                                        <v-text-field label="Memo" :rules="memoType ? memoValueRules : null"
                                                       v-model="memoValue"></v-text-field>
                                     </v-flex>
                                 </v-layout>
@@ -62,7 +62,8 @@
                                 <tr>
                                     <td>
                                         <span class="grey--text">+</span>
-                                        <span class="grey--text text--darken-2" v-html="amountFormat((0.0000100).toFixed(7))"></span>
+                                        <span class="grey--text text--darken-2"
+                                              v-html="amountFormat((0.0000100).toFixed(7))"></span>
                                     </td>
                                     <td>
                                         <small class="grey--text">(base fee)</small>
@@ -175,8 +176,10 @@
 
     methods: {
       clickVerify() {
-        if (this.valid) {
-          this.clickedVerify = true
+        if (this.$refs.form.validate()) {
+          if (this.valid) {
+            this.clickedVerify = true
+          }
         }
       }
     }

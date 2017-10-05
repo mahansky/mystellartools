@@ -7,6 +7,8 @@ export default ({ keypairGuard, guestGuard }) => [
     { path: '/payments', name: 'payments', component: require('~/pages/wallet/payments.vue') },
     { path: '/send', name: 'send', component: require('~/pages/wallet/send.vue') },
     { path: '/receive', name: 'receive', component: require('~/pages/wallet/receive.vue') },
+
+    { path: '/operations', name: 'operations', component: require('~/pages/tools/operations.vue') },
     // { path: '/settings', component: require('~/pages/settings/index.vue'), children: [
     //   { path: '', redirect: { name: 'settings.profile' }},
     //   { path: 'profile', name: 'settings.profile', component: require('~/pages/settings/profile.vue') },

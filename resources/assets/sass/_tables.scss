@@ -1,0 +1,37 @@
+table.table {
+  .table-row-detail {
+    visibility: hidden;
+  }
+
+  tr:hover {
+    .table-row-detail {
+      visibility: visible;
+    }
+  }
+}
+
+table.send-amount-table {
+  font-size: 120%;
+
+  tr td:first-child {
+    text-align: right;
+  }
+
+  tr td:last-child {
+    padding-left: 10px;
+  }
+
+  tr.total td {
+    border-top: 1px solid #ccc;
+    padding-top: 5px;
+    font-size: 120%;
+  }
+}
+
+table.single-operation {
+  border-spacing: 0;
+
+  tr td:first-child {
+    padding-right: 20px;
+  }
+}

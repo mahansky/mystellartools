@@ -62,7 +62,7 @@
                 <v-divider></v-divider>
 
                 <v-subheader>TOOLS</v-subheader>
-                <v-list-tile @click="$router.push('receive')">
+                <v-list-tile @click="$router.push('operations')">
                     <v-list-tile-action>
                         <v-icon>transform</v-icon>
                     </v-list-tile-action>
