@@ -6,3 +6,26 @@
 @import 'toolbar';
 @import 'navbar';
 @import 'tables';
+
+.receive {
+  .qrcode {
+    .card {
+      width: 200px;
+    }
+
+    .flex:first-child {
+      flex: 0;
+    }
+
+    .flex:last-child {
+      flex: 1;
+    }
+  }
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s;
+}
+.fade-enter, .fade-leave-to {
+  opacity: 0;
+}
