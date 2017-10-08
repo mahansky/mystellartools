@@ -28,26 +28,34 @@
                                 <span v-if="props.item.asset_code" v-text="props.item.asset_code"></span>
                                 <span v-else v-text="'XLM'"></span>
                             </td>
-                            <td>
-                                <!--{{ props.item.memo }}-->
-                            </td>
-                            <td>
-                                <span class="grey--text text--darken-2">
-                                    <!--{{ props.item.timestamp }}-->
-                                </span>
-                            </td>
+                            <template v-if="props.item.datetime">
+                                <td>
+                                    <span v-if="props.item.memo" v-text="props.item.memo"></span>
+                                </td>
+                                <td>
+                                    <span class="grey--text text--darken-2" v-if="props.item.datetime"
+                                          v-text="props.item.datetime"></span>
+                                </td>
+                            </template>
+                            <template v-else>
+                                <td colspan="2">
+                                    <span class="table-row-detail">
+                                        <a href="#" @click.prevent="loadInfo(props.item)">Load details</a>
+                                    </span>
+                                </td>
+                            </template>
                             <td>
                                 <span class="table-row-detail">
-                                    <a :href="props.item._links.self.href" target="_blank" rel="noreferrer nofollow">#</a>
+                                    <a :href="props.item._links.self.href" target="_blank"
+                                       rel="noreferrer nofollow">#</a>
                                 </span>
                             </td>
                         </template>
                     </v-data-table>
 
                     <p class="mb-1">
-                        Showing last 50 payments. If you want to see more, go to the
+                        Showing last 50 payments. If you want to see more, go to
                         <router-link to="/">All operations</router-link>
-                        .
                     </p>
                     <p class="mb-1">New payments will be shown at the top of the table automatically.</p>
                 </v-flex>
@@ -58,6 +66,7 @@
 
 <script>
   import { StellarServer } from '../../stellar'
+  import moment from 'moment'
 
   export default {
     data () {
@@ -69,59 +78,91 @@
           {text: 'Date', value: 'timestamp', sortable: false, align: 'left'},
           {text: '', value: 'link', sortable: false, align: 'right'},
         ],
-        payments: [
-          {
-            "_links": {
-              "self": {
-                "href": "https://horizon.stellar.org/operations/30231480227598337"
-              },
-            },
-            "id": "30231480227598337",
-            "paging_token": "30231480227598337",
-            "source_account": "GAKC3P3LQKBRCPOQ3ACI6NHKDNHKTIPGTX7EPOC3SGCMLQK4K3WYICWK",
-            "type": "payment",
-            "type_i": 1,
-            "asset_type": "native",
-            "from": "GAKC3P3LQKBRCPOQ3ACI6NHKDNHKTIPGTX7EPOC3SGCMLQK4K3WYICWK",
-            "to": "GBK4DFCUAZRNU7TJ4XUOJEADVQBLGVVVFKRTHHXNAXD7MTYUWR7HKCNY",
-            "amount": "1.1000000"
-          },
-          {
-            "_links": {
-              "self": {
-                "href": "https://horizon.stellar.org/operations/27709668704915457"
-              },
-            },
-            "id": "27709668704915457",
-            "paging_token": "27709668704915457",
-            "source_account": "GAREELUB43IRHWEASCFBLKHURCGMHE5IF6XSE7EXDLACYHGRHM43RFOX",
-            "type": "payment",
-            "type_i": 1,
-            "asset_type": "credit_alphanum4",
-            "asset_code": "CNY",
-            "asset_issuer": "GAREELUB43IRHWEASCFBLKHURCGMHE5IF6XSE7EXDLACYHGRHM43RFOX",
-            "from": "GAREELUB43IRHWEASCFBLKHURCGMHE5IF6XSE7EXDLACYHGRHM43RFOX",
-            "to": "GBK4DFCUAZRNU7TJ4XUOJEADVQBLGVVVFKRTHHXNAXD7MTYUWR7HKCNY",
-            "amount": "100000.0000000"
-          },
-        ]
+        payments: []
       }
     },
 
     created () {
       let vm = this
-//
-//      StellarServer.payments()
-//        .forAccount(this.$store.getters.keypair.publicKey())
-//        .limit(50)
-//        .order('desc')
-//        .call()
-//        .then(payments => {
-//          vm.payments = _.filter(payments._embedded.records, function (record) {
-//            return record.type === 'payment'
-//          })
-//        })
-//      // load additional info for the first 10 payments (/transactions)
+
+      StellarServer.payments()
+        .forAccount(this.$store.getters.keypair.publicKey())
+        .limit(50)
+        .order('desc')
+        .call()
+        .then(payments => {
+          _.forEach(payments.records, function (payment) {
+            if (payment.type === 'create_account') {
+              payment.from = payment.funder
+              payment.amount = payment.starting_balance
+              payment.asset_type = 'native'
+            }
+          })
+
+          vm.payments = _.filter(payments.records, function (payment) {
+            return payment.type !== 'account_merge'
+          })
+
+          vm.startListening()
+
+          let promises = []
+
+          for (let i = 0; i < Math.min(vm.payments.length, 10); i++) {
+            promises.push(vm.fetchAdditionalInfo(vm.payments[i]))
+          }
+
+          Promise.all(promises)
+            .then(() => {
+              vm.$forceUpdate()
+            })
+        })
+    },
+
+    methods: {
+      startListening() {
+        let vm = this
+
+        StellarServer.payments()
+          .forAccount(this.$store.getters.keypair.publicKey())
+          .cursor('now')
+          .stream({
+            onmessage: (payment) => {
+              if (payment.type !== 'account_merge') {
+                vm.payments.unshift(payment)
+              }
+            }
+          })
+      },
+
+      fetchAdditionalInfo(payment) {
+        return StellarServer.transactions()
+          .transaction(this.parseTransactionHash(payment))
+          .call()
+          .then(tx => this.processAdditionalInfo(payment, tx))
+      },
+
+      processAdditionalInfo(payment, tx) {
+        payment.datetime = moment(tx.created_at).format('DD.MM.YYYY HH:mm:ss')
+
+        if (tx.memo_type !== 'none') {
+          payment.memo = tx.memo
+        }
+      },
+
+      parseTransactionHash(payment) {
+        let parts = payment._links.transaction.href.split('/')
+
+        return parts[parts.length - 1]
+      },
+
+      loadInfo(payment) {
+        let vm = this
+
+        Promise.resolve(this.fetchAdditionalInfo(payment))
+          .then(() => {
+            vm.$forceUpdate()
+          })
+      }
     }
   }
 </script>
