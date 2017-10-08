@@ -1,5 +1,9 @@
 <?php
 
 Route::get('{path}', function () {
-    return view('index');
+    $routes = collect(Route::getRoutes()->getRoutesByName())->map(function ($route) {
+        return $route->uri;
+    });
+
+    return view('index', compact('routes'));
 })->where('path', '(.*)');

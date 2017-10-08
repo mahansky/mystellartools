@@ -2,6 +2,7 @@
     $config = [
         'appName' => config('app.name'),
         'locale' => $locale = app()->getLocale(),
+        'routes' => $routes,
     ];
 @endphp
 <script>window.config = @json($config)</script>

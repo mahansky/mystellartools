@@ -14,3 +14,6 @@ use Illuminate\Http\Request;
 */
 
 Route::get('qrcode', 'QRCodeController');
+
+Route::get('federation', 'FederationController@show')->name('federation');
+Route::post('federation', 'FederationController@store')->name('federation.store');

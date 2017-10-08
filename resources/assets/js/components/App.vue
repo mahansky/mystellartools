@@ -5,11 +5,14 @@
     <transition name="page" mode="out-in">
       <component v-if="layout" :is="layout"></component>
     </transition>
+
+    <error></error>
   </div>
 </template>
 
 <script>
 import Loading from './Loading'
+import Error from './Error'
 
 // Load layout components dynamically.
 const requireContext = require.context('../layouts', false, /.*\.vue$/)
@@ -27,7 +30,8 @@ export default {
   el: '#app',
 
   components: {
-    Loading
+    Loading,
+    Error,
   },
 
   metaInfo () {
