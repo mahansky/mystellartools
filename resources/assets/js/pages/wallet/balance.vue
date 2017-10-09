@@ -8,7 +8,7 @@
                         <v-card-title primary-title>
                             <div class="text-xs-center" style="width: 100%;">
                                 <h2 class="text-xs-center blue--text" v-html="amountFormat(native)"></h2>
-                                <div class="subheading grey--text">$ 4567.64</div>
+                                <price :lumens="native"></price>
                             </div>
                         </v-card-title>
                     </v-card>
@@ -17,14 +17,7 @@
             <v-layout row wrap class="mt-5">
                 <v-flex xs12>
                     <div class="subheader">Other tokens</div>
-                    <div v-for="token in tokens">
-                        <h4 class="mb-1 mt-3">
-                            <span v-html="amountFormat(token.balance)"></span>
-                            <small>{{ token.asset_code }}</small>
-                        </h4>
-                        <div class="grey--text text--darken-2">Issuer <span class="grey--text" v-text="token.asset_issuer"></span></div>
-                        <div class="grey--text text--darken-2" v-if="token.limit">Limit <span class="grey--text" v-html="amountFormat(token.limit)"></span></div>
-                    </div>
+                    <token v-for="token in tokens" :token="token" :key="token.asset_code"></token>
                 </v-flex>
             </v-layout>
         </v-container>
@@ -33,29 +26,18 @@
 
 <script>
   import { Stellar, StellarServer } from '../../stellar'
+  import Price from './balance/price'
+  import Token from './balance/token'
 
   export default {
+    components: {
+      Price,
+      Token,
+    },
+
     data () {
       return {
-        balances: [
-          {
-            "balance": "857557.0000000",
-            "limit": "1000000000.0000000",
-            "asset_type": "credit_alphanum4",
-            "asset_code": "CNY",
-            "asset_issuer": "GAREELUB43IRHWEASCFBLKHURCGMHE5IF6XSE7EXDLACYHGRHM43RFOX"
-          },
-          {
-            "balance": "98798.23",
-            "asset_type": "credit_alphanum4",
-            "asset_code": "ABC",
-            "asset_issuer": "GAREELUB43IRHWEASCFBLKHURCGMHE5IF6XSE7EXDLACYHGRHM43RPOP"
-          },
-          {
-            "balance": "120.8993300",
-            "asset_type": "native"
-          }
-        ]
+        balances: [],
       }
     },
 
@@ -84,15 +66,15 @@
     created () {
       let vm = this
 
-//      StellarServer.accounts()
-//        .accountId(this.$store.getters.keypair.publicKey())
-//        .call()
-//        .then(function (account) {
-//          vm.balances = account.balances
-//        })
-//        .catch(function (err) {
-//          console.log('error', err)
-//        })
+      StellarServer.accounts()
+        .accountId(this.$store.getters.keypair.publicKey())
+        .call()
+        .then(function (account) {
+          vm.balances = account.balances
+        })
+        .catch(function (error) {
+          this.$store.dispatch('storeError', error.response.data.detail)
+        })
     }
   }
 </script>
