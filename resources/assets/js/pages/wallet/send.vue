@@ -6,29 +6,46 @@
                     <v-card class="white" v-if="!clickedVerify">
                         <v-card-text>
                             <v-form v-model="valid" ref="form">
-                                <v-text-field label="Recipient" :rules="recipientRules"
-                                              v-model="recipient"></v-text-field>
+                                <v-text-field
+                                        label="Recipient"
+                                        :rules="recipientRules"
+                                        v-model="recipient"
+                                ></v-text-field>
 
                                 <v-layout row>
                                     <v-flex xs8>
-                                        <v-text-field label="Amount" :rules="amountRules"
-                                                      v-model="amount"></v-text-field>
+                                        <v-text-field
+                                                label="Amount"
+                                                :rules="amountRules"
+                                                v-model="amount"
+                                                hint="<a href='#' @click='setMax'>set max</a>"
+                                        ></v-text-field>
                                     </v-flex>
                                     <v-flex xs4>
-                                        <v-select label="Asset" :items="['XLM']" :rules="assetRules"
-                                                  v-model="asset"></v-select>
+                                        <v-select
+                                                label="Asset" :items="['XLM']"
+                                                :rules="assetRules"
+                                                v-model="asset"
+                                        ></v-select>
                                     </v-flex>
                                 </v-layout>
 
                                 <v-layout row v-if="memo">
                                     <v-flex xs4>
-                                        <v-select label="Memo type"
-                                                  :items="['MEMO_ID', 'MEMO_TEXT', 'MEMO_HASH', 'MEMO_RETURN']"
-                                                  v-model="memoType"></v-select>
+                                        <v-select
+                                                label="Memo type"
+                                                :items="['MEMO_ID', 'MEMO_TEXT', 'MEMO_HASH', 'MEMO_RETURN']"
+                                                v-model="memoType"
+                                                hint="<a href='https://www.stellar.org/developers/guides/concepts/transactions.html#memo' target='_blank' rel='nofollow noreferrer'>what's a memo?</a>"
+                                                persistent-hint
+                                        ></v-select>
                                     </v-flex>
                                     <v-flex xs8>
-                                        <v-text-field label="Memo" :rules="memoType ? memoValueRules : null"
-                                                      v-model="memoValue"></v-text-field>
+                                        <v-text-field
+                                                :label="memoPlaceholder"
+                                                :rules="memoType ? memoValueRules : []"
+                                                v-model="memoValue"
+                                        ></v-text-field>
                                     </v-flex>
                                 </v-layout>
                             </v-form>
@@ -51,32 +68,72 @@
                                 <span v-text="recipient"></span>
                             </p>
 
-                            <b>Amount</b>
-                            <table class="send-amount-table" cellpadding="0" cellspacing="0">
-                                <tr>
-                                    <td>
-                                        <span v-html="amountFormat(parseFloat(amount).toFixed(7))"></span>
-                                    </td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <span class="grey--text">+</span>
-                                        <span class="grey--text text--darken-2"
-                                              v-html="amountFormat((0.0000100).toFixed(7))"></span>
-                                    </td>
-                                    <td>
-                                        <small class="grey--text">(base fee)</small>
-                                    </td>
-                                <tr class="total">
-                                    <td>
-                                        <span v-html="amountFormat(parseFloat(amount + 0.00001).toFixed(7))"></span>
-                                    </td>
-                                    <td>
-                                        <span v-text="asset"></span>
-                                    </td>
-                                </tr>
-                            </table>
+                            <v-layout row wrap>
+                                <v-flex xs6>
+                                    <b>Amount sending</b>
+                                    <table class="send-amount-table" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td>
+                                                <span v-html="amountFormat(parseFloat(amount).toFixed(7))"></span>
+                                            </td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <span class="grey--text">+</span>
+                                                <span class="grey--text text--darken-2"
+                                                      v-html="amountFormat((0.0000100).toFixed(7))"></span>
+                                            </td>
+                                            <td>
+                                                <small class="grey--text">(base fee)</small>
+                                            </td>
+                                        <tr class="total">
+                                            <td>
+                                                <span v-html="amountFormat(parseFloat(amount + 0.00001).toFixed(7))"></span>
+                                            </td>
+                                            <td>
+                                                <span v-text="asset"></span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </v-flex>
+                                <v-flex xs6>
+                                    <b>New balance</b>
+                                    <table class="send-amount-table" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td>
+                                                <span v-html="amountFormat(parseFloat(balance).toFixed(7))"></span>
+                                            </td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <span>-</span>
+                                                <span v-html="amountFormat(parseFloat(amount + 0.00001).toFixed(7))"></span>
+                                            </td>
+                                            <td>
+                                                <small class="grey--text">(sending)</small>
+                                            </td>
+                                        <tr class="total">
+                                            <td>
+                                                <span v-html="amountFormat(parseFloat(balance - (amount + 0.00001)).toFixed(7))"></span>
+                                            </td>
+                                            <td>
+                                                <span v-text="asset"></span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </v-flex>
+                            </v-layout>
+
+                            <v-layout row wrap v-if="memo">
+                                <v-flex xs12>
+                                    <b>Memo</b>
+                                    <br>
+                                    <span v-text="memoType"></span>:
+                                    <span v-text="memoValue"></span>
+                                </v-flex>
+                            </v-layout>
                         </v-card-text>
                         <v-card-actions>
                             <v-btn class="white blue--text" flat @click="clickedVerify = false">
@@ -84,9 +141,20 @@
                                 Back
                             </v-btn>
                             <v-spacer></v-spacer>
-                            <v-btn info :loading="isSending" @click="isSending = true">
+                            <v-btn
+                                    v-if="isVerifying"
+                                    flat
+                                    :loading="isVerifying"
+                                    class="red--text"
+                            ></v-btn>
+                            <v-btn
+                                    info
+                                    v-if="!isVerifying"
+                                    :loading="isSending"
+                                    @click="clickedSend"
+                            >
                                 Send
-                                <v-icon>send</v-icon>
+                                <v-icon>done</v-icon>
                             </v-btn>
                         </v-card-actions>
                     </v-card>
@@ -124,33 +192,75 @@
 
 <script>
   import { Stellar, StellarServer } from '../../stellar'
+  import { Asset, Keypair, Memo, Operation, TransactionBuilder } from 'stellar-sdk'
+  import BigNumber from 'bignumber.js'
 
   export default {
     data () {
       return {
+        balance: 123.3434,
         clickedVerify: false,
+        isVerifying: true,
         memo: false,
         valid: false,
         isSending: false,
 
         recipient: '',
         recipientRules: [(v) => {
-          try {
-            Stellar.Keypair.fromPublicKey(v)
-          } catch (e) {
-            return 'Invalid recipient'
+          let domain = window.config.domain.replace('.', '\\.')
+          let regex = new RegExp('^.+\\*' + domain + '$')
+          let ok = true
+
+          if (!regex.test(v)) {
+            ok = false
           }
 
-          return true
+          if (!ok) {
+            try {
+              Stellar.Keypair.fromPublicKey(v)
+              ok = true
+            } catch (e) {
+              ok = false
+            }
+          }
+
+          return ok ? true : 'Invalid recepient'
         }],
 
         amount: '',
-        amountRules: [(v) => v > 0 || 'Amount must be greater than zero.'],
+        amountRules: [(v) => Operation.isValidAmount(v) || 'Amount must be greater than zero.'],
 
+        resolvedMemo: null,
         memoType: '',
         memoValue: '',
+        memoPlaceholder: 'Memo',
         memoValueRules: [(v) => {
+          let memoError = ''
 
+          try {
+            switch (this.memoType) {
+              case 'MEMO_TEXT':
+                memoError = 'MEMO_TEXT must contain a maximum of 28 characters'
+                this.resolvedMemo = Memo.text(v)
+                break
+              case 'MEMO_ID':
+                memoError = 'MEMO_ID must be a valid 64 bit unsigned integer'
+                this.resolvedMemo = Memo.id(v)
+                break
+              case 'MEMO_HASH':
+                memoError = 'MEMO_HASH must be a 32 byte hash represented in hexadecimal (A-Z0-9)'
+                this.resolvedMemo = Memo.hash(v)
+                break
+              case 'MEMO_RETURN':
+                memoError = 'MEMO_RETURN must be a 32 byte hash represented in hexadecimal (A-Z0-9)'
+                this.resolvedMemo = Memo.returnHash(v)
+                break
+            }
+          } catch (error) {
+            return memoError
+          }
+
+          return true
         }],
 
         asset: '',
@@ -174,14 +284,120 @@
       }
     },
 
+    watch: {
+      memoType (type) {
+        switch (type) {
+          case 'MEMO_ID':
+            this.memoPlaceholder = 'Enter memo ID number';
+            break;
+          case 'MEMO_TEXT':
+            this.memoPlaceholder = 'Up to 28 characters';
+            break;
+          case 'MEMO_HASH':
+          case 'MEMO_RETURN':
+            this.memoPlaceholder = 'Enter 64 character encoded string';
+            break;
+        }
+      }
+    },
+
     methods: {
       clickVerify() {
         if (this.$refs.form.validate()) {
           if (this.valid) {
             this.clickedVerify = true
+            this.isVerifying = true
+            this.isSending = false
+
+            this.verifyPayment()
           }
         }
-      }
+      },
+
+      verifyPayment () {
+        let vm = this
+
+        StellarServer.loadAccount(this.$store.getters.keypair.publicKey())
+          .then(account => {
+            vm.loadedAccount = account
+
+            let minimumBalance = 20 + (account.subentry_count) * 10
+            let nativeBalance = _(account.balances).find(balance => balance.asset_type === 'native').balance
+            let maxSend = new BigNumber(nativeBalance).minus(minimumBalance)
+
+            if (maxSend.lt(this.amount)) {
+              throw 'InsufficientBalanceError'
+            }
+          })
+          .then(() => {
+            if (new BigNumber(this.amount).gte(20)) {
+              return
+            }
+
+            return StellarServer.accounts()
+              .accountId(this.recipient)
+              .call()
+              .catch(err => {
+                if (err.name === 'NotFoundError') {
+                  throw 'DestinationAccountNotExistError'
+                }
+              })
+          })
+          .then(() => {
+            vm.isVerifying = false
+          })
+          .catch(err => {
+            console.log('sending ', err)
+            this.$store.dispatch('storeError', err)
+
+          })
+      },
+
+      clickedSend () {
+        this.isSending = true
+
+        StellarServer.accounts()
+          .accountId(this.recipient)
+          .call()
+          .then(() => {
+            let operation = Operation.payment({
+              destination: this.recipient,
+              asset: Asset.native(),
+              amount: this.amount,
+            })
+
+            return this.submitTransaction(operation)
+          })
+          .then(() => {
+            this.$router.push({name: 'payments'})
+          })
+          .catch(err => {
+            if (err.name === 'NotFoundError') {
+              let operation = Operation.createAccount({
+                destination: this.destination,
+                startingBalance: this.amount,
+              })
+
+              return this.submitTransaction(operation)
+            } else {
+              this.$store.dispatch('storeError', err.name)
+            }
+          })
+      },
+
+      submitTransaction (operation) {
+        let transaction = new TransactionBuilder(this.loadedAccount).addOperation(operation)
+
+        if (this.memo) {
+          transaction.addMemo(this.resolvedMemo)
+        }
+
+        transaction.build()
+
+        transaction.sign(Keypair.fromSeed(this.$store.getters.keypair.getSecret()))
+
+        return StellarServer.submitTransaction(transaction)
+      },
     }
   }
 </script>

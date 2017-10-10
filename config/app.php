@@ -54,6 +54,8 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
+    'domain' => parse_url(env('APP_URL'), PHP_URL_HOST),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone

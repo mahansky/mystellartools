@@ -44,7 +44,7 @@ class FederationController extends Controller
         }
 
         return response([
-            'stellar_address' => $address->stellar_address . '*' . parse_url(config('APP_URL'), PHP_URL_HOST),
+            'stellar_address' => $address->stellar_address . '*' . config('app.domain'),
             'account_id'      => $address->account_id,
         ], 200);
     }
@@ -67,7 +67,7 @@ class FederationController extends Controller
         $address = Address::create($data);
 
         return response([
-            'stellar_address' => $address->stellar_address . '*' . parse_url(config('APP_URL'), PHP_URL_HOST),
+            'stellar_address' => $address->stellar_address . '*' . config('app.domain'),
             'account_id'      => $address->account_id,
         ], 200);
     }
