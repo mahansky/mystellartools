@@ -191,7 +191,7 @@
 </template>
 
 <script>
-  import { Stellar, StellarServer } from '../../stellar'
+  import { ruleAccountIsValid, Stellar, StellarServer } from '../../stellar'
   import { Asset, Keypair, Memo, Operation, TransactionBuilder } from 'stellar-sdk'
   import BigNumber from 'bignumber.js'
 
@@ -206,26 +206,7 @@
         isSending: false,
 
         recipient: '',
-        recipientRules: [(v) => {
-          let domain = window.config.domain.replace('.', '\\.')
-          let regex = new RegExp('^.+\\*' + domain + '$')
-          let ok = true
-
-          if (!regex.test(v)) {
-            ok = false
-          }
-
-          if (!ok) {
-            try {
-              Stellar.Keypair.fromPublicKey(v)
-              ok = true
-            } catch (e) {
-              ok = false
-            }
-          }
-
-          return ok ? true : 'Invalid recepient'
-        }],
+        recipientRules: [(v) => ruleAccountIsValid(v)],
 
         amount: '',
         amountRules: [(v) => Operation.isValidAmount(v) || 'Amount must be greater than zero.'],
@@ -394,7 +375,7 @@
 
         transaction.build()
 
-        transaction.sign(Keypair.fromSeed(this.$store.getters.keypair.getSecret()))
+        transaction.sign(Keypair.fromSeed(this.$store.getters.keypair.secret()))
 
         return StellarServer.submitTransaction(transaction)
       },

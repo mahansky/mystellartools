@@ -8,7 +8,7 @@
                 floating
         >
             <v-list>
-                <v-list-tile @click="$router.push('balance')">
+                <v-list-tile :to="{name: 'balance'}">
                     <v-list-tile-action>
                         <v-icon>account_balance_wallet</v-icon>
                     </v-list-tile-action>
@@ -16,7 +16,7 @@
                         <v-list-tile-title>Balance</v-list-tile-title>
                     </v-list-tile-content>
                 </v-list-tile>
-                <v-list-tile @click="$router.push('payments')">
+                <v-list-tile :to="{name: 'payments'}">
                     <v-list-tile-action>
                         <v-icon>format_align_left</v-icon>
                     </v-list-tile-action>
@@ -24,7 +24,7 @@
                         <v-list-tile-title>Payments</v-list-tile-title>
                     </v-list-tile-content>
                 </v-list-tile>
-                <v-list-tile @click="$router.push('send')">
+                <v-list-tile :to="{name: 'send'}">
                     <v-list-tile-action>
                         <v-icon>call_made</v-icon>
                     </v-list-tile-action>
@@ -32,7 +32,7 @@
                         <v-list-tile-title>Send</v-list-tile-title>
                     </v-list-tile-content>
                 </v-list-tile>
-                <v-list-tile @click="$router.push('receive')">
+                <v-list-tile :to="{name: 'receive'}">
                     <v-list-tile-action>
                         <v-icon>call_received</v-icon>
                     </v-list-tile-action>
@@ -43,7 +43,7 @@
                 <v-divider></v-divider>
 
                 <v-subheader>TOKENS</v-subheader>
-                <v-list-tile @click="$router.push('receive')">
+                <v-list-tile disabled>
                     <v-list-tile-action>
                         <v-icon>add_circle_outline</v-icon>
                     </v-list-tile-action>
@@ -51,7 +51,7 @@
                         <v-list-tile-title>Issue tokens</v-list-tile-title>
                     </v-list-tile-content>
                 </v-list-tile>
-                <v-list-tile @click="$router.push('receive')">
+                <v-list-tile disabled>
                     <v-list-tile-action>
                         <v-icon>settings_ethernet</v-icon>
                     </v-list-tile-action>
@@ -62,7 +62,7 @@
                 <v-divider></v-divider>
 
                 <v-subheader>TOOLS</v-subheader>
-                <v-list-tile @click="$router.push('operations')">
+                <v-list-tile :to="{name: 'operations'}">
                     <v-list-tile-action>
                         <v-icon>transform</v-icon>
                     </v-list-tile-action>
@@ -70,7 +70,7 @@
                         <v-list-tile-title>All operations</v-list-tile-title>
                     </v-list-tile-content>
                 </v-list-tile>
-                <v-list-tile @click="$router.push('receive')">
+                <v-list-tile disabled>
                     <v-list-tile-action>
                         <v-icon>settings</v-icon>
                     </v-list-tile-action>
@@ -78,7 +78,7 @@
                         <v-list-tile-title>Set options</v-list-tile-title>
                     </v-list-tile-content>
                 </v-list-tile>
-                <v-list-tile @click="$router.push('receive')">
+                <v-list-tile disabled>
                     <v-list-tile-action>
                         <v-icon>dns</v-icon>
                     </v-list-tile-action>
@@ -86,7 +86,7 @@
                         <v-list-tile-title>Manage data</v-list-tile-title>
                     </v-list-tile-content>
                 </v-list-tile>
-                <v-list-tile @click="$router.push('receive')">
+                <v-list-tile :to="{name: 'merge'}">
                     <v-list-tile-action>
                         <v-icon>merge_type</v-icon>
                     </v-list-tile-action>

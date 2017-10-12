@@ -3,11 +3,11 @@
         <v-container grid-list-lg>
             <v-layout row wrap>
                 <v-flex xs12>
-                    <div class="subheader">Lumens (XLM)</div>
+                    <div class="subheader">Lumens</div>
                     <v-card class="white">
                         <v-card-title primary-title>
                             <div class="text-xs-center" style="width: 100%;">
-                                <h2 class="text-xs-center blue--text" v-html="amountFormat(native)"></h2>
+                                <h2 class="text-xs-center blue--text" v-html="amountFormat(native) + ' XLM'"></h2>
                                 <price :lumens="native"></price>
                             </div>
                         </v-card-title>

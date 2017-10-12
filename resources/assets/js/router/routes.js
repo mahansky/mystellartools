@@ -9,6 +9,7 @@ export default ({ keypairGuard, guestGuard }) => [
     { path: '/receive', name: 'receive', component: require('~/pages/wallet/receive.vue') },
 
     { path: '/operations', name: 'operations', component: require('~/pages/tools/operations.vue') },
+    { path: '/merge', name: 'merge', component: require('~/pages/tools/merge.vue') },
     // { path: '/settings', component: require('~/pages/settings/index.vue'), children: [
     //   { path: '', redirect: { name: 'settings.profile' }},
     //   { path: 'profile', name: 'settings.profile', component: require('~/pages/settings/profile.vue') },
