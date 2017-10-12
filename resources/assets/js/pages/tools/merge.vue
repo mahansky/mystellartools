@@ -38,6 +38,7 @@
 <script>
   import { ruleAccountIsValid, Stellar, StellarServer } from '../../stellar'
   import { TransactionBuilder, Operation, Keypair } from 'stellar-sdk'
+  import { flash } from '../../utils'
 
   export default {
     data () {
@@ -74,8 +75,7 @@
               vm.$router.push('/')
             })
             .catch((err) => {
-              console.log('error ', err)
-              vm.$store.dispatch('storeError', err)
+              flash(vm.$store, err, 'error')
             })
         }
       }

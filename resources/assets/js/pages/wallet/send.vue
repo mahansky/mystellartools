@@ -194,6 +194,7 @@
   import { ruleAccountIsValid, Stellar, StellarServer } from '../../stellar'
   import { Asset, Keypair, Memo, Operation, TransactionBuilder } from 'stellar-sdk'
   import BigNumber from 'bignumber.js'
+  import { flash } from '../../utils'
 
   export default {
     data () {
@@ -328,9 +329,7 @@
             vm.isVerifying = false
           })
           .catch(err => {
-            console.log('sending ', err)
-            this.$store.dispatch('storeError', err)
-
+            flash(vm.$store, err, 'error')
           })
       },
 
@@ -361,7 +360,7 @@
 
               return this.submitTransaction(operation)
             } else {
-              this.$store.dispatch('storeError', err.name)
+              flash(this.$store, err.name, 'error')
             }
           })
       },

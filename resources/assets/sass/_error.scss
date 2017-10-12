@@ -1,7 +1,12 @@
 .error-popup {
-  position: absolute;
+  position: fixed;
   bottom: 0;
   right: 0;
   margin: 20px;
   padding: 20px;
+  max-width: 500px;
+
+  @media (max-width: 500px) {
+    max-width: 100%;
+  }
 }

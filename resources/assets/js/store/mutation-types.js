@@ -10,6 +10,6 @@ export const UPDATE_USER = 'UPDATE_USER'
 export const STORE_KEYPAIR = 'STORE_KEYPAIR'
 export const REMOVE_KEYPAIR = 'REMOVE_KEYPAIR'
 
-// error.js
-export const STORE_ERROR = 'STORE_ERROR'
-export const REMOVE_ERROR = 'REMOVE_ERROR'
+// flash.js
+export const STORE_FLASH = 'STORE_FLASH'
+export const REMOVE_FLASH = 'REMOVE_FLASH'

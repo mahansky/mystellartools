@@ -70,7 +70,7 @@
                         <v-list-tile-title>All operations</v-list-tile-title>
                     </v-list-tile-content>
                 </v-list-tile>
-                <v-list-tile disabled>
+                <v-list-tile :to="{name: 'setoptions'}">
                     <v-list-tile-action>
                         <v-icon>settings</v-icon>
                     </v-list-tile-action>

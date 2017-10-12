@@ -96,6 +96,7 @@
 
 <script>
   import axios from 'axios'
+  import { flash } from '../../utils'
 
   export default {
     data () {
@@ -164,7 +165,7 @@
             this.stellarAddress = response.data.stellar_address.split('*')[0]
             this.fetchStellarQRCode()
           }).catch(error => {
-            this.$store.dispatch('storeError', error.response.data.detail)
+            flash(this.$store, error.response.data.detail, 'error')
           })
         }
       }

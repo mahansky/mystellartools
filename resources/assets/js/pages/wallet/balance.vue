@@ -28,6 +28,7 @@
   import { Stellar, StellarServer } from '../../stellar'
   import Price from './balance/price'
   import Token from './balance/token'
+  import { flash } from '../../utils'
 
   export default {
     components: {
@@ -73,7 +74,7 @@
           vm.balances = account.balances
         })
         .catch(function (error) {
-          this.$store.dispatch('storeError', error.response.data.detail)
+          flash(this.$store, error.response.data.detail, 'error')
         })
     }
   }

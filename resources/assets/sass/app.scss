@@ -8,6 +8,10 @@
 @import 'tables';
 @import 'error';
 
+#app {
+  position: relative;
+}
+
 .receive {
   .qrcode {
     .card {
@@ -33,4 +37,17 @@
 
 .pointer {
   cursor: pointer;
+}
+
+.setoptions {
+  .card {
+    b {
+      display: block;
+      margin-bottom: 10px;
+
+      &:not(:first-child) {
+        margin-top: 30px;
+      }
+    }
+  }
 }
