@@ -245,7 +245,7 @@
           return true
         }],
 
-        asset: '',
+        asset: 'XLM',
         assetRules: [(v) => !!v || 'You have to choose an asset code'],
 
 //        contactsSearch: '',

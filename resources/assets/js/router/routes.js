@@ -11,6 +11,7 @@ export default ({ keypairGuard, guestGuard }) => [
     { path: '/operations', name: 'operations', component: require('~/pages/tools/operations.vue') },
     { path: '/merge', name: 'merge', component: require('~/pages/tools/merge.vue') },
     { path: '/setoptions', name: 'setoptions', component: require('~/pages/tools/setoptions.vue') },
+    { path: '/data', name: 'data', component: require('~/pages/tools/data.vue') },
     // { path: '/settings', component: require('~/pages/settings/index.vue'), children: [
     //   { path: '', redirect: { name: 'settings.profile' }},
     //   { path: 'profile', name: 'settings.profile', component: require('~/pages/settings/profile.vue') },

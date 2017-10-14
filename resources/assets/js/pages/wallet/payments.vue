@@ -78,7 +78,8 @@
           {text: 'Date', value: 'timestamp', sortable: false, align: 'left'},
           {text: '', value: 'link', sortable: false, align: 'right'},
         ],
-        payments: []
+        payments: [],
+        eventSource: null,
       }
     },
 
@@ -122,7 +123,7 @@
       startListening() {
         let vm = this
 
-        StellarServer.payments()
+        vm.eventSource = StellarServer.payments()
           .forAccount(this.$store.getters.keypair.publicKey())
           .cursor('now')
           .stream({
@@ -163,6 +164,10 @@
             vm.$forceUpdate()
           })
       }
-    }
+    },
+
+    beforeDestroy () {
+      this.eventSource()
+    },
   }
 </script>

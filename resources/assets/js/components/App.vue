@@ -6,13 +6,13 @@
       <component v-if="layout" :is="layout"></component>
     </transition>
 
-    <error></error>
+    <flash ref="flash"></flash>
   </div>
 </template>
 
 <script>
 import Loading from './Loading'
-import Error from './Error'
+import Flash from './Flash'
 
 // Load layout components dynamically.
 const requireContext = require.context('../layouts', false, /.*\.vue$/)
@@ -31,7 +31,7 @@ export default {
 
   components: {
     Loading,
-    Error,
+    Flash,
   },
 
   metaInfo () {
@@ -50,6 +50,7 @@ export default {
 
   mounted () {
     this.$loading = this.$refs.loading
+    this.$flash = this.$refs.flash
   },
 
   methods: {

@@ -1,10 +1,14 @@
 <template>
     <transition name="fade">
-        <div class="error-popup red lighten-1 white--text" v-if="message">
-            <h6 v-text="title"></h6>
-            <div v-text="message"></div>
-            <div @click="hide" class="mt-3"><b>CLOSE</b></div>
-        </div>
+        <v-alert
+                v-if="message"
+                :error="type === 'error'"
+                :success="type === 'success'"
+                :value="true"
+                v-text="message"
+                class="error-popup"
+                dismissible
+        ></v-alert>
     </transition>
 </template>
 
@@ -13,8 +17,8 @@
 
   export default {
     computed: {
-      title () {
-        return this.flash.type === 'error' ? 'Error!' : 'Success!'
+      type () {
+        return this.flash.type
       },
 
       message () {

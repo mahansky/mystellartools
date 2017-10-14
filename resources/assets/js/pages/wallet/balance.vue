@@ -1,23 +1,34 @@
 <template>
     <main>
         <v-container grid-list-lg>
-            <v-layout row wrap>
+            <template v-if="exists">
+                <v-layout row wrap>
+                    <v-flex xs12>
+                        <div class="subheader">Lumens</div>
+                        <v-card class="white">
+                            <v-card-title primary-title>
+                                <div class="text-xs-center" style="width: 100%;">
+                                    <h2 class="text-xs-center blue--text" v-html="amountFormat(native) + ' XLM'"></h2>
+                                    <price :lumens="native"></price>
+                                </div>
+                            </v-card-title>
+                        </v-card>
+                    </v-flex>
+                </v-layout>
+                <v-layout row wrap class="mt-5" v-if="tokens.length > 0">
+                    <v-flex xs12>
+                        <div class="subheader">Other tokens</div>
+                        <token v-for="token in tokens" :token="token" :key="token.asset_code"></token>
+                    </v-flex>
+                </v-layout>
+            </template>
+            <v-layout row wrap v-else>
                 <v-flex xs12>
-                    <div class="subheader">Lumens</div>
-                    <v-card class="white">
-                        <v-card-title primary-title>
-                            <div class="text-xs-center" style="width: 100%;">
-                                <h2 class="text-xs-center blue--text" v-html="amountFormat(native) + ' XLM'"></h2>
-                                <price :lumens="native"></price>
-                            </div>
-                        </v-card-title>
-                    </v-card>
-                </v-flex>
-            </v-layout>
-            <v-layout row wrap class="mt-5" v-if="tokens.length > 0">
-                <v-flex xs12>
-                    <div class="subheader">Other tokens</div>
-                    <token v-for="token in tokens" :token="token" :key="token.asset_code"></token>
+                    <v-alert info value="true">
+                        This account doesn't exist on the Stellar network.
+                        <br>
+                        If you want to create it, send 20 XLM to its address.
+                    </v-alert>
                 </v-flex>
             </v-layout>
         </v-container>
@@ -61,6 +72,10 @@
         return _.filter(this.balances, function (b) {
           return b.asset_type !== 'native'
         })
+      },
+
+      exists () {
+        return !! this.balances.length
       }
     },
 
@@ -74,7 +89,7 @@
           vm.balances = account.balances
         })
         .catch(function (error) {
-          flash(this.$store, error.response.data.detail, 'error')
+          flash(vm.$store, error, 'error')
         })
     }
   }

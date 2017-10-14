@@ -16,5 +16,5 @@ let vue = new Vue({
 let Stellar = require('stellar-sdk')
 // vue.$store.dispatch('storeKeypair', {keypair: Stellar.Keypair.fromSecret('SCQSS4FGSBORSP2O543GCHECPJGOMVCL7CINLS3YBA4V47AHZ665ZZSG')})
 // vue.$store.dispatch('storeKeypair', {keypair: Stellar.Keypair.fromPublicKey('GBK4DFCUAZRNU7TJ4XUOJEADVQBLGVVVFKRTHHXNAXD7MTYUWR7HKCNY')})
-// vue.$store.dispatch('storeKeypair', {keypair: Stellar.Keypair.fromPublicKey('GD4KEL2QMSDIHEGIT2SOZSRG55GLWIXUFTD5FVNDUX4WPMONWROJLP5R')})
-vue.$store.dispatch('storeKeypair', {keypair: Stellar.Keypair.fromSecret('SCXWHZJLMGQ2WQOSYACV6LOO5PAGMRAKA55FYUJ6L7XVLAB7ZNHPJ2L3')})
+// vue.$store.dispatch('storeKeypair', {keypair: Stellar.Keypair.fromPublicKey('GCMISAYBG7LNKRJ5W2I7JO66VVQWUJAUSJ4UONBQFV67NTISHU6HJW4T')})
+vue.$store.dispatch('storeKeypair', {keypair: Stellar.Keypair.fromSecret('SAPM5U5MAVGIOSONFTPI24GVD7HODZXMGOBA2MOYN5M5N3IJRWRLJHGX')})

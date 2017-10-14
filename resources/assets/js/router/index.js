@@ -45,6 +45,7 @@ function make (routes) {
   router.afterEach((to, from) => {
     router.app.$nextTick(() => {
       router.app.$loading.finish()
+      router.app.$flash.hide()
     })
   })
 
