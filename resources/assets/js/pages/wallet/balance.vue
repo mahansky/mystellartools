@@ -17,7 +17,7 @@
                 </v-layout>
                 <v-layout row wrap class="mt-5" v-if="tokens.length > 0">
                     <v-flex xs12>
-                        <div class="subheader">Other tokens</div>
+                        <div class="subheader">Other assets</div>
                         <token v-for="token in tokens" :token="token" :key="token.asset_code"></token>
                     </v-flex>
                 </v-layout>

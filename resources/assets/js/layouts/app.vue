@@ -42,16 +42,16 @@
                 </v-list-tile>
                 <v-divider></v-divider>
 
-                <v-subheader>TOKENS</v-subheader>
+                <v-subheader>ASSETS</v-subheader>
                 <v-list-tile disabled>
                     <v-list-tile-action>
                         <v-icon>add_circle_outline</v-icon>
                     </v-list-tile-action>
                     <v-list-tile-content>
-                        <v-list-tile-title>Issue tokens</v-list-tile-title>
+                        <v-list-tile-title>Issue assets</v-list-tile-title>
                     </v-list-tile-content>
                 </v-list-tile>
-                <v-list-tile disabled>
+                <v-list-tile :to="{name: 'trustlines'}">
                     <v-list-tile-action>
                         <v-icon>settings_ethernet</v-icon>
                     </v-list-tile-action>

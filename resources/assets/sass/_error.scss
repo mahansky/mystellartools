@@ -5,6 +5,7 @@
   margin: 20px;
   padding: 20px;
   max-width: 500px;
+  word-break: break-word;
 
   @media (max-width: 500px) {
     max-width: 100%;

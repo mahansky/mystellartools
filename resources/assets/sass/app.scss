@@ -51,3 +51,20 @@
     }
   }
 }
+
+.trustlines {
+  .anchor-results {
+    box-shadow: none !important;
+  }
+
+  .anchor-result {
+    tr td:first-child {
+      padding-right: 16px;
+      vertical-align: top;
+    }
+
+    tr td:last-child {
+      word-break: break-all;
+    }
+  }
+}
