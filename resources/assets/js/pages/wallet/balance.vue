@@ -1,6 +1,6 @@
 <template>
     <main>
-        <v-container grid-list-lg>
+        <v-container grid-list-lg v-if="loaded">
             <template v-if="exists">
                 <v-layout row wrap>
                     <v-flex xs12>
@@ -49,6 +49,7 @@
 
     data () {
       return {
+        loaded: false,
         balances: [],
       }
     },
@@ -90,6 +91,9 @@
         })
         .catch(function (error) {
           flash(vm.$store, error, 'error')
+        })
+        .then(() => {
+            this.loaded = true
         })
     }
   }

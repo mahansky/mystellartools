@@ -1,0 +1,37 @@
+main.account {
+  .account-card {
+    word-break: break-word;
+  }
+
+  .datablock {
+    &:not(:last-child) {
+      margin-bottom: 16px;
+    }
+
+    .name {
+      font-weight: bold;
+      margin-bottom: 2px;
+    }
+
+    table {
+      td:first-child {
+        padding-right: 16px;
+        text-transform: uppercase;
+      }
+
+      &.fluid {
+        width: 100%;
+
+        td:first-child {
+          padding-right: 0;
+          width: 20%;
+          vertical-align: top;
+        }
+
+        td:last-child {
+          width: 80%;
+        }
+      }
+    }
+  }
+}

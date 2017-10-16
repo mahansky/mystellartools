@@ -7,6 +7,7 @@ export default ({ keypairGuard, guestGuard }) => [
     { path: '/payments', name: 'payments', component: require('~/pages/wallet/payments.vue') },
     { path: '/send', name: 'send', component: require('~/pages/wallet/send.vue') },
     { path: '/receive', name: 'receive', component: require('~/pages/wallet/receive.vue') },
+    { path: '/account', name: 'account', component: require('~/pages/wallet/account.vue') },
 
     { path: '/operations', name: 'operations', component: require('~/pages/tools/operations.vue') },
     { path: '/trustlines', name: 'trustlines', component: require('~/pages/tools/trustlines.vue') },

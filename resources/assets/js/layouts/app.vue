@@ -40,6 +40,14 @@
                         <v-list-tile-title>Receive</v-list-tile-title>
                     </v-list-tile-content>
                 </v-list-tile>
+                <v-list-tile :to="{name: 'account'}">
+                    <v-list-tile-action>
+                        <v-icon>language</v-icon>
+                    </v-list-tile-action>
+                    <v-list-tile-content>
+                        <v-list-tile-title>Account</v-list-tile-title>
+                    </v-list-tile-content>
+                </v-list-tile>
                 <v-divider></v-divider>
 
                 <v-subheader>TOOLS</v-subheader>
