@@ -1,6 +1,7 @@
 <template>
-    <main>
-        <v-container grid-list-lg>
+    <main class="payments">
+        <v-btn flat info loading v-if="!loaded"></v-btn>
+        <v-container grid-list-lg v-if="loaded">
             <v-layout row wrap>
                 <v-flex xs12>
                     <v-data-table
@@ -80,6 +81,7 @@
         ],
         payments: [],
         eventSource: null,
+        loaded: false,
       }
     },
 
@@ -92,6 +94,8 @@
         .order('desc')
         .call()
         .then(payments => {
+          vm.loaded = true
+
           _.forEach(payments.records, function (payment) {
             if (payment.type === 'create_account') {
               payment.from = payment.funder

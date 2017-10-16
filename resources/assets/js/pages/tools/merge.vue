@@ -4,6 +4,11 @@
             <v-layout row wrap>
                 <v-flex lg6>
                     <v-card class="white">
+                        <v-toolbar card color="white" dense>
+                            <v-toolbar-title class="body-2 grey--text text--darken-2">
+                                Merge accounts
+                            </v-toolbar-title>
+                        </v-toolbar>
                         <v-card-text>
                             <v-form v-model="valid" ref="form">
                                 <v-text-field

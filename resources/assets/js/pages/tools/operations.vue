@@ -1,53 +1,56 @@
 <template>
-    <v-container>
-        <v-layout row>
-            <v-flex xs12>
-                <v-expansion-panel expand v-if="operations.length > 0">
-                    <v-expansion-panel-content v-for="operation in operations" :key="operation.id">
-                        <div slot="header">
-                            <v-layout row>
-                                <v-flex lg4>
-                                    <code v-text="operation.id" class="mr-3"></code>
-                                </v-flex>
-                                <v-flex lg8>
-                                    <span v-text="operation.type.toUpperCase()"></span>
-                                </v-flex>
-                            </v-layout>
-                        </div>
-                        <v-card>
-                            <v-card-text class="grey lighten-4">
-                                <keep-alive>
-                                    <component :is="operation.type" :operation="operation"></component>
-                                </keep-alive>
+    <main class="operations">
+        <v-btn info loading flat v-if="!loaded"></v-btn>
+        <v-container grid-list-lg v-if="loaded">
+            <v-layout row>
+                <v-flex xs12>
+                    <v-expansion-panel expand v-if="operations.length > 0">
+                        <v-expansion-panel-content v-for="operation in operations" :key="operation.id">
+                            <div slot="header">
+                                <v-layout row>
+                                    <v-flex lg4>
+                                        <code v-text="operation.id" class="mr-3"></code>
+                                    </v-flex>
+                                    <v-flex lg8>
+                                        <span v-text="operation.type.toUpperCase()"></span>
+                                    </v-flex>
+                                </v-layout>
+                            </div>
+                            <v-card>
+                                <v-card-text class="grey lighten-4">
+                                    <keep-alive>
+                                        <component :is="operation.type" :operation="operation"></component>
+                                    </keep-alive>
 
-                                <div class="mt-3">
-                                    <a :href="operation._links.self.href" target="_blank" rel="noreferrer nofollow">
-                                        <small>#{{ operation.id }}</small>
-                                    </a>
-                                </div>
-                            </v-card-text>
-                        </v-card>
-                    </v-expansion-panel-content>
-                </v-expansion-panel>
-                <p v-else class="grey--text">No results.</p>
-            </v-flex>
-        </v-layout>
-        <v-layout row class="mt-3">
-            <v-flex md2>
-                <v-btn flat class="grey grey--text text--darken-3" :disabled="prevDisabled" @click="prev">
-                    <v-icon>chevron_left</v-icon>
-                    Prev
-                </v-btn>
-            </v-flex>
-            <v-spacer></v-spacer>
-            <v-flex md2 class="text-xs-right">
-                <v-btn flat class="grey grey--text text--darken-3" :disabled="nextDisabled" @click="next">
-                    Next
-                    <v-icon>chevron_right</v-icon>
-                </v-btn>
-            </v-flex>
-        </v-layout>
-    </v-container>
+                                    <div class="mt-3">
+                                        <a :href="operation._links.self.href" target="_blank" rel="noreferrer nofollow">
+                                            <small>#{{ operation.id }}</small>
+                                        </a>
+                                    </div>
+                                </v-card-text>
+                            </v-card>
+                        </v-expansion-panel-content>
+                    </v-expansion-panel>
+                    <p v-else class="grey--text">No results.</p>
+                </v-flex>
+            </v-layout>
+            <v-layout row class="mt-3">
+                <v-flex md2>
+                    <v-btn flat class="grey grey--text text--darken-3" :disabled="prevDisabled" @click="prev">
+                        <v-icon>chevron_left</v-icon>
+                        Prev
+                    </v-btn>
+                </v-flex>
+                <v-spacer></v-spacer>
+                <v-flex md2 class="text-xs-right">
+                    <v-btn flat class="grey grey--text text--darken-3" :disabled="nextDisabled" @click="next">
+                        Next
+                        <v-icon>chevron_right</v-icon>
+                    </v-btn>
+                </v-flex>
+            </v-layout>
+        </v-container>
+    </main>
 </template>
 
 <script>
@@ -84,6 +87,7 @@
 
     data () {
       return {
+        loaded: false,
         nextDisabled: false,
         prevDisabled: true,
         pressedNext: true,
@@ -110,13 +114,14 @@
     },
 
     created () {
-      console.log('loaded')
       this.fetch()
     },
 
     methods: {
       fetch (goNext = true) {
         let vm = this
+
+        vm.loaded = false
 
         if (goNext) {
           if (this.nextId) {
@@ -135,6 +140,7 @@
         })
           .then(response => {
             vm.processResponse(response.data)
+            vm.loaded = true
           })
       },
 

@@ -4,6 +4,11 @@
             <v-layout row wrap>
                 <v-flex md6>
                     <v-card class="white" v-if="!clickedVerify">
+                        <v-toolbar card color="white" dense>
+                            <v-toolbar-title class="body-2 grey--text text--darken-2">
+                                Make a payment
+                            </v-toolbar-title>
+                        </v-toolbar>
                         <v-card-text>
                             <v-form v-model="valid" ref="form">
                                 <v-text-field
@@ -61,6 +66,11 @@
                     </v-card>
 
                     <v-card class="white" v-else>
+                        <v-toolbar card color="white" dense>
+                            <v-toolbar-title class="body-2 grey--text text--darken-2">
+                                Make a payment
+                            </v-toolbar-title>
+                        </v-toolbar>
                         <v-card-text>
                             <p>
                                 <b>Recipient</b>

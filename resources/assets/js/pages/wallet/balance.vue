@@ -1,5 +1,6 @@
 <template>
-    <main>
+    <main class="balance">
+        <v-btn info loading flat v-if="!loaded"></v-btn>
         <v-container grid-list-lg v-if="loaded">
             <template v-if="exists">
                 <v-layout row wrap>

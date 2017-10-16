@@ -4,6 +4,11 @@
             <v-layout row wrap>
                 <v-flex lg6>
                     <v-card class="white">
+                        <v-toolbar card color="white" dense>
+                            <v-toolbar-title class="body-2 grey--text text--darken-2">
+                                Create trustline with anchor
+                            </v-toolbar-title>
+                        </v-toolbar>
                         <v-card-text>
                             <v-form ref="anchorForm" v-model="anchorFormValid" lazy-validation>
                                 <v-layout row>
@@ -179,7 +184,8 @@
                 </v-flex>
             </v-layout>
 
-            <v-layout v-if="trustlines.length > 0">
+            <v-btn info loading flat v-if="!loaded"></v-btn>
+            <v-layout v-if="loaded && trustlines.length > 0">
                 <v-flex xs12>
                     <div class="subheader">Trustlines</div>
 
@@ -216,6 +222,8 @@
   export default {
     data () {
       return {
+        loaded: false,
+
         headers: [
           { text: 'Asset code', value: 'asset_code', align: 'left' },
           { text: 'Issuer', value: 'asset_issuer', align: 'left' },
@@ -340,9 +348,12 @@
       },
 
       fetchData () {
+        this.loaded = false
+
         return StellarServer.loadAccount(this.$store.getters.keypair.publicKey())
           .then(account => {
             this.balances = account.balances
+            this.loaded = true
           })
       },
 

@@ -4,6 +4,11 @@
             <v-layout row wrap>
                 <v-flex lg6>
                     <v-card class="white">
+                        <v-toolbar card color="white" dense>
+                            <v-toolbar-title class="body-2 grey--text text--darken-2">
+                                Data entry
+                            </v-toolbar-title>
+                        </v-toolbar>
                         <v-card-text>
                             <v-form ref="form" v-model="valid">
                                 <v-text-field
@@ -42,7 +47,9 @@
                     </p>
                 </v-flex>
             </v-layout>
-            <v-layout row wrap v-if="items.length > 0">
+
+            <v-btn info loading flat v-if="!loaded"></v-btn>
+            <v-layout row wrap v-if="loaded && items.length > 0">
                 <v-flex xs12>
                     <div class="subheader">DataEntries</div>
 
@@ -80,6 +87,8 @@
   export default {
     data () {
       return {
+        loaded: false,
+
         headers: [
           {
             text: 'Key',
@@ -150,11 +159,14 @@
       fetchData () {
         let vm = this
 
+        vm.loaded = false
+
         return StellarServer.accounts()
           .accountId(vm.$store.getters.keypair.publicKey())
           .call()
           .then(account => {
             vm.dataset = account.data_attr
+            vm.loaded = true
           })
           .catch(e => {})
       },
