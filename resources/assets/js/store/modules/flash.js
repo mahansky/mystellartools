@@ -32,9 +32,9 @@ export const actions = {
   storeFlash ({commit}, payload) {
     commit(types.STORE_FLASH, payload)
 
-    // setTimeout(() => {
-    //   commit(types.REMOVE_FLASH)
-    // }, 5000)
+    setTimeout(() => {
+      commit(types.REMOVE_FLASH)
+    }, 6000)
   },
 
   removeFlash ({commit}) {

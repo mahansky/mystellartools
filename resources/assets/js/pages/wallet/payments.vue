@@ -16,7 +16,7 @@
                                     <small class="grey--text">{{ props.item.from }}</small>
                                 </template>
                                 <template v-else>
-                                    <span class="grey--text text--darken-2">{{ props.item.from }}</span>
+                                    <span>{{ props.item.from }}</span>
                                 </template>
                             </td>
                             <td class="text-xs-right">

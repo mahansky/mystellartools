@@ -42,13 +42,13 @@
                 </v-list-tile>
                 <v-divider></v-divider>
 
-                <v-subheader>ASSETS</v-subheader>
-                <v-list-tile disabled>
+                <v-subheader>TOOLS</v-subheader>
+                <v-list-tile :to="{name: 'operations'}">
                     <v-list-tile-action>
-                        <v-icon>add_circle_outline</v-icon>
+                        <v-icon>transform</v-icon>
                     </v-list-tile-action>
                     <v-list-tile-content>
-                        <v-list-tile-title>Issue assets</v-list-tile-title>
+                        <v-list-tile-title>All operations</v-list-tile-title>
                     </v-list-tile-content>
                 </v-list-tile>
                 <v-list-tile :to="{name: 'trustlines'}">
@@ -57,17 +57,6 @@
                     </v-list-tile-action>
                     <v-list-tile-content>
                         <v-list-tile-title>Manage trustlines</v-list-tile-title>
-                    </v-list-tile-content>
-                </v-list-tile>
-                <v-divider></v-divider>
-
-                <v-subheader>TOOLS</v-subheader>
-                <v-list-tile :to="{name: 'operations'}">
-                    <v-list-tile-action>
-                        <v-icon>transform</v-icon>
-                    </v-list-tile-action>
-                    <v-list-tile-content>
-                        <v-list-tile-title>All operations</v-list-tile-title>
                     </v-list-tile-content>
                 </v-list-tile>
                 <v-list-tile :to="{name: 'setoptions'}">
