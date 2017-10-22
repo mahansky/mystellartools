@@ -1,10 +1,10 @@
 <template>
     <v-container>
         <v-layout>
-            <v-flex xs-12>
+            <v-flex xs12>
                 <h1 class="text-xs-center">Interstellar.Tools</h1>
 
-                <v-form v-model="valid">
+                <v-form v-model="valid" ref="form">
                     <v-text-field
                             label="Public or private key of your Stellar account"
                             v-model="key"
@@ -14,6 +14,11 @@
 
                     <v-btn dark @click="enter" :class="{ blue: valid, red: !valid }">enter the interstellar</v-btn>
                 </v-form>
+
+                <router-link :to="{name: 'login'}">Login</router-link>
+                <router-link :to="{name: 'register'}">Register</router-link>
+
+                <router-link :to="{name: 'balance'}" v-if="hasKeypair">GO TO THE APP</router-link>
             </v-flex>
         </v-layout>
     </v-container>
@@ -27,9 +32,11 @@
   export default {
     layout: 'default',
 
-    computed: mapGetters({
-      authenticated: 'authCheck'
-    }),
+    computed: {
+      hasKeypair () {
+        return !! this.$store.keypair
+      }
+    },
 
     data: () => ({
       title: window.config.appName,
@@ -57,17 +64,19 @@
 
     methods: {
       enter () {
-        let secret = this.key[0] === 'S'
-        let keypair = null
+        if (this.$refs.form.validate()) {
+          let secret = this.key[0] === 'S'
+          let keypair = null
 
-        if (secret) {
-          keypair = Stellar.Keypair.fromSecret(this.key)
-        } else {
-          keypair = Stellar.Keypair.fromPublicKey(this.key)
+          if (secret) {
+            keypair = Stellar.Keypair.fromSecret(this.key)
+          } else {
+            keypair = Stellar.Keypair.fromPublicKey(this.key)
+          }
+
+          this.$store.dispatch('storeKeypair', {keypair})
+          this.$router.push('balance')
         }
-
-        this.$store.dispatch('storeKeypair', {keypair})
-        this.$router.push('balance')
       }
     }
   }

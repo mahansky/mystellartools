@@ -3,8 +3,8 @@ import store from '~/store'
 import router from '~/router'
 
 axios.interceptors.request.use(request => {
-  if (store.getters.authToken) {
-    request.headers.common['Authorization'] = `Bearer ${store.getters.authToken}`
+  if (store.getters.authAccessToken) {
+    request.headers.common['Authorization'] = `Bearer ${store.getters.authAccessToken}`
   }
 
   // request.headers['X-Socket-Id'] = Echo.socketId()

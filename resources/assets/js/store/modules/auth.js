@@ -4,14 +4,27 @@ import * as types from '../mutation-types'
 // state
 export const state = {
   user: null,
-  token: localStorage.getItem('token')
+  accessToken: localStorage.getItem('accessToken'),
+  refreshToken: localStorage.getItem('refreshToken'),
 }
 
 // mutations
 export const mutations = {
-  [types.SAVE_TOKEN] (state, {token, remember}) {
-    state.token = token
-    localStorage.setItem('token', token)
+  [types.STORE_AUTH] (state, {user, accessToken, refreshToken}) {
+    state.user = user
+    state.accessToken = accessToken
+    state.refreshToken = refreshToken
+
+    localStorage.setItem('accessToken', accessToken)
+    localStorage.setItem('refreshToken', refreshToken)
+  },
+
+  [types.STORE_TOKENS] (state, {accessToken, refreshToken}) {
+    state.accessToken = accessToken
+    state.refreshToken = refreshToken
+
+    localStorage.setItem('accessToken', accessToken)
+    localStorage.setItem('refreshToken', refreshToken)
   },
 
   [types.FETCH_USER_SUCCESS] (state, {user}) {
@@ -19,15 +32,20 @@ export const mutations = {
   },
 
   [types.FETCH_USER_FAILURE] (state) {
-    state.token = null
-    localStorage.removeItem('token')
+    state.accessToken = null
+    state.refreshToken = null
+
+    localStorage.removeItem('accessToken')
+    localStorage.removeItem('refreshToken')
   },
 
   [types.LOGOUT] (state) {
     state.user = null
-    state.token = null
+    state.accessToken = null
+    state.refreshToken = null
 
-    localStorage.removeItem('token')
+    localStorage.removeItem('accessToken')
+    localStorage.removeItem('refreshToken')
   },
 
   [types.UPDATE_USER] (state, {user}) {
@@ -37,8 +55,12 @@ export const mutations = {
 
 // actions
 export const actions = {
-  saveToken ({commit, dispatch}, payload) {
-    commit(types.SAVE_TOKEN, payload)
+  storeAuth ({commit}, payload) {
+    commit(types.STORE_AUTH, payload)
+  },
+
+  storeTokens ({commit}, payload) {
+    commit(types.STORE_TOKENS, payload)
   },
 
   async fetchUser ({commit}) {
@@ -51,15 +73,15 @@ export const actions = {
     }
   },
 
+  async refreshTokens ({commit}, payload) {
+
+  },
+
   updateUser ({commit}, payload) {
     commit(types.UPDATE_USER, payload)
   },
 
-  async logout ({commit}) {
-    try {
-      await axios.post('/api/logout')
-    } catch (e) { }
-
+  logout ({commit}) {
     commit(types.LOGOUT)
   }
 }
@@ -67,6 +89,6 @@ export const actions = {
 // getters
 export const getters = {
   authUser: state => state.user,
-  authToken: state => state.token,
-  authCheck: state => state.user !== null
+  authAccessToken: state => state.accessToken,
+  authCheck: state => state.accessToken !== null,
 }

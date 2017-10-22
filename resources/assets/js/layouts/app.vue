@@ -103,7 +103,7 @@
                 <v-btn v-if="unlocked" dark icon v-tooltip:bottom="{ html: 'Unlocked with secret' }">
                     <v-icon>lock_open</v-icon>
                 </v-btn>
-                <v-btn v-else dark icon v-tooltip:bottom="{ html: 'Click to unlock' }" @click.stop="dialog = !dialog">
+                <v-btn v-else dark icon v-tooltip:bottom="{ html: 'Click to unlock' }" @click.stop="clickedLock">
                     <v-icon>lock_outline</v-icon>
                 </v-btn>
             </div>
@@ -131,11 +131,40 @@
         >
             <settings @close-dialog="dialog = !dialog"></settings>
         </v-dialog>
+
+        <v-dialog v-model="passwordDialog">
+            <v-card class="white">
+                <v-card-text>
+                    <b>Unlock your account</b>
+                    <p>Enter the password you used to encrypt the Secret key.</p>
+                    <v-text-field
+                            label="Password"
+                            :append-icon="passwordForm.pw ? 'visibility' : 'visibility_off'"
+                            :append-icon-cb="() => (passwordForm.pw = !passwordForm.pw)"
+                            :type="passwordForm.pw ? 'password' : 'text'"
+                            v-model="passwordForm.password"
+                    ></v-text-field>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                            flat
+                            class="blue--text"
+                            @click="unlockSecret"
+                            :loading="passwordForm.isLoading"
+                    >
+                        Unlock
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </v-app>
 </template>
 
 <script>
   import Settings from './app/settings.vue'
+  import axios from 'axios'
+  import { flash } from '../utils'
 
   export default {
     name: 'app-layout',
@@ -148,27 +177,79 @@
       return {
         drawer: true,
         dialog: false,
+        passwordDialog: false,
+        passwordForm: {
+          valid: false,
+          pw: true,
+          isLoading: false,
+          password: '',
+        },
       }
     },
 
     computed: {
       unlocked () {
-        return this.$store.getters.keypairCanSign
+        return this.$store.getters.keypairCanSign || this.$store.getters.keypairSssOk
       },
 
       activeAccount () {
-        return this.$store.getters.keypair.publicKey()
+        return this.keypair ? this.$store.getters.keypair.publicKey() : ''
+      },
+
+      keypair () {
+        return this.$store.getters.keypair
+      },
+    },
+
+    watch: {
+      keypair (val) {
+        if (val === null || val === undefined) {
+          this.dialog = true
+        }
       },
     },
 
     methods: {
       logout () {
         this.$store.dispatch('removeKeypair')
+        this.$store.dispatch('logout')
         this.$router.push({name: 'welcome'})
       },
 
       openDialog () {
         this.dialog = true
+      },
+
+      unlockSecret () {
+        this.passwordForm.isLoading = true
+
+        axios.post('/api/unlock', {
+          public_key: this.activeAccount,
+          password: this.passwordForm.password,
+        }).then(() => {
+          this.passwordDialog = false
+
+          this.$store.dispatch('updateSss', {
+            sss: true,
+            sssOk: true,
+          })
+
+          flash(this.$store, 'Account unlocked', 'success')
+        }).catch((err) => {
+          flash(this.$store, err, 'error')
+        }).then(() => {
+          this.passwordForm.isLoading = false
+        })
+      },
+
+      clickedLock () {
+        if (this.$store.getters.keypairSss && !this.$store.getters.keypairSssOk) {
+          this.passwordDialog = true
+        }
+
+        if (!this.$store.getters.keypairSss && !this.$store.getters.keypairCanSign) {
+          this.dialog = !this.dialog
+        }
       },
     }
   }

@@ -9,7 +9,7 @@ Vue.use(Meta)
 Vue.use(Router)
 
 const router = make(
-  routes({keypairGuard, guestGuard})
+  routes({keypairGuard, keypairCanSignGuard, guestGuard})
 )
 
 sync(store, router)
@@ -31,11 +31,17 @@ function make (routes) {
 
   // Register before guard.
   router.beforeEach(async (to, from, next) => {
-    // if (!store.getters.authCheck && store.getters.authToken) {
-    //   try {
-    //     await store.dispatch('fetchUser')
-    //   } catch (e) { }
-    // }
+    if (store.getters.authCheck && store.getters.authUser === null) {
+      try {
+        await store.dispatch('fetchUser')
+      } catch (e) { }
+    }
+
+    if (store.getters.authCheck && store.getters.accounts === null) {
+      try {
+        await store.dispatch('fetchAccounts')
+      } catch (e) { }
+    }
 
     setLayout(router, to)
     next()
@@ -75,27 +81,11 @@ function setLayout (router, to) {
   }
 }
 
-/**
- * Redirect to login if guest.
- *
- * @param  {Array} routes
- * @return {Array}
- */
-function authGuard (routes) {
-  return beforeEnter(routes, (to, from, next) => {
-    if (!store.getters.authCheck) {
-      next({name: 'login'})
-    } else {
-      next()
-    }
-  })
-}
-
 function keypairGuard (routes) {
   return beforeEnter(routes, (to, from, next) => {
-    next()
-    return
+    console.log('checking')
     if (!store.getters.keypair) {
+      console.log(store.getters.keypair)
       next({name: 'welcome'})
     } else {
       next()
@@ -103,16 +93,20 @@ function keypairGuard (routes) {
   })
 }
 
-/**
- * Redirect home if authenticated.
- *
- * @param  {Array} routes
- * @return {Array}
- */
+function keypairCanSignGuard (routes) {
+  return beforeEnter(routes, (to, from, next) => {
+    if (!store.getters.keypairCanSign) {
+      next({name: 'balance'})
+    } else {
+      next()
+    }
+  })
+}
+
 function guestGuard (routes) {
   return beforeEnter(routes, (to, from, next) => {
     if (store.getters.authCheck) {
-      next({name: 'home'})
+      next({name: 'balance'})
     } else {
       next()
     }
