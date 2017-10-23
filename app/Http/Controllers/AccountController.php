@@ -26,8 +26,10 @@ class AccountController extends Controller
             return response()->json(['message' => 'Already exists'], 400);
         }
 
-        $encrypter = new Encrypter($data['password']);
-        $data['secret_key'] = $encrypter->encrypt($data['secret_key']);
+        if (isset($data['secret_key'])) {
+            $encrypter = new Encrypter($data['password']);
+            $data['secret_key'] = $encrypter->encrypt($data['secret_key']);
+        }
 
         unset($data['password']);
 

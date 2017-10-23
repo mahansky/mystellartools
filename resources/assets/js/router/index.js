@@ -83,13 +83,17 @@ function setLayout (router, to) {
 
 function keypairGuard (routes) {
   return beforeEnter(routes, (to, from, next) => {
-    console.log('checking')
     if (!store.getters.keypair) {
-      console.log(store.getters.keypair)
-      next({name: 'welcome'})
-    } else {
-      next()
+      if (!store.getters.authCheck) {
+        next({name: 'welcome'})
+      } else {
+        if (to.name !== 'balance') {
+          next({name: 'balance'})
+        }
+      }
     }
+
+    return next()
   })
 }
 

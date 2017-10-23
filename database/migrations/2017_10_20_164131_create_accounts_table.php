@@ -18,7 +18,7 @@ class CreateAccountsTable extends Migration
             $table->unsignedInteger('user_id');
             $table->string('name');
             $table->string('public_key');
-            $table->string('secret_key')->nullable();
+            $table->text('secret_key')->nullable();
             $table->timestamps();
         });
     }

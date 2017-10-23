@@ -8,18 +8,28 @@ export const state = {
 
 // mutations
 export const mutations = {
-  [types.STORE_FLASH] (state, {message, type}) {
-    state.message = message
+  [types.STORE_FLASH] (state, payload) {
+    state.message = payload.message
 
-    if (message.message) {
-      state.message = message.message
+    if (payload.message.message) {
+      state.message = payload.message.message
 
-      if (message.message.detail) {
-        state.message = message.message.detail
+      if (payload.message.message.detail) {
+        state.message = payload.message.message.detail
+      }
+
+      if (payload.message.response) {
+        if (payload.message.response.data && payload.message.response.data.message) {
+          state.message = payload.message.response.data.message
+        }
+
+        if (payload.message.response.data && payload.message.response.data.detail) {
+          state.message = payload.message.response.data.detail
+        }
       }
     }
 
-    state.type = type
+    state.type = payload.type
   },
 
   [types.REMOVE_FLASH] (state) {
@@ -30,6 +40,7 @@ export const mutations = {
 // actions
 export const actions = {
   storeFlash ({commit}, payload) {
+    console.log(payload)
     commit(types.STORE_FLASH, payload)
 
     setTimeout(() => {

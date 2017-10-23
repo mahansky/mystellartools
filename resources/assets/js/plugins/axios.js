@@ -13,7 +13,7 @@ axios.interceptors.request.use(request => {
 })
 
 axios.interceptors.response.use(response => response, error => {
-  const { status } = error.response
+  const {status} = error.response
 
   if (status >= 500) {
     console.log('Server error 500')
@@ -22,8 +22,10 @@ axios.interceptors.response.use(response => response, error => {
   if (status === 401 && store.getters.authCheck) {
     console.log('Not authenticated')
 
-    new Promise(store.dispatch('logout')).then(() => {
-        router.push({ name: 'login' })
+    new Promise(() => {
+      store.dispatch('logout')
+    }).then(() => {
+      router.push({name: 'login'})
     })
   }
 

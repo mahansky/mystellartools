@@ -1,7 +1,7 @@
 <template>
     <main class="balance">
         <v-btn info loading flat v-if="!loaded"></v-btn>
-        <v-container grid-list-lg v-if="loaded">
+        <v-container v-if="loaded">
             <template v-if="exists">
                 <v-layout row wrap>
                     <v-flex xs12>
@@ -15,6 +15,10 @@
                             </v-card-title>
                         </v-card>
                     </v-flex>
+                </v-layout>
+                <v-layout>
+                    <v-spacer></v-spacer>
+                    <small class="grey--text mr-2 mt-1">prices provided by coinmarketcap.com</small>
                 </v-layout>
                 <v-layout row wrap class="mt-5" v-if="tokens.length > 0">
                     <v-flex xs12>
@@ -33,6 +37,7 @@
                 </v-flex>
             </v-layout>
         </v-container>
+        <small style="display: none;" v-text="publicKey"></small>
     </main>
 </template>
 
@@ -78,24 +83,45 @@
 
       exists () {
         return !! this.balances.length
+      },
+
+      publicKey () {
+        console.log('changing pubkey')
+        return this.$store.getters.keypair ? this.$store.getters.keypair.publicKey() : null
+      },
+    },
+
+    watch: {
+      publicKey (val) {
+        if (val) {
+          this.fetchData()
+        }
+      },
+    },
+
+    methods: {
+      fetchData () {
+        let vm = this
+
+        StellarServer.accounts()
+          .accountId(this.$store.getters.keypair.publicKey())
+          .call()
+          .then(function (account) {
+            vm.balances = account.balances
+          })
+          .catch(function (error) {
+            flash(vm.$store, error, 'error')
+          })
+          .then(() => {
+            this.loaded = true
+          })
       }
     },
 
     created () {
-      let vm = this
-
-      StellarServer.accounts()
-        .accountId(this.$store.getters.keypair.publicKey())
-        .call()
-        .then(function (account) {
-          vm.balances = account.balances
-        })
-        .catch(function (error) {
-          flash(vm.$store, error, 'error')
-        })
-        .then(() => {
-            this.loaded = true
-        })
-    }
+      if (this.publicKey) {
+        this.fetchData()
+      }
+    },
   }
 </script>

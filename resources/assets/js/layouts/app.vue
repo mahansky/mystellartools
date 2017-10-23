@@ -126,10 +126,10 @@
                 v-model="dialog"
                 fullscreen
                 transition="dialog-bottom-transition"
-                :overlay=false
+                hide-overlay
                 scrollable
         >
-            <settings @close-dialog="dialog = !dialog"></settings>
+            <settings @close-dialog="closeDialog"></settings>
         </v-dialog>
 
         <v-dialog v-model="passwordDialog">
@@ -251,6 +251,17 @@
           this.dialog = !this.dialog
         }
       },
-    }
+
+      closeDialog () {
+        console.log('closing dialog')
+        this.dialog = false
+      }
+    },
+
+    created () {
+      if (this.keypair === null || this.keypair === undefined) {
+        this.dialog = true
+      }
+    },
   }
 </script>
