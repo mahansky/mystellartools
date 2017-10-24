@@ -218,6 +218,7 @@
   import { Asset, TransactionBuilder, Operation } from 'stellar-sdk'
   import axios from 'axios'
   import { flash } from '../../utils'
+  import { transactions } from '../../stellar/transactions'
 
   export default {
     data () {
@@ -321,22 +322,7 @@
         let vm = this
         let asset = new Asset(code, issuer)
 
-        return StellarServer.loadAccount(vm.$store.getters.keypair.publicKey())
-          .then(account => {
-            let attr = { asset }
-
-            if (limit !== undefined) {
-              attr.limit = limit
-            }
-
-            let transaction = new TransactionBuilder(account)
-              .addOperation(Operation.changeTrust(attr))
-              .build()
-
-            transaction.sign(vm.$store.getters.keypair)
-
-            return StellarServer.submitTransaction(transaction)
-          })
+        return transactions.updateTrustline(this.$store.getters.keypair, {asset, limit})
           .then(() => {
             flash(vm.$store, 'Trustline updated', 'success')
 
@@ -378,20 +364,11 @@
 
         let vm = this
 
-        StellarServer.loadAccount(vm.$store.getters.keypair.publicKey())
-          .then(account => {
-            let transaction = new TransactionBuilder(account)
-              .addOperation(Operation.allowTrust({
-                trustor: vm.allowTrustor,
-                assetCode: vm.allowAssetCode,
-                authorize: vm.allowAuthorized,
-              }))
-              .build()
-
-            transaction.sign(vm.$store.getters.keypair)
-
-            return StellarServer.submitTransaction(transaction)
-          })
+        transactions.allowTrustline(this.$store.getters.keypair, {
+          trustor: vm.allowTrustor,
+          assetCode: vm.allowAssetCode,
+          authorize: vm.allowAuthorized,
+        })
           .then(() => {
             flash(vm.$store, 'Trust updated', 'success')
 

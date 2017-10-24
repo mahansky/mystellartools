@@ -83,6 +83,7 @@
   import { TransactionBuilder, Operation } from 'stellar-sdk'
   import { StellarServer } from '../../stellar'
   import { flash } from '../../utils'
+  import { transactions } from '../../stellar/transactions'
 
   export default {
     data () {
@@ -172,26 +173,12 @@
       },
 
       submitTx (key, value) {
-        let vm = this
-
-        StellarServer.loadAccount(vm.$store.getters.keypair.publicKey())
-          .then(account => {
-            let transaction = new TransactionBuilder(account)
-              .addOperation(Operation.manageData({
-                name: key,
-                value
-              }))
-              .build()
-
-            transaction.sign(vm.$store.getters.keypair)
-
-            return StellarServer.submitTransaction(transaction)
-          })
+        transactions.manageData(this.$store.getters.keypair, {key, value})
           .then(() => {
-            return vm.fetchData()
+            return this.fetchData()
           })
           .catch((err) => {
-            flash(vm.$store, err, 'error')
+            flash(this.$store, err, 'error')
           })
       }
     },

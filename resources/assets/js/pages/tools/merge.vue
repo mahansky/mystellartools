@@ -44,6 +44,7 @@
   import { ruleAccountIsValid, Stellar, StellarServer } from '../../stellar'
   import { TransactionBuilder, Operation, Keypair } from 'stellar-sdk'
   import { flash } from '../../utils'
+  import { transactions } from '../../stellar/transactions'
 
   export default {
     data () {
@@ -51,36 +52,18 @@
         valid: false,
         destination: '',
         destinationRules: [(v) => ruleAccountIsValid(v)],
-        loadedAccount: null,
       }
     },
 
     methods: {
       merge () {
         if (this.$refs.form.validate()) {
-          let vm = this
-
-          StellarServer.loadAccount(vm.$store.getters.keypair.publicKey())
-            .then(account => {
-              vm.loadedAccount = account
-            })
+          transactions.mergeAccounts(this.$store.getters.keypair, {destination: this.destination})
             .then(() => {
-              let transaction = new TransactionBuilder(vm.loadedAccount)
-                .addOperation(Operation.accountMerge({
-                  destination: vm.destination,
-                }))
-                .build()
-
-              transaction.sign(vm.$store.getters.keypair)
-
-              return StellarServer.submitTransaction(transaction)
-            })
-            .then(() => {
-              console.log('redir')
-              vm.$router.push('/')
+              this.$router.push('/')
             })
             .catch((err) => {
-              flash(vm.$store, err, 'error')
+              flash(this.$store, err, 'error')
             })
         }
       }
