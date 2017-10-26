@@ -10,6 +10,10 @@
 
 <script>
 export default {
+  metaInfo: () => ({
+    title: 'Not found',
+  }),
+
   name: 'not-found',
 
   layout: 'default'

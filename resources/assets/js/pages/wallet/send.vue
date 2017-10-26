@@ -207,6 +207,10 @@
   import { flash } from '../../utils'
 
   export default {
+    metaInfo: () => ({
+      title: 'Send',
+    }),
+
     data () {
       return {
         balance: 123.3434,

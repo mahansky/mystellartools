@@ -221,6 +221,10 @@
   import { transactions } from '../../stellar/transactions'
 
   export default {
+    metaInfo: () => ({
+      title: 'Trustlines',
+    }),
+
     data () {
       return {
         loaded: false,

@@ -70,6 +70,10 @@
   import moment from 'moment'
 
   export default {
+    metaInfo: () => ({
+      title: 'Payments',
+    }),
+
     data () {
       return {
         headers: [

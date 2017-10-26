@@ -192,6 +192,10 @@
   import { flash } from '../../utils'
 
   export default {
+    metaInfo: () => ({
+      title: 'Set Options',
+    }),
+
     data () {
       return {
         valid: false,

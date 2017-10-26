@@ -22,6 +22,10 @@
   import { flash } from '../../utils'
 
   export default {
+    metaInfo: () => ({
+      title: 'Login',
+    }),
+
     layout: 'default',
 
     data () {

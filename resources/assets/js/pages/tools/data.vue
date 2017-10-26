@@ -86,6 +86,10 @@
   import { transactions } from '../../stellar/transactions'
 
   export default {
+    metaInfo: () => ({
+      title: 'Manage data',
+    }),
+
     data () {
       return {
         loaded: false,

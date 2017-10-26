@@ -30,6 +30,10 @@
   let Stellar = require('stellar-sdk')
 
   export default {
+    metaInfo: () => ({
+      title: 'Stellar Wallet and Account viewer',
+    }),
+
     layout: 'default',
 
     computed: {

@@ -71,6 +71,10 @@
   import { first, last, orderBy } from 'lodash'
 
   export default {
+    metaInfo: () => ({
+      title: 'All operations',
+    }),
+
     components: {
       account_merge,
       allow_trust,

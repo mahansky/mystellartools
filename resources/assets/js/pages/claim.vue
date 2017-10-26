@@ -39,6 +39,10 @@
   import { flash } from '../utils'
 
   export default {
+    metaInfo: () => ({
+      title: 'Claim your Lumens',
+    }),
+
     layout: 'default',
 
     data: () => ({

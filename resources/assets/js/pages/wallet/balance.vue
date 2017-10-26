@@ -48,6 +48,10 @@
   import { flash } from '../../utils'
 
   export default {
+    metaInfo: () => ({
+        title: 'Balance',
+    }),
+
     components: {
       Price,
       Token,
@@ -57,6 +61,7 @@
       return {
         loaded: false,
         balances: [],
+        eventSource: null,
       }
     },
 
@@ -115,13 +120,33 @@
           .then(() => {
             this.loaded = true
           })
-      }
+      },
+
+      startListening() {
+        let vm = this
+
+        vm.eventSource = StellarServer.payments()
+          .forAccount(this.$store.getters.keypair.publicKey())
+          .cursor('now')
+          .stream({
+            onmessage: (payment) => {
+              if (payment.type !== 'account_merge') {
+                vm.fetchData()
+              }
+            }
+          })
+      },
     },
 
     created () {
       if (this.publicKey) {
         this.fetchData()
+        this.startListening()
       }
+    },
+
+    beforeDestroy () {
+      this.eventSource()
     },
   }
 </script>

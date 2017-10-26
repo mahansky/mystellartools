@@ -47,6 +47,10 @@
   import { transactions } from '../../stellar/transactions'
 
   export default {
+    metaInfo: () => ({
+      title: 'Merge account',
+    }),
+
     data () {
       return {
         valid: false,

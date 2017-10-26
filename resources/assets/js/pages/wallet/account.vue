@@ -256,6 +256,10 @@
   import axios from 'axios'
 
   export default {
+    metaInfo: () => ({
+      title: 'Account',
+    }),
+
     data () {
       return {
         stellarAddressLoading: true,
