@@ -13,7 +13,7 @@ class PriceTicker extends Command
      *
      * @var string
      */
-    protected $signature = 'ticker:fetch';
+    protected $signature = 'interstellar:fetch-prices';
 
     /**
      * The console command description.

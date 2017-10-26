@@ -13,6 +13,8 @@ Route::post('federation', 'FederationController@store')->name('federation.store'
 
 Route::get('prices', 'PriceController')->name('prices');
 
+Route::get('claim', 'ClaimController');
+
 Route::post('register', 'Auth\AuthController@register');
 Route::post('login', 'Auth\AuthController@login');
 Route::post('refresh', 'Auth\AuthController@refresh');

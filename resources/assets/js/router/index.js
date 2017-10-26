@@ -85,11 +85,9 @@ function keypairGuard (routes) {
   return beforeEnter(routes, (to, from, next) => {
     if (!store.getters.keypair) {
       if (!store.getters.authCheck) {
-        next({name: 'welcome'})
-      } else {
-        if (to.name !== 'balance') {
-          next({name: 'balance'})
-        }
+        return next({name: 'welcome'})
+      } else if (to.name !== 'balance') {
+        return next({name: 'balance'})
       }
     }
 
@@ -99,11 +97,11 @@ function keypairGuard (routes) {
 
 function keypairCanSignGuard (routes) {
   return beforeEnter(routes, (to, from, next) => {
-    if (!store.getters.keypairCanSign) {
-      next({name: 'balance'})
-    } else {
-      next()
+    if (store.getters.keypairCanSign || store.getters.keypairSssOk) {
+      return next()
     }
+
+    return next({name: 'balance'})
   })
 }
 

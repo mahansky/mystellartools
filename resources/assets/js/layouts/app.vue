@@ -104,7 +104,7 @@
                     <v-icon>lock_open</v-icon>
                 </v-btn>
                 <v-btn v-else dark icon v-tooltip:bottom="{ html: 'Click to unlock' }" @click.stop="clickedLock">
-                    <v-icon>lock_outline</v-icon>
+                    <v-icon>https</v-icon>
                 </v-btn>
             </div>
             <v-btn icon @click.stop="openDialog">

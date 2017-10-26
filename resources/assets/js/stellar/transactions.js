@@ -1,88 +1,68 @@
 import { StellarServer } from './index'
-import { TransactionBuilder, Operation } from 'stellar-sdk'
+import { TransactionBuilder, Operation, StrKey } from 'stellar-sdk'
+const xdr = require('stellar-base').xdr;
 
+// Submit Transaction
+function _submitTx(keypair, operation) {
+  return transactions.loadAccount(keypair)
+    .then(account => {
+      let transaction = new TransactionBuilder(account)
+        .addOperation(operation)
+        .build()
+
+      transaction.sign(keypair)
+
+      return StellarServer.submitTransaction(transaction)
+    })
+}
+
+// Transactions
 export const transactions = {
   loadAccount: (keypair) => {
     return StellarServer.loadAccount(keypair.publicKey())
   },
 
-  manageData: (keypair, {name, value}) => {
-    return transactions.loadAccount(keypair)
-      .then(account => {
-        let transaction = new TransactionBuilder(account)
-          .addOperation(Operation.manageData({
-            name,
-            value: '' + value,
-          }))
-          .build()
-
-        transaction.sign(keypair)
-
-        return StellarServer.submitTransaction(transaction)
+  addSigner: (keypair, {publicKey, weight}) => {
+    return _submitTx(keypair, Operation.setOptions({
+      signer: new xdr.Signer({
+        key: new xdr.SignerKey.signerKeyTypeEd25519(StrKey.decodeEd25519PublicKey(publicKey)),
+        weight,
       })
+    }))
+  },
+
+  manageData: (keypair, {name, value}) => {
+    return _submitTx(keypair, Operation.manageData({
+      name,
+      value: '' + value,
+    }))
   },
 
   mergeAccounts: (keypair, {destination}) => {
-    return transactions.loadAccount(keypair)
-      .then(() => {
-        let transaction = new TransactionBuilder(keypair)
-          .addOperation(Operation.accountMerge({
-            destination,
-          }))
-          .build()
-
-        transaction.sign(keypair)
-
-        return StellarServer.submitTransaction(transaction)
-      })
+    return _submitTx(keypair, Operation.accountMerge({
+      destination,
+    }))
   },
 
   updateTrustline: (keypair, {asset, limit}) => {
-    return transactions.loadAccount(keypair)
-      .then(account => {
-        let attr = { asset }
+    let attr = { asset }
 
-        if (limit !== undefined) {
-          attr.limit = limit
-        }
+    if (limit !== undefined) {
+      attr.limit = limit
+    }
 
-        let transaction = new TransactionBuilder(account)
-          .addOperation(Operation.changeTrust(attr))
-          .build()
-
-        transaction.sign(keypair)
-
-        return StellarServer.submitTransaction(transaction)
-      })
+    return _submitTx(keypair, Operation.changeTrust(attr))
   },
 
   allowTrustline: (keypair, {trustor, assetCode, authorize}) => {
-    return transactions.loadAccount(keypair)
-      .then(account => {
-        let transaction = new TransactionBuilder(account)
-          .addOperation(Operation.allowTrust({
-            trustor,
-            assetCode,
-            authorize,
-          }))
-          .build()
-
-        transaction.sign(keypair)
-
-        return StellarServer.submitTransaction(transaction)
-      })
+    return _submitTx(keypair, Operation.allowTrust({
+      trustor,
+      assetCode,
+      authorize,
+    }))
   },
 
   setOptions: (keypair, attributes) => {
-    return transactions.loadAccount(keypair)
-      .then((account) => {
-        let transaction = new TransactionBuilder(account)
-          .addOperation(Operation.setOptions(attributes))
-          .build()
-
-        transaction.sign(keypair)
-
-        return StellarServer.submitTransaction(transaction)
-      })
+    return _submitTx(keypair, Operation.setOptions(attributes))
   },
 }

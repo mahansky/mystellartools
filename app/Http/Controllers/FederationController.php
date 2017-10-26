@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Address;
+use App\Email;
+use App\Stellar\Stellar;
 use Illuminate\Support\Facades\Validator;
 
 class FederationController extends Controller
@@ -10,9 +12,10 @@ class FederationController extends Controller
     /**
      * Search for stellar addresses and the other way around
      *
+     * @param Stellar $stellar
      * @return \Illuminate\Http\Response
      */
-    public function show()
+    public function show(Stellar $stellar)
     {
         $validator = Validator::make(request()->all(), [
             'q'    => 'required',
@@ -25,21 +28,40 @@ class FederationController extends Controller
             ], 400);
         }
 
+        // If this is a name->account_id lookup
         if (request('type') === 'name') {
             $name = request('q');
 
+            // Extract name part from request
             if (strpos($name, '*') !== false) {
                 $name = explode('*', $name)[0];
             }
 
+            // Find it in DB
             $address = Address::where('stellar_address', $name)->first();
+
+            // If it doesn't exist and it is an email
+            if ( ! $address && filter_var($name, FILTER_VALIDATE_EMAIL)) {
+                $keypair = $stellar->generateKeypair();
+
+                $address = Address::create([
+                    'account_id'      => $keypair->public_key,
+                    'stellar_address' => $name,
+                ]);
+
+                Email::create([
+                    'email'      => $name,
+                    'public_key' => $keypair->public_key,
+                    'secret_key' => $keypair->secret_key,
+                ]);
+            }
         } else {
             $address = Address::where('account_id', request('q'))->first();
         }
 
         if ( ! $address) {
             return response([
-                'detail' => 'Not found'
+                'detail' => 'Not found.'
             ], 404);
         }
 
@@ -52,7 +74,7 @@ class FederationController extends Controller
     public function store()
     {
         $data = request()->validate([
-            'account_id' => 'required',
+            'account_id'      => 'required',
             'stellar_address' => 'required',
         ]);
 
