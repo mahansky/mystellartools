@@ -1,6 +1,7 @@
 <template>
     <main>
-        <v-container grid-list-lg>
+        <v-btn flat info loading v-if="!loaded"></v-btn>
+        <v-container grid-list-lg v-if="loaded">
             <v-layout row wrap>
                 <v-flex md6>
                     <v-card class="white" v-if="!clickedVerify">
@@ -23,15 +24,47 @@
                                                 label="Amount"
                                                 :rules="amountRules"
                                                 v-model="amount"
-                                                hint="<a href='#' @click='setMax'>set max</a>"
                                         ></v-text-field>
                                     </v-flex>
                                     <v-flex xs4>
-                                        <v-select
-                                                label="Asset" :items="['XLM']"
-                                                :rules="assetRules"
-                                                v-model="asset"
-                                        ></v-select>
+                                        <v-menu
+                                                offset-x
+                                                :close-on-content-click="false"
+                                                v-model="assetSelector"
+                                                style="width: 100%"
+                                        >
+                                            <v-select
+                                                    label="Asset"
+                                                    slot="activator"
+                                                    v-model="asset"
+                                                    :items="assetTypes"
+                                                    @focus="assetSelector = true"
+                                                    disabled
+                                            ></v-select>
+                                            <v-card>
+                                                <v-card-text>
+                                                    <v-select
+                                                            label="Select Asset"
+                                                            :items="availableAssets"
+                                                            v-model="selectedAvailableAsset"
+                                                    ></v-select>
+                                                    <v-layout>
+                                                        <v-spacer></v-spacer>
+                                                        <span class="subheader">or</span>
+                                                        <v-spacer></v-spacer>
+                                                    </v-layout>
+                                                    <v-text-field
+                                                            label="New Asset Code"
+                                                            v-model="newAsset"
+                                                            :rules="newAssetRules"
+                                                    ></v-text-field>
+                                                </v-card-text>
+                                                <v-card-actions>
+                                                    <v-spacer></v-spacer>
+                                                    <v-btn info flat @click="setAsset">Set</v-btn>
+                                                </v-card-actions>
+                                            </v-card>
+                                        </v-menu>
                                     </v-flex>
                                 </v-layout>
 
@@ -41,8 +74,6 @@
                                                 label="Memo type"
                                                 :items="['MEMO_ID', 'MEMO_TEXT', 'MEMO_HASH', 'MEMO_RETURN']"
                                                 v-model="memoType"
-                                                hint="<a href='https://www.stellar.org/developers/guides/concepts/transactions.html#memo' target='_blank' rel='nofollow noreferrer'>what's a memo?</a>"
-                                                persistent-hint
                                         ></v-select>
                                     </v-flex>
                                     <v-flex xs8>
@@ -171,13 +202,23 @@
                 </v-flex>
                 <v-flex md6>
                     <b>Recipient</b>
-                    <p>Public key (address) of Stellar account or any email.</p>
-                    <b>Amount & Asset</b>
                     <p>
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Architecto, asperiores atque blanditiis cumque deserunt earum.</p>
+                        <u>Public key</u> (address) of Stellar account or <u>any email address</u>.
+                    </p>
+                    <p>
+                        If you enter an email, that hasn't received any assets in the past, recipient will get a message with information on how to access his new assets.
+                        If he doesn't claim them, you can <a href="#">revert the process</a>.
+                    </p>
+                    <b>Asset</b>
+                    <p>
+                        You can choose one of the assets your account has (see <router-link :to="{name: 'balance'}">Balance</router-link>) or you can issue new asset directly using this form.
+                        Recipient will have to trust you first. Trust can be created using <router-link :to="{name: 'trustlines'}">Trustlines</router-link>.
+                    </p>
                     <b>Memo</b>
                     <p>
-                        Laboriosam libero molestias nostrum placeat quaerat quam qui recusandae sapiente soluta temporibus velit!</p>
+                        If you choose MEMO_TEXT, you can write short message that will be sent to the recipient along with the payment.
+                        For information on other types, check <a href="https://www.stellar.org/developers/guides/concepts/transactions.html#memo" target="_blank" rel="noreferrer nofollow">documentation</a>.
+                    </p>
                 </v-flex>
                 <!--<v-flex lg8 md12>-->
                 <!--<v-text-field v-model="contactsSearch" label="Search contacts" hide-details class="mt-5"></v-text-field>-->
@@ -205,6 +246,7 @@
   import { Asset, Keypair, Memo, Operation, TransactionBuilder } from 'stellar-sdk'
   import BigNumber from 'bignumber.js'
   import { flash } from '../../utils'
+  import { forEach } from 'lodash'
 
   export default {
     metaInfo: () => ({
@@ -213,7 +255,9 @@
 
     data () {
       return {
-        balance: 123.3434,
+        loaded: false,
+
+        balance: 0,
         clickedVerify: false,
         isVerifying: true,
         memo: false,
@@ -259,7 +303,13 @@
           return true
         }],
 
+        selectedAvailableAsset: '',
+        newAsset: '',
+        newAssetRules: [(v) => (!!v && v.length > 0 && v.length <= 12) || 'Max 12 characters'],
+        availableAssets: [],
+        assetSelector: false,
         asset: 'XLM',
+        assetTypes: ['XLM'],
         assetRules: [(v) => !!v || 'You have to choose an asset code'],
 
 //        contactsSearch: '',
@@ -284,21 +334,21 @@
       memoType (type) {
         switch (type) {
           case 'MEMO_ID':
-            this.memoPlaceholder = 'Enter memo ID number';
-            break;
+            this.memoPlaceholder = 'Enter memo ID number'
+            break
           case 'MEMO_TEXT':
-            this.memoPlaceholder = 'Up to 28 characters';
-            break;
+            this.memoPlaceholder = 'Up to 28 characters'
+            break
           case 'MEMO_HASH':
           case 'MEMO_RETURN':
-            this.memoPlaceholder = 'Enter 64 character encoded string';
-            break;
+            this.memoPlaceholder = 'Enter 64 character encoded string'
+            break
         }
       }
     },
 
     methods: {
-      clickVerify() {
+      clickVerify () {
         if (this.$refs.form.validate()) {
           if (this.valid) {
             this.clickedVerify = true
@@ -392,6 +442,36 @@
 
         return StellarServer.submitTransaction(transaction)
       },
-    }
+
+      setAsset () {
+        if (this.newAsset) {
+          this.asset = this.newAsset
+        } else {
+          this.asset = this.selectedAvailableAsset
+        }
+
+        this.assetTypes = [this.asset]
+        this.newAsset = ''
+        this.assetSelector = false
+      },
+    },
+
+    created () {
+      StellarServer.loadAccount(this.$store.getters.keypair.publicKey())
+        .then((account) => {
+          this.availableAssets = ['XLM']
+
+          forEach(account.balances, (balance) => {
+            if (balance.asset_type !== 'native') {
+              this.availableAssets.push(balance.asset_code)
+            }
+          })
+
+          this.loaded = true
+        })
+        .catch(err => {
+          flash(this.$store, err, 'error')
+        })
+    },
   }
 </script>

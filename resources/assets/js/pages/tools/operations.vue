@@ -139,7 +139,7 @@
           }
         }
 
-        axios.get('https://horizon.stellar.org/accounts/GD4KEL2QMSDIHEGIT2SOZSRG55GLWIXUFTD5FVNDUX4WPMONWROJLP5R/operations', {
+        axios.get('https://horizon.stellar.org/accounts/' + vm.$store.getters.keypair.publicKey() + '/operations', {
           params: this.parameters
         })
           .then(response => {

@@ -127,7 +127,6 @@
                 fullscreen
                 transition="dialog-bottom-transition"
                 hide-overlay
-                scrollable
         >
             <settings @close-dialog="closeDialog"></settings>
         </v-dialog>

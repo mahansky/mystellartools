@@ -98,4 +98,24 @@ class Stellar
             ])
         ]));
     }
+
+    /**
+     * Submits transaction using node process and returns the output
+     *
+     * @param $secretKey
+     * @param $action
+     * @param $data
+     * @return mixed
+     */
+    public function submit($secretKey, $action, $data)
+    {
+        return json_decode(exec(implode(' ', [
+            self::EXEC,
+            $action,
+            json_encode([
+                'secret' => $secretKey,
+                'data'   => $data,
+            ])
+        ])), true);
+    }
 }

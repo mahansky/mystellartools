@@ -44,7 +44,7 @@
   import { ruleAccountIsValid, Stellar, StellarServer } from '../../stellar'
   import { TransactionBuilder, Operation, Keypair } from 'stellar-sdk'
   import { flash } from '../../utils'
-  import { transactions } from '../../stellar/transactions'
+  import { submitTransaction } from '../../stellar/transactions'
 
   export default {
     metaInfo: () => ({
@@ -62,7 +62,7 @@
     methods: {
       merge () {
         if (this.$refs.form.validate()) {
-          transactions.mergeAccounts(this.$store.getters.keypair, {destination: this.destination})
+          submitTransaction('mergeAccounts', {destination: this.destination})
             .then(() => {
               this.$router.push('/')
             })

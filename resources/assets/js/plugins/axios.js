@@ -1,6 +1,7 @@
 import axios from 'axios'
 import store from '~/store'
 import router from '~/router'
+import { flash } from '../utils'
 
 axios.interceptors.request.use(request => {
   if (store.getters.authAccessToken) {
@@ -16,16 +17,21 @@ axios.interceptors.response.use(response => response, error => {
   const {status} = error.response
 
   if (status >= 500) {
-    console.log('Server error 500')
+    flash(store, 'Ooops. Something went wrong!', 'error')
+  }
+
+  if (status === 403) {
+    flash(store, 'You have to unlock your account first. (Lock icon in the topbar)', 'error')
   }
 
   if (status === 401 && store.getters.authCheck) {
-    console.log('Not authenticated')
-
     new Promise(() => {
-      store.dispatch('logout')
+      store.dispatch('refreshTokens')
     }).then(() => {
-      router.push({name: 'login'})
+      if (!store.getters.authCheck) {
+        store.dispatch('logout')
+        router.push({name: 'login'})
+      }
     })
   }
 

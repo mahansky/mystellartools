@@ -13,7 +13,7 @@ Route::post('federation', 'FederationController@store')->name('federation.store'
 
 Route::get('prices', 'PriceController')->name('prices');
 
-Route::get('claim', 'ClaimController');
+Route::get('claim', 'ClaimController')->middleware('throttle:10,1');
 
 Route::post('register', 'Auth\AuthController@register');
 Route::post('login', 'Auth\AuthController@login');
@@ -33,5 +33,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('accounts', 'AccountController@store');
     Route::delete('accounts', 'AccountController@destroy');
     Route::post('unlock', 'AccountController@unlock');
+
+    Route::post('transactions', 'TransactionController');
 
 });

@@ -83,7 +83,7 @@
   import { TransactionBuilder, Operation } from 'stellar-sdk'
   import { StellarServer } from '../../stellar'
   import { flash } from '../../utils'
-  import { transactions } from '../../stellar/transactions'
+  import { submitTransaction } from '../../stellar/transactions'
 
   export default {
     metaInfo: () => ({
@@ -177,7 +177,7 @@
       },
 
       submitTx (key, value) {
-        transactions.manageData(this.$store.getters.keypair, {key, value})
+        submitTransaction('manageData', {key, value})
           .then(() => {
             return this.fetchData()
           })

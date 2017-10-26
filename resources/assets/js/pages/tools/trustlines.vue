@@ -218,7 +218,7 @@
   import { Asset, TransactionBuilder, Operation } from 'stellar-sdk'
   import axios from 'axios'
   import { flash } from '../../utils'
-  import { transactions } from '../../stellar/transactions'
+  import { submitTransaction } from '../../stellar/transactions'
 
   export default {
     metaInfo: () => ({
@@ -326,7 +326,7 @@
         let vm = this
         let asset = new Asset(code, issuer)
 
-        return transactions.updateTrustline(this.$store.getters.keypair, {asset, limit})
+        return submitTransaction('updateTrustline', {asset, limit})
           .then(() => {
             flash(vm.$store, 'Trustline updated', 'success')
 
@@ -368,7 +368,7 @@
 
         let vm = this
 
-        transactions.allowTrustline(this.$store.getters.keypair, {
+        submitTransaction('allowTrustline', {
           trustor: vm.allowTrustor,
           assetCode: vm.allowAssetCode,
           authorize: vm.allowAuthorized,

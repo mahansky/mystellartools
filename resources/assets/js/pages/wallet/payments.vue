@@ -41,7 +41,8 @@
                             <template v-else>
                                 <td colspan="2">
                                     <span class="table-row-detail">
-                                        <a href="#" @click.prevent="loadInfo(props.item)">Load details</a>
+                                        <v-btn loading flat info v-if="props.item.isLoading"></v-btn>
+                                        <a v-if="!props.item.isLoading" href="#" @click.prevent="loadInfo(props.item)">Load details</a>
                                     </span>
                                 </td>
                             </template>
@@ -68,6 +69,7 @@
 <script>
   import { StellarServer } from '../../stellar'
   import moment from 'moment'
+  import Vue from 'vue'
 
   export default {
     metaInfo: () => ({
@@ -165,11 +167,14 @@
       },
 
       loadInfo(payment) {
+        Vue.set(payment, 'isLoading', true)
+
         let vm = this
 
         Promise.resolve(this.fetchAdditionalInfo(payment))
           .then(() => {
             vm.$forceUpdate()
+            Vue.set(payment, 'isLoading', false)
           })
       }
     },

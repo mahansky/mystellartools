@@ -109,7 +109,7 @@
                                 ></v-select>
                                 <v-text-field
                                         v-if="signerType"
-                                        label="Signer"
+                                        :label="signerLabel"
                                         v-model="signer"
                                         :rules="signerRules"
                                 ></v-text-field>
@@ -121,7 +121,7 @@
                                         :rules="weightRules"
                                 ></v-text-field>
 
-                                <b>Other</b>
+                                <b>Others</b>
                                 <v-text-field
                                         label="Inflation destination"
                                         v-model="inflationDest"
@@ -151,14 +151,18 @@
                     <p>
                         Operations have varying levels of access.
                         This field specifies thresholds for low-, medium-, and high-access levels, as well as the weight of the master key.
-                        For more info, see <a href="https://www.stellar.org/developers/guides/concepts/multi-sig.html" target="_blank" rel="noreferrer nofollow">multi-sig</a>.
+                        For more info, see <a href="https://www.stellar.org/developers/guides/concepts/multi-sig.html"
+                                              target="_blank" rel="noreferrer nofollow">multi-sig</a>.
                     </p>
 
                     <b>Flags</b>
                     <ul class="mb-3">
-                        <li><u>Authorization required (0x1)</u>: Requires the issuing account to give other accounts permission before they can hold the issuing account’s credit.</li>
-                        <li><u>Authorization revocable (0x2)</u>: Allows the issuing account to revoke its credit held by other accounts.</li>
-                        <li><u>Authorization immutable (0x4)</u>: If this is set then none of the authorization flags can be set and the account can never be deleted.</li>
+                        <li><u>Authorization required</u>: Requires the issuing account to give other accounts permission before they can hold the issuing account’s credit.
+                        </li>
+                        <li><u>Authorization revocable</u>: Allows the issuing account to revoke its credit held by other accounts.
+                        </li>
+                        <li><u>Authorization immutable</u>: If this is set then none of the authorization flags can be set and the account can never be deleted.
+                        </li>
                     </ul>
 
                     <b>Signers</b>
@@ -187,9 +191,12 @@
 
 <script>
   import { ruleAccountIsValid, Stellar, StellarServer } from '../../stellar'
-  import { TransactionBuilder, Operation, Keypair, StrKey, Buffer } from 'stellar-sdk'
-  const xdr = require("stellar-base").xdr;
+  import { TransactionBuilder, Operation, Keypair, StrKey } from 'stellar-sdk'
   import { flash } from '../../utils'
+  import { submitTransaction } from '../../stellar/transactions'
+  import isString from 'lodash'
+
+  const xdr = require('stellar-base').xdr
 
   export default {
     metaInfo: () => ({
@@ -248,35 +255,39 @@
         signerRules: [(v) => {
           let temp
 
-          switch (this.signerType) {
-            case 'ed25519':
-              if (!StrKey.isValidEd25519PublicKey(v)) {
-                return 'Invalid input'
-              }
+          try {
+            switch (this.signerType) {
+              case 'ed25519':
+                if (!StrKey.isValidEd25519PublicKey(v)) {
+                  throw 'error'
+                }
 
-              break
+                break
 
-            case 'txhash':
-              if (isString(v)) {
-                temp = Buffer.from(v, 'hex');
-              }
+              case 'txhash':
+                if (isString(v)) {
+                  temp = new Buffer.from(v, 'hex')
+                }
 
-              if (!(Buffer.isBuffer(temp) && temp.length === 32)) {
-                return 'Invalid input'
-              }
+                if (!(Buffer.isBuffer(temp) && temp.length === 32)) {
+                  throw 'error'
+                }
 
-              break
+                break
 
-            case 'sha256':
-              if (isString(v)) {
-                temp = Buffer.from(v, 'hex');
-              }
+              case 'sha256':
+                if (isString(v)) {
+                  temp = Buffer.from(v, 'hex')
+                }
 
-              if (!(Buffer.isBuffer(temp) && temp.length === 32)) {
-                return 'Invalid input'
-              }
+                if (!(Buffer.isBuffer(temp) && temp.length === 32)) {
+                  throw 'error'
+                }
 
-              break
+                break
+            }
+          } catch (e) {
+            return 'Invalid input'
           }
 
           return true
@@ -318,7 +329,7 @@
             attributes.highTreshold = this.highTreshold
 
           if (this.inflationDest)
-            attributes.inflationDest = Keypair.fromPublicKey(this.inflationDest).xdrAccountId();
+            attributes.inflationDest = Keypair.fromPublicKey(this.inflationDest).xdrAccountId()
 
           if (this.homeDomain)
             attributes.homeDomain = this.homeDomain
@@ -345,7 +356,13 @@
             attributes.signer = new xdr.Signer({key, weight})
           }
 
-          this.submit(Operation.setOptions(attributes))
+          submitTransaction('setOptions', attributes)
+            .then(() => {
+              flash(this.$store, 'Success!', 'success')
+            })
+            .catch((err) => {
+              flash(this.$store, err, 'error')
+            })
         }
       },
 
@@ -363,28 +380,6 @@
 
         return result
       },
-
-      submit (operation) {
-        let vm = this
-
-        StellarServer.loadAccount(vm.$store.getters.keypair.publicKey())
-          .then((account) => {
-            let transaction = new TransactionBuilder(account)
-              .addOperation(operation)
-              .build()
-
-            transaction.sign(vm.$store.getters.keypair)
-
-            return StellarServer.submitTransaction(transaction)
-          })
-          .then(() => {
-            console.log('setoptions done')
-          })
-          .catch((err) => {
-            console.log('error ', err)
-            flash(vm.$store, err, 'error')
-          })
-      }
     }
   }
 </script>

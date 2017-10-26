@@ -70,6 +70,9 @@
                                         label="Password"
                                         v-model="addForm.password"
                                         :rules="addForm.passwordRules"
+                                        :append-icon="addForm.pw ? 'visibility' : 'visibility_off'"
+                                        :append-icon-cb="() => (addForm.pw = !addForm.pw)"
+                                        :type="addForm.pw ? 'password' : 'text'"
                                 ></v-text-field>
                             </v-form>
                             <v-layout row>
@@ -156,6 +159,7 @@
         },
 
         addForm: {
+          pw: false,
           isLoading: false,
           valid: false,
           name: '',

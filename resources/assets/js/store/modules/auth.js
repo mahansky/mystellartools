@@ -73,8 +73,19 @@ export const actions = {
     }
   },
 
-  async refreshTokens ({commit}, payload) {
+  async refreshTokens ({commit, state}, payload) {
+    try {
+      const {data} = await axios.post('/api/refresh', {
+        token: state.refreshToken
+      })
 
+      commit(types.STORE_TOKENS, {
+        accessToken: data.access_token,
+        refreshToken: data.refresh_token,
+      })
+    } catch (e) {
+      commit(types.FETCH_USER_FAILURE)
+    }
   },
 
   updateUser ({commit}, payload) {
