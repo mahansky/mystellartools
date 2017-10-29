@@ -4,7 +4,7 @@ const mix = require('laravel-mix')
 
 // STELLAR NODEJS MIX
 
-if (process.argv.indexOf('--config=stellar.webpack.mix.js')) {
+if (process.argv.indexOf('--config=stellar.webpack.mix.js') !== -1) {
   mix.js('resources/assets/js/stellar/external.js', 'stellar.js')
 
   mix.webpackConfig({
