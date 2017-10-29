@@ -6,6 +6,7 @@
 /public/js/manifest*js*
 /public/js/vendor*js*
 /public/stellar.js
+/public/mix-manifest.json
 /storage/*.key
 /vendor
 /.idea
