@@ -7,7 +7,7 @@ switch (process.argv[2]) {
   case 'generate':
     const newKeypair = Stellar.Keypair.random()
 
-    console.log(JSON.stringify({
+    console.log(window.JSON.stringify({
       public_key: newKeypair.publicKey(),
       secret_key: newKeypair.secret(),
     }))
@@ -15,7 +15,7 @@ switch (process.argv[2]) {
     break
 
   default:
-    const data = JSON.parse(process.argv[2])
+    const data = window.JSON.parse(process.argv[2])
     const keypair = Stellar.Keypair.fromSecret(data.secret)
 
     let output
@@ -30,12 +30,12 @@ switch (process.argv[2]) {
         output.tx_success = 0
       })
       .then(() => {
-        console.log(JSON.stringify(JSON.decycle(output)))
+        console.log(window.JSON.stringify(JSON.decycle(output)))
       })
 }
 
-if (typeof JSON.decycle !== 'function') {
-  JSON.decycle = function decycle (object) {
+if (typeof window.JSON.decycle !== 'function') {
+  window.JSON.decycle = function decycle (object) {
     'use strict'
 
     var objects = [],
@@ -74,7 +74,7 @@ if (typeof JSON.decycle !== 'function') {
             for (name in value) {
               if (Object.prototype.hasOwnProperty.call(value, name)) {
                 nu[name] = derez(value[name],
-                  path + '[' + JSON.stringify(name) + ']')
+                  path + '[' + window.JSON.stringify(name) + ']')
               }
             }
           }
