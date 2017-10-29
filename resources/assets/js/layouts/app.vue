@@ -227,6 +227,7 @@
           password: this.passwordForm.password,
         }).then(() => {
           this.passwordDialog = false
+          this.passwordForm.password = ''
 
           this.$store.dispatch('updateSss', {
             sss: true,

@@ -7,6 +7,7 @@
                 v-model="visible"
                 class="error-popup"
                 dismissible
+                hide-icon
         >
             {{ message }}
         </v-alert>

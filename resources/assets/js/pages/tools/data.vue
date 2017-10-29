@@ -135,7 +135,8 @@
         _.forEach(this.dataset, function (value, key) {
           array.push({
             key,
-            value
+            value,
+            isDeleteLoading: false,
           })
         })
 
@@ -163,6 +164,8 @@
         this.submitTx(item.key, null)
           .then(() => {
             item.isDeleteLoading = false
+
+            flash(this.$store, 'Data entry deleted', 'success')
           })
       },
 
@@ -171,8 +174,12 @@
           this.isSubmitting = true
 
           this.submitTx(this.key, this.value)
-            .then(() => {
+            .then((res) => {
               this.isSubmitting = false
+
+              if (res) {
+                flash(this.$store, 'Data entry updated', 'success')
+              }
             })
         }
       },

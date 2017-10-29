@@ -16,6 +16,14 @@ export const mutations = {
 
       if (payload.message.message.detail) {
         state.message = payload.message.message.detail
+
+        if (payload.message.message.extras) {
+          if (payload.message.message.extras.result_codes) {
+            if (payload.message.message.extras.result_codes.operations) {
+              state.message += ' [' + payload.message.message.extras.result_codes.operations.join('; ') + ']'
+            }
+          }
+        }
       }
 
       if (payload.message.response) {
@@ -25,6 +33,14 @@ export const mutations = {
 
         if (payload.message.response.data && payload.message.response.data.detail) {
           state.message = payload.message.response.data.detail
+
+          if (payload.message.response.data.extras) {
+            if (payload.message.response.data.extras.result_codes) {
+              if (payload.message.response.data.extras.result_codes.operations) {
+                state.message += ' [' + payload.message.response.data.extras.result_codes.operations.join('; ') + ']'
+              }
+            }
+          }
         }
       }
     }

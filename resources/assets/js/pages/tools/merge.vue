@@ -10,7 +10,7 @@
                             </v-toolbar-title>
                         </v-toolbar>
                         <v-card-text>
-                            <v-form v-model="valid" ref="form">
+                            <v-form v-model="valid" ref="form" @submit.prevent="">
                                 <v-text-field
                                         label="Destination account"
                                         v-model="destination"
@@ -24,6 +24,7 @@
                                     :class="{'blue--text': valid, 'red--text': !valid}"
                                     flat
                                     @click="merge"
+                                    :loading="isLoading"
                             >
                                 Merge accounts
                             </v-btn>
@@ -56,18 +57,26 @@
         valid: false,
         destination: '',
         destinationRules: [(v) => ruleAccountIsValid(v)],
+        isLoading: false,
       }
     },
 
     methods: {
       merge () {
         if (this.$refs.form.validate()) {
+          this.isLoading = true
+
           submitTransaction('mergeAccounts', {destination: this.destination})
             .then(() => {
-              this.$router.push('/')
+              this.$store.dispatch('removeKeypair')
+              this.$store.dispatch('logout')
+              this.$router.push({name: 'welcome'})
             })
             .catch((err) => {
               flash(this.$store, err, 'error')
+            })
+            .then(() => {
+              this.isLoading = false
             })
         }
       }

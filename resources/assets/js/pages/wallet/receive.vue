@@ -16,7 +16,7 @@
                                         v-model="newStellarAddress"
                                         :rules="addressRules"
                                         label="Stellar address"
-                                        suffix="*lumen.money"
+                                        suffix="*mystellar.tools"
                                 ></v-text-field>
                             </v-form>
                         </v-card-text>
@@ -42,7 +42,7 @@
                             <v-text-field
                                     label="Stellar address"
                                     :value="stellarAddress"
-                                    suffix="*lumen.money"
+                                    suffix="*mystellar.tools"
                                     disabled
                             ></v-text-field>
                         </v-card-text>
@@ -131,10 +131,13 @@
           type: 'id',
         }
       }).then(response => {
-        this.loaded = true
         this.stellarAddress = response.data.stellar_address.split('*')[0]
         this.fetchStellarQRCode()
-      }).catch(error => {})
+      }).catch(error => {
+
+      }).then(() => {
+        this.loaded = true
+      })
 
       this.fetchPublicQRCode()
     },
@@ -164,7 +167,7 @@
       fetchStellarQRCode() {
         axios.get('/api/qrcode', {
           params: {
-            text: this.stellarAddress + '*lumens.money',
+            text: this.stellarAddress + '*mystellar.tools',
           }
         }).then(response => {
           this.qrcodeStellar = 'data:image/png;base64,' + response.data.qrcode

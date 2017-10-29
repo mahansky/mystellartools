@@ -4,7 +4,7 @@ const mix = require('laravel-mix')
 
 // STELLAR NODEJS MIX
 
-if (process.argv[5] === '--config=stellar.webpack.mix.js') {
+if (process.argv.indexOf('--config=stellar.webpack.mix.js')) {
   mix.js('resources/assets/js/stellar/external.js', 'stellar.js')
 
   mix.webpackConfig({
@@ -22,8 +22,6 @@ if (process.argv[5] === '--config=stellar.webpack.mix.js') {
 mix
   .js('resources/assets/js/app.js', 'public/js')
   .sass('resources/assets/sass/app.scss', 'public/css')
-
-  .sourceMaps()
   .disableNotifications()
 
 if (mix.inProduction()) {
@@ -36,9 +34,7 @@ if (mix.inProduction()) {
     'vuex',
     'jquery',
     'popper.js',
-    'vue-i18n',
     'vue-meta',
-    'js-cookie',
     'bootstrap',
     'vue-router',
     'vuex-router-sync'

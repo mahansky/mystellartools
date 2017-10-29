@@ -8,8 +8,8 @@ class Stellar
 {
     const HORIZON = 'https://horizon.stellar.org';
 
-    const STELLAR_JS = 'public/stellar.js';
-    const EXEC = 'node ' . self::STELLAR_JS;
+    const STELLAR_JS = '/Users/mprom/Code/interstellar/public/stellar.js';
+    const EXEC = '/usr/local/bin/node ' . self::STELLAR_JS;
 
     /**
      * @var Client
@@ -103,14 +103,16 @@ class Stellar
      */
     public function submit($secretKey, $action, $data)
     {
-        $response = exec(implode(' ', [
+        $command = implode(' ', [
             self::EXEC,
-            "'" . json_encode([
+            escapeshellarg(json_encode([
                 'action' => $action,
                 'secret' => $secretKey,
                 'data'   => $data,
-            ]) . "'"
-        ]));
+            ])),
+        ]);
+
+        $response = trim(shell_exec($command));
 
         return json_decode($response, true);
     }

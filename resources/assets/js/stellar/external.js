@@ -1,6 +1,8 @@
 import { Stellar } from './index'
 import { transactions } from './transactions'
 
+const util = require('util')
+
 switch (process.argv[2]) {
   case 'generate':
     const newKeypair = Stellar.Keypair.random()
@@ -28,22 +30,60 @@ switch (process.argv[2]) {
         output.tx_success = 0
       })
       .then(() => {
-        console.log(JSON.stringify(output, censor(output)))
+        console.log(JSON.stringify(JSON.decycle(output)))
       })
 }
 
-function censor (censor) {
-  let i = 0
+if (typeof JSON.decycle !== 'function') {
+  JSON.decycle = function decycle (object) {
+    'use strict'
 
-  return function (key, value) {
-    if (i !== 0 && typeof(censor) === 'object' && typeof(value) === 'object' && censor === value)
-      return '[Circular]'
+    var objects = [],
+      paths = []
 
-    if (i >= 10)
-      return '[Unknown]'
+    return (function derez (value, path) {
 
-    ++i
+      var i,
+        name,
+        nu
 
-    return value
+      switch (typeof value) {
+        case 'object':
+
+          if (!value) {
+            return null
+          }
+
+          for (i = 0; i < objects.length; i += 1) {
+            if (objects[i] === value) {
+              return {$ref: paths[i]}
+            }
+          }
+
+          objects.push(value)
+          paths.push(path)
+
+          if (Object.prototype.toString.apply(value) === '[object Array]') {
+            nu = []
+            for (i = 0; i < value.length; i += 1) {
+              nu[i] = derez(value[i], path + '[' + i + ']')
+            }
+          } else {
+
+            nu = {}
+            for (name in value) {
+              if (Object.prototype.hasOwnProperty.call(value, name)) {
+                nu[name] = derez(value[name],
+                  path + '[' + JSON.stringify(name) + ']')
+              }
+            }
+          }
+          return nu
+        case 'number':
+        case 'string':
+        case 'boolean':
+          return value
+      }
+    }(object, '$'))
   }
 }

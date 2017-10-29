@@ -35,7 +35,7 @@ export const transactions = {
   manageData: (keypair, {name, value}) => {
     return _submitTx(keypair, Operation.manageData({
       name,
-      value: '' + value,
+      value,
     }))
   },
 

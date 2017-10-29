@@ -21,6 +21,8 @@ axios.interceptors.response.use(response => response, error => {
   }
 
   if (status === 403) {
+    store.dispatch('updateSss', {sss: true, sssOk: false})
+
     flash(store, 'You have to unlock your account first. (Lock icon in the topbar)', 'error')
   }
 
