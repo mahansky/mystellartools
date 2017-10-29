@@ -1,8 +1,10 @@
 /node_modules
 /public/hot
 /public/storage
-/public/css/app*css
-/public/js/app*js
+/public/css/app*css*
+/public/js/app*js*
+/public/js/manifest*js*
+/public/js/vendor*js*
 /public/stellar.js
 /storage/*.key
 /vendor
