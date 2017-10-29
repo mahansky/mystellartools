@@ -193,7 +193,7 @@
   import { ruleAccountIsValid, Stellar, StellarServer } from '../../stellar'
   import { TransactionBuilder, Operation, Keypair, StrKey } from 'stellar-sdk'
   import { flash } from '../../utils'
-  import { submitTransaction } from '../../stellar/transactions'
+  import { submitTransaction } from '../../stellar/internal'
   import isString from 'lodash'
 
   const xdr = require('stellar-base').xdr

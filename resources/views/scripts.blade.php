@@ -1,12 +1,3 @@
-@php
-    $config = [
-        'appName' => config('app.name'),
-        'locale' => $locale = app()->getLocale(),
-        'domain' => config('app.domain'),
-    ];
-@endphp
-<script>window.config = @json($config)</script>
-
 @if (app()->isLocal())
     <script src="{{ mix('js/app.js') }}"></script>
 @else

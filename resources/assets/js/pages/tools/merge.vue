@@ -44,7 +44,7 @@
   import { ruleAccountIsValid, Stellar, StellarServer } from '../../stellar'
   import { TransactionBuilder, Operation, Keypair } from 'stellar-sdk'
   import { flash } from '../../utils'
-  import { submitTransaction } from '../../stellar/transactions'
+  import { submitTransaction } from '../../stellar/internal'
 
   export default {
     metaInfo: () => ({

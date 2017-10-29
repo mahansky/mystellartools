@@ -1,7 +1,5 @@
 import { StellarServer } from './index'
 import { TransactionBuilder, Operation, StrKey } from 'stellar-sdk'
-import axios from 'axios'
-import store from '../store'
 
 const xdr = require('stellar-base').xdr;
 
@@ -68,24 +66,4 @@ export const transactions = {
   setOptions: (keypair, attributes) => {
     return _submitTx(keypair, Operation.setOptions(attributes))
   },
-}
-
-export const submitTransaction = (action, data, keypair, sss) => {
-  if (keypair === undefined) {
-    keypair = store.getters.keypair
-  }
-
-  if (sss === undefined) {
-    sss = store.getters.keypairSss
-  }
-
-  if (sss) {
-    return axios.post('/api/transactions', {
-      action,
-      data,
-      public_key: keypair.publicKey(),
-    })
-  }
-
-  return transactions[action](keypair, data)
 }

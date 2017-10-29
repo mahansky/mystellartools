@@ -83,20 +83,14 @@ class Stellar
      * @param string $signer public key of new signer
      * @param string $secretKey secret key of account
      * @param int $weight
+     * @return mixed
      */
     public function addSignerToAccount($signer, $secretKey, $weight = 1)
     {
-        exec(implode(' ', [
-            self::EXEC,
-            'addSigner',
-            json_encode([
-                'secret' => $secretKey,
-                'data'   => [
-                    'signer' => $signer,
-                    'weight' => $weight,
-                ],
-            ])
-        ]));
+        return $this->submit($secretKey, 'addSigner', [
+            'signer' => $signer,
+            'weight' => $weight,
+        ]);
     }
 
     /**
@@ -109,13 +103,15 @@ class Stellar
      */
     public function submit($secretKey, $action, $data)
     {
-        return json_decode(exec(implode(' ', [
+        $response = exec(implode(' ', [
             self::EXEC,
-            $action,
-            json_encode([
+            "'" . json_encode([
+                'action' => $action,
                 'secret' => $secretKey,
                 'data'   => $data,
-            ])
-        ])), true);
+            ]) . "'"
+        ]));
+
+        return json_decode($response, true);
     }
 }

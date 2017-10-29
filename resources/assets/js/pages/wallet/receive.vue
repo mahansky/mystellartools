@@ -1,6 +1,7 @@
 <template>
     <main class="receive">
-        <v-container grid-list-lg>
+        <v-btn flat info loading v-if="!loaded"></v-btn>
+        <v-container grid-list-lg v-if="loaded">
             <v-layout row wrap v-if="!stellarAddress">
                 <v-flex lg6>
                     <v-card class="white">
@@ -110,12 +111,16 @@
 
     data () {
       return {
+        loaded: false,
         qrcodePublic: '',
         qrcodeStellar: '',
         formValid: false,
         newStellarAddress: '',
         stellarAddress: null,
-        addressRules: [(v) => !!v || 'Stellar address is required']
+        addressRules: [
+          (v) => !!v || 'Stellar address is required',
+          (v) => /^[\w]+$/.test(v) || 'Only alphanumeric characters are allowed',
+        ]
       }
     },
 
@@ -126,6 +131,7 @@
           type: 'id',
         }
       }).then(response => {
+        this.loaded = true
         this.stellarAddress = response.data.stellar_address.split('*')[0]
         this.fetchStellarQRCode()
       }).catch(error => {})

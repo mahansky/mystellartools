@@ -39,6 +39,7 @@
                                                     v-model="asset"
                                                     :items="assetTypes"
                                                     @focus="assetSelector = true"
+                                                    :rules="assetRules"
                                                     disabled
                                             ></v-select>
                                             <v-card>
@@ -56,7 +57,6 @@
                                                     <v-text-field
                                                             label="New Asset Code"
                                                             v-model="newAsset"
-                                                            :rules="newAssetRules"
                                                     ></v-text-field>
                                                 </v-card-text>
                                                 <v-card-actions>
@@ -109,63 +109,24 @@
                                 <span v-text="recipient"></span>
                             </p>
 
-                            <v-layout row wrap>
-                                <v-flex xs6>
-                                    <b>Amount sending</b>
-                                    <table class="send-amount-table" cellpadding="0" cellspacing="0">
-                                        <tr>
-                                            <td>
-                                                <span v-html="amountFormat(parseFloat(amount).toFixed(7))"></span>
-                                            </td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <span class="grey--text">+</span>
-                                                <span class="grey--text text--darken-2"
-                                                      v-html="amountFormat((0.0000100).toFixed(7))"></span>
-                                            </td>
-                                            <td>
-                                                <small class="grey--text">(base fee)</small>
-                                            </td>
-                                        <tr class="total">
-                                            <td>
-                                                <span v-html="amountFormat(parseFloat(amount + 0.00001).toFixed(7))"></span>
-                                            </td>
-                                            <td>
-                                                <span v-text="asset"></span>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </v-flex>
-                                <v-flex xs6>
-                                    <b>New balance</b>
-                                    <table class="send-amount-table" cellpadding="0" cellspacing="0">
-                                        <tr>
-                                            <td>
-                                                <span v-html="amountFormat(parseFloat(balance).toFixed(7))"></span>
-                                            </td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <span>-</span>
-                                                <span v-html="amountFormat(parseFloat(amount + 0.00001).toFixed(7))"></span>
-                                            </td>
-                                            <td>
-                                                <small class="grey--text">(sending)</small>
-                                            </td>
-                                        <tr class="total">
-                                            <td>
-                                                <span v-html="amountFormat(parseFloat(balance - (amount + 0.00001)).toFixed(7))"></span>
-                                            </td>
-                                            <td>
-                                                <span v-text="asset"></span>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </v-flex>
-                            </v-layout>
+                            <b>Amount</b>
+                            <table class="first-padding" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td><span>Sending</span></td>
+                                    <td>
+                                        <span v-html="amountFormat(newBigNumber(amount).toFixed(7))"></span>
+                                        <span v-text="asset"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><span>New balance</span></td>
+                                    <td>
+                                        <span v-html="amountFormat(newBigNumber(balance).minus(amount).toFixed(7))"></span>
+                                        <span v-text="asset"></span>
+                                    </td>
+                                </tr>
+                            </table>
+                            <p class="grey--text">Every transaction costs extra <span v-html="amountFormat('0.0000100')"></span> XLM</p>
 
                             <v-layout row wrap v-if="memo">
                                 <v-flex xs12>
@@ -211,13 +172,19 @@
                     </p>
                     <b>Asset</b>
                     <p>
-                        You can choose one of the assets your account has (see <router-link :to="{name: 'balance'}">Balance</router-link>) or you can issue new asset directly using this form.
-                        Recipient will have to trust you first. Trust can be created using <router-link :to="{name: 'trustlines'}">Trustlines</router-link>.
+                        You can choose one of the assets your account has (see
+                        <router-link :to="{name: 'balance'}">Balance</router-link>
+                        ) or you can issue new asset directly using this form.
+                        Recipient will have to trust you first. Trust can be created using
+                        <router-link :to="{name: 'trustlines'}">Trustlines</router-link>
+                        .
                     </p>
                     <b>Memo</b>
                     <p>
                         If you choose MEMO_TEXT, you can write short message that will be sent to the recipient along with the payment.
-                        For information on other types, check <a href="https://www.stellar.org/developers/guides/concepts/transactions.html#memo" target="_blank" rel="noreferrer nofollow">documentation</a>.
+                        For information on other types, check <a
+                            href="https://www.stellar.org/developers/guides/concepts/transactions.html#memo"
+                            target="_blank" rel="noreferrer nofollow">documentation</a>.
                     </p>
                 </v-flex>
                 <!--<v-flex lg8 md12>-->
@@ -243,7 +210,7 @@
 
 <script>
   import { ruleAccountIsValid, Stellar, StellarServer } from '../../stellar'
-  import { Asset, Keypair, Memo, Operation, TransactionBuilder } from 'stellar-sdk'
+  import { Asset, Keypair, Memo, Operation, TransactionBuilder, StrKey, FederationServer } from 'stellar-sdk'
   import BigNumber from 'bignumber.js'
   import { flash } from '../../utils'
   import { forEach } from 'lodash'
@@ -264,8 +231,22 @@
         valid: false,
         isSending: false,
 
+        resolvedRecipient: '',
         recipient: '',
-        recipientRules: [(v) => ruleAccountIsValid(v)],
+        recipientRules: [(v) => {
+          let ok = StrKey.isValidEd25519PublicKey(v)
+
+          if (!ok) {
+            let regex = new RegExp('^.+\\*mystellar\\.tools$')
+            ok = regex.test(v)
+          }
+
+          if (!ok) {
+            ok = !!v
+          }
+
+          return ok ? true : 'Invalid account'
+        }],
 
         amount: '',
         amountRules: [(v) => Operation.isValidAmount(v) || 'Amount must be greater than zero.'],
@@ -305,12 +286,11 @@
 
         selectedAvailableAsset: '',
         newAsset: '',
-        newAssetRules: [(v) => (!!v && v.length > 0 && v.length <= 12) || 'Max 12 characters'],
         availableAssets: [],
         assetSelector: false,
         asset: 'XLM',
         assetTypes: ['XLM'],
-        assetRules: [(v) => !!v || 'You have to choose an asset code'],
+        assetRules: [(v) => (!!v && v.length > 0 && v.length <= 12) || 'Asset code is required, max 12 characters'],
 
 //        contactsSearch: '',
 //        contactsHeaders: [
@@ -350,13 +330,11 @@
     methods: {
       clickVerify () {
         if (this.$refs.form.validate()) {
-          if (this.valid) {
-            this.clickedVerify = true
-            this.isVerifying = true
-            this.isSending = false
+          this.clickedVerify = true
+          this.isVerifying = true
+          this.isSending = false
 
-            this.verifyPayment()
-          }
+          this.verifyPayment()
         }
       },
 
@@ -371,9 +349,14 @@
             let nativeBalance = _(account.balances).find(balance => balance.asset_type === 'native').balance
             let maxSend = new BigNumber(nativeBalance).minus(minimumBalance)
 
-            if (maxSend.lt(this.amount)) {
+            this.balance = nativeBalance
+
+            if (maxSend.lt(new BigNumber(this.amount))) {
               throw 'InsufficientBalanceError'
             }
+          })
+          .then(() => {
+            this.resolvedRecipient = this.resolveAccountIdFromRecipient(this.recipient)
           })
           .then(() => {
             if (new BigNumber(this.amount).gte(20)) {
@@ -381,7 +364,7 @@
             }
 
             return StellarServer.accounts()
-              .accountId(this.recipient)
+              .accountId(this.resolvedRecipient)
               .call()
               .catch(err => {
                 if (err.name === 'NotFoundError') {
@@ -397,16 +380,42 @@
           })
       },
 
+      async resolveAccountIdFromRecipient (recipient) {
+        if (StrKey.isValidEd25519PublicKey(recipient)) {
+          return recipient
+        }
+
+        if (recipient.indexOf('*') === -1) {
+          recipient = recipient + '*mystellar.tools'
+        }
+
+        let {accountId} = await FederationServer.resolve(recipient)
+
+        if (!accountId) {
+          throw 'Federation lookup failed'
+        }
+
+        return accountId
+      },
+
       clickedSend () {
         this.isSending = true
 
+        let asset
+
+        if (this.asset === 'XLM') {
+          asset = Asset.native()
+        } else {
+          asset = new Asset(this.asset, this.$store.getters.keypair.publicKey())
+        }
+
         StellarServer.accounts()
-          .accountId(this.recipient)
+          .accountId(this.resolvedRecipient)
           .call()
           .then(() => {
             let operation = Operation.payment({
-              destination: this.recipient,
-              asset: Asset.native(),
+              destination: this.resolvedRecipient,
+              asset,
               amount: this.amount,
             })
 
@@ -418,14 +427,17 @@
           .catch(err => {
             if (err.name === 'NotFoundError') {
               let operation = Operation.createAccount({
-                destination: this.destination,
+                destination: this.resolvedRecipient,
                 startingBalance: this.amount,
               })
 
               return this.submitTransaction(operation)
             } else {
-              flash(this.$store, err.name, 'error')
+              flash(this.$store, err, 'error')
             }
+          })
+          .catch(err => {
+            flash(this.$store, err, 'error')
           })
       },
 
@@ -436,9 +448,9 @@
           transaction.addMemo(this.resolvedMemo)
         }
 
-        transaction.build()
+        transaction = transaction.build()
 
-        transaction.sign(Keypair.fromSeed(this.$store.getters.keypair.secret()))
+        transaction.sign(this.$store.getters.keypair)
 
         return StellarServer.submitTransaction(transaction)
       },
@@ -453,6 +465,10 @@
         this.assetTypes = [this.asset]
         this.newAsset = ''
         this.assetSelector = false
+      },
+
+      newBigNumber (value) {
+        return new BigNumber(value)
       },
     },
 

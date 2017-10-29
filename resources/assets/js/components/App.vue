@@ -35,7 +35,7 @@ export default {
   },
 
   metaInfo () {
-    const { appName } = window.config
+    const appName = 'MyStellar.Tools'
 
     return {
       title: appName,

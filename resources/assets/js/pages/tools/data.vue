@@ -28,6 +28,7 @@
                             <v-btn
                                     flat
                                     :class="{'blue--text': valid, 'red--text': !valid}"
+                                    :loading="isSubmitting"
                                     @click="save"
                             >
                                 Save
@@ -68,7 +69,9 @@
                             <td class="text-xs-right">
                                 <span class="table-row-detail">
                                     <a href="#" @click.prevent="edit(props.item.key)" class="mr-3">Edit</a>
-                                    <a href="#" @click.prevent="remove(props.item.key)" class="red--text">Delete</a>
+
+                                    <v-btn loading flat danger v-if="props.item.isDeleteLoading"></v-btn>
+                                    <a v-if="!props.item.isDeleteLoading" href="#" @click.prevent="remove(props.item)" class="red--text">Delete</a>
                                 </span>
                             </td>
                         </template>
@@ -83,7 +86,9 @@
   import { TransactionBuilder, Operation } from 'stellar-sdk'
   import { StellarServer } from '../../stellar'
   import { flash } from '../../utils'
-  import { submitTransaction } from '../../stellar/transactions'
+  import { submitTransaction } from '../../stellar/internal'
+  import Vue from 'vue'
+  import { forEach } from 'lodash'
 
   export default {
     metaInfo: () => ({
@@ -93,6 +98,7 @@
     data () {
       return {
         loaded: false,
+        isSubmitting: false,
 
         headers: [
           {
@@ -116,7 +122,7 @@
         dataset: {},
         valid: false,
         key: '',
-        keyRules: [(v) => v.length <= 64 || 'Maximum length is 64 characters'],
+        keyRules: [(v) => (v.length > 0 && v.length <= 64) || 'Maximum length is 64 characters'],
         value: '',
         valueRules: [(v) => new Buffer(v).length <= 64 || 'Maximum size is 64 bytes'],
       }
@@ -151,13 +157,23 @@
         window.scrollTo(0, 0)
       },
 
-      remove (key) {
-        this.submitTx(key, null)
+      remove (item) {
+        item.isDeleteLoading = true
+
+        this.submitTx(item.key, null)
+          .then(() => {
+            item.isDeleteLoading = false
+          })
       },
 
       save () {
         if (this.$refs.form.validate()) {
+          this.isSubmitting = true
+
           this.submitTx(this.key, this.value)
+            .then(() => {
+              this.isSubmitting = false
+            })
         }
       },
 
@@ -172,19 +188,23 @@
           .then(account => {
             vm.dataset = account.data_attr
             vm.loaded = true
+
+            forEach(vm.dataset, (data) => {
+              Vue.set(data, 'isDeleteLoading', false)
+            })
           })
           .catch(e => {})
       },
 
-      submitTx (key, value) {
-        submitTransaction('manageData', {key, value})
+      submitTx (name, value) {
+        return submitTransaction('manageData', {name, value})
           .then(() => {
             return this.fetchData()
           })
           .catch((err) => {
             flash(this.$store, err, 'error')
           })
-      }
+      },
     },
 
     created () {

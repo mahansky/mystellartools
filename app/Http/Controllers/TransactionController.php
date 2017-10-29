@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Account;
+use App\Helpers\Encrypter;
 use App\Stellar\Stellar;
 use Illuminate\Support\Facades\Cache;
 
@@ -28,6 +28,14 @@ class TransactionController extends Controller
             ], 403);
         }
 
-        return $stellar->submit(decrypt($cachedKey), $data['action'], $data);
+        $encrypter = new Encrypter(decrypt($cachedKey));
+        $secret = $encrypter->decrypt($account->secret_key);
+
+        $response = $stellar->submit($secret, $data['action'], $data['data']);
+
+        return response()->json(
+            $response,
+            isset($response['tx_success']) && $response['tx_success'] ? 200 : 400
+        );
     }
 }

@@ -39,7 +39,9 @@
                         <v-card-text>
                             <div class="datablock">
                                 <div class="name">Thresholds</div>
+                            </div>
 
+                            <div class="datablock">
                                 <table>
                                     <tr>
                                         <td><span class="grey--text text--darken-1 caption">LOW</span></td>
@@ -60,7 +62,9 @@
                         <v-card-text>
                             <div class="datablock">
                                 <div class="name">Flags</div>
+                            </div>
 
+                            <div class="datablock">
                                 <table>
                                     <tr v-if="account.flags.auth_required !== undefined">
                                         <td><span class="grey--text text--darken-1 caption pr-2">AUTH_REQUIRED</span>
@@ -93,7 +97,7 @@
                                 <table class="fluid">
                                     <tr>
                                         <td><span class="grey--text text--darken-1 caption pr-2">Balance</span></td>
-                                        <td><span v-text="asset.balance"></span></td>
+                                        <td><span v-html="amountFormat(asset.balance)"></span></td>
                                     </tr>
                                     <tr>
                                         <td><span class="grey--text text--darken-1 caption pr-2">Type</span></td>
@@ -143,14 +147,14 @@
                                 </table>
                             </div>
                         </v-card-text>
-                        <template v-if="Object.keys(account.data).length > 0">
+                        <template v-if="Object.keys(account.data_attr).length > 0">
                             <v-divider></v-divider>
                             <v-card-text>
                                 <div class="datablock">
                                     <div class="name">Data</div>
                                 </div>
 
-                                <div class="datablock" v-for="(value, key) in account.data">
+                                <div class="datablock" v-for="(value, key) in account.data_attr">
                                     <table class="fluid">
                                         <tr>
                                             <td><span class="grey--text text--darken-1 caption pr-2">Key</span></td>
@@ -254,6 +258,7 @@
 <script>
   import { Stellar, StellarServer } from '../../stellar'
   import axios from 'axios'
+  import { flash } from '../../utils'
 
   export default {
     metaInfo: () => ({
@@ -309,6 +314,9 @@
           }).then(() => {
             this.stellarAddressLoading = false
           })
+        })
+        .catch(() => {
+          flash(this.$store, 'Unable to load data', 'error')
         })
     },
 

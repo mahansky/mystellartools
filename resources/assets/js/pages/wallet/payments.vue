@@ -21,10 +21,10 @@
                                 </template>
                             </td>
                             <td class="text-xs-right">
-                                <span :class="props.item.amount > 0 ? 'green--text' : 'red--text'">
-                                    <template v-if="props.item.amount > 0">+</template>
-                                    <template v-if="props.item.amount < 0">-</template>
-                                    {{ Math.abs(props.item.amount) }}
+                                <span :class="isIncoming(props.item) ? 'green--text' : 'red--text'">
+                                    <template v-if="isIncoming(props.item)">+</template>
+                                    <template v-if="!isIncoming(props.item)">-</template>
+                                    <span v-html="amountFormat(props.item.amount)"></span>
                                 </span>
                                 <span v-if="props.item.asset_code" v-text="props.item.asset_code"></span>
                                 <span v-else v-text="'XLM'"></span>
@@ -70,6 +70,7 @@
   import { StellarServer } from '../../stellar'
   import moment from 'moment'
   import Vue from 'vue'
+  import { flash } from '../../utils'
 
   export default {
     metaInfo: () => ({
@@ -119,18 +120,19 @@
           let promises = []
 
           for (let i = 0; i < Math.min(vm.payments.length, 10); i++) {
-            promises.push(vm.fetchAdditionalInfo(vm.payments[i]))
+//            promises.push(vm.fetchAdditionalInfo(vm.payments[i]))
+            this.loadInfo(vm.payments[i])
           }
 
-          Promise.all(promises)
-            .then(() => {
-              vm.$forceUpdate()
-            })
+          return null
+        })
+        .catch(() => {
+          flash(this.$store, 'Unable to load data', 'error')
         })
     },
 
     methods: {
-      startListening() {
+      startListening () {
         let vm = this
 
         vm.eventSource = StellarServer.payments()
@@ -145,14 +147,14 @@
           })
       },
 
-      fetchAdditionalInfo(payment) {
+      fetchAdditionalInfo (payment) {
         return StellarServer.transactions()
           .transaction(this.parseTransactionHash(payment))
           .call()
           .then(tx => this.processAdditionalInfo(payment, tx))
       },
 
-      processAdditionalInfo(payment, tx) {
+      processAdditionalInfo (payment, tx) {
         payment.datetime = moment(tx.created_at).format('DD.MM.YYYY HH:mm:ss')
 
         if (tx.memo_type !== 'none') {
@@ -160,13 +162,13 @@
         }
       },
 
-      parseTransactionHash(payment) {
+      parseTransactionHash (payment) {
         let parts = payment._links.transaction.href.split('/')
 
         return parts[parts.length - 1]
       },
 
-      loadInfo(payment) {
+      loadInfo (payment) {
         Vue.set(payment, 'isLoading', true)
 
         let vm = this
@@ -176,11 +178,24 @@
             vm.$forceUpdate()
             Vue.set(payment, 'isLoading', false)
           })
+      },
+
+      isIncoming (payment) {
+        if (payment.type === 'payment') {
+          return (payment.from !== this.$store.getters.keypair.publicKey())
+            || (payment.from === payment.to)
+        }
+
+        if (payment.type === 'create_account') {
+          return (payment.account === this.$store.getters.keypair.publicKey())
+        }
       }
     },
 
     beforeDestroy () {
-      this.eventSource()
+      if (this.eventSource) {
+        this.eventSource()
+      }
     },
   }
 </script>

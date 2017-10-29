@@ -218,7 +218,7 @@
   import { Asset, TransactionBuilder, Operation } from 'stellar-sdk'
   import axios from 'axios'
   import { flash } from '../../utils'
-  import { submitTransaction } from '../../stellar/transactions'
+  import { submitTransaction } from '../../stellar/internal'
 
   export default {
     metaInfo: () => ({
@@ -344,6 +344,9 @@
           .then(account => {
             this.balances = account.balances
             this.loaded = true
+          })
+          .catch(() => {
+            flash(this.$store, 'Unable to load data', 'error')
           })
       },
 

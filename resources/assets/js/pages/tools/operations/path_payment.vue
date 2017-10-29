@@ -1,6 +1,6 @@
 <template>
     <div>
-        <table class="single-operation">
+        <table class="first-padding">
             <tr>
                 <td><b>From</b></td>
                 <td><span v-text="operation.from"></span></td>

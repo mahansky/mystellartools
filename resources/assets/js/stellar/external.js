@@ -10,7 +10,7 @@ switch (process.argv[2]) {
       secret_key: newKeypair.secret(),
     }))
 
-    break;
+    break
 
   default:
     const data = JSON.parse(process.argv[2])
@@ -21,11 +21,29 @@ switch (process.argv[2]) {
     transactions[data.action](keypair, data.data)
       .then((response) => {
         output = response
+        output.tx_success = 1
       })
       .catch((err) => {
         output = err
+        output.tx_success = 0
       })
       .then(() => {
-        console.log(JSON.stringify(output))
+        console.log(JSON.stringify(output, censor(output)))
       })
+}
+
+function censor (censor) {
+  let i = 0
+
+  return function (key, value) {
+    if (i !== 0 && typeof(censor) === 'object' && typeof(value) === 'object' && censor === value)
+      return '[Circular]'
+
+    if (i >= 10)
+      return '[Unknown]'
+
+    ++i
+
+    return value
+  }
 }

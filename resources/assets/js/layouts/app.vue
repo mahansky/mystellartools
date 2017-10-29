@@ -96,7 +96,7 @@
 
         <v-toolbar class="blue" dark fixed>
             <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
-            <v-toolbar-title>Interstellar.Tools</v-toolbar-title>
+            <v-toolbar-title>MyStellar.Tools</v-toolbar-title>
             <v-spacer></v-spacer>
             <div class="selected-account">
                 <span class="key ml-3" v-text="activeAccount"></span>
@@ -107,11 +107,11 @@
                     <v-icon>https</v-icon>
                 </v-btn>
             </div>
-            <v-btn icon @click.stop="openDialog">
+            <v-btn icon @click.stop="openDialog" v-tooltip:bottom="{ html: 'Settings' }">
                 <v-icon>settings</v-icon>
             </v-btn>
             <v-spacer></v-spacer>
-            <v-btn icon @click="logout">
+            <v-btn icon @click="logout" v-tooltip:bottom="{ html: 'Logout' }">
                 <v-icon>exit_to_app</v-icon>
             </v-btn>
         </v-toolbar>

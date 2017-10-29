@@ -69,6 +69,8 @@
   import payment from './operations/payment.vue'
   import set_options from './operations/set_options.vue'
   import { first, last, orderBy } from 'lodash'
+  import { flash } from '../../utils'
+  import { HorizonURL } from '../../stellar/index'
 
   export default {
     metaInfo: () => ({
@@ -122,7 +124,7 @@
     },
 
     methods: {
-      fetch (goNext = true) {
+      fetch: function (goNext = true) {
         let vm = this
 
         vm.loaded = false
@@ -139,12 +141,15 @@
           }
         }
 
-        axios.get('https://horizon.stellar.org/accounts/' + vm.$store.getters.keypair.publicKey() + '/operations', {
+        axios.get(HorizonURL + '/accounts/' + vm.$store.getters.keypair.publicKey() + '/operations', {
           params: this.parameters
         })
           .then(response => {
             vm.processResponse(response.data)
             vm.loaded = true
+          })
+          .catch(() => {
+            flash(this.$store, 'Unable to load data', 'error')
           })
       },
 

@@ -40,12 +40,12 @@ export const mutations = {
 // actions
 export const actions = {
   storeFlash ({commit}, payload) {
-    console.log(payload)
+    console.log('Incoming flash:', payload)
     commit(types.STORE_FLASH, payload)
 
     setTimeout(() => {
       commit(types.REMOVE_FLASH)
-    }, 6000)
+    }, 10000)
   },
 
   removeFlash ({commit}) {

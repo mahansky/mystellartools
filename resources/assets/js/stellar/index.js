@@ -4,6 +4,7 @@ export const Stellar = require('stellar-sdk')
 
 Stellar.Network.usePublicNetwork()
 export const HorizonURL = 'https://horizon.stellar.org'
+// export const HorizonURL = 'https://mystellar.tools:8000'
 export const StellarServer = new Stellar.Server(HorizonURL)
 
 // Stellar.Network.useTestNetwork()
@@ -13,8 +14,7 @@ export const ruleAccountIsValid = (input, allowFederation = true) => {
   let ok = false
 
   if (allowFederation) {
-    let domain = window.config.domain.replace('.', '\\.')
-    let regex = new RegExp('^.+\\*' + domain + '$')
+    let regex = new RegExp('^.+\\*mystellar\\.tools$')
 
     ok = regex.test(input)
   }

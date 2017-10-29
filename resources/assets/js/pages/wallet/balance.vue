@@ -91,7 +91,6 @@
       },
 
       publicKey () {
-        console.log('changing pubkey')
         return this.$store.getters.keypair ? this.$store.getters.keypair.publicKey() : null
       },
     },
@@ -146,7 +145,9 @@
     },
 
     beforeDestroy () {
-      this.eventSource()
+      if (this.eventSource) {
+        this.eventSource()
+      }
     },
   }
 </script>

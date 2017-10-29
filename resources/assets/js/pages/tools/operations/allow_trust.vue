@@ -1,6 +1,6 @@
 <template>
     <div>
-        <table class="single-operation">
+        <table class="first-padding">
             <tr>
                 <td><b>Trustee Account</b></td>
                 <td><span v-text="operation.trustee"></span></td>

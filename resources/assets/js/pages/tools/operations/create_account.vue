@@ -1,6 +1,6 @@
 <template>
     <div>
-        <table class="single-operation">
+        <table class="first-padding">
             <tr>
                 <td><b>Funder</b></td>
                 <td><span v-text="operation.funder"></span></td>

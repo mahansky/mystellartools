@@ -1,6 +1,6 @@
 <template>
     <div>
-        <table class="single-operation">
+        <table class="first-padding">
             <tr v-if="operation.signer_key">
                 <td><b>SIGNER_KEY</b></td>
                 <td><span v-text="operation.signer_key"></span></td>

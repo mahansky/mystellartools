@@ -86,6 +86,12 @@ class FederationController extends Controller
             return response(['detail' => 'Stellar address already taken.'], 409);
         }
 
+        if (! filter_var($data['stellar_address'], FILTER_VALIDATE_EMAIL)) {
+            if (! preg_match('/^[\w]+$/', $data['stellar_address'])) {
+                return response(['detail' => 'Invalid input'], 400);
+            }
+        }
+
         $address = Address::create($data);
 
         return response([
