@@ -46,8 +46,10 @@ class ClaimLumensEmail extends Notification
      */
     public function toMail($notifiable)
     {
-        return (new MailMessage)->markdown('emails.claim', [
-            'token' => $this->token,
-        ]);
+        return (new MailMessage)
+            ->subject('You have received Stellar Lumens (XLM)')
+            ->markdown('emails.claim', [
+                'token' => $this->token,
+            ]);
     }
 }
