@@ -32,7 +32,7 @@
             <v-layout class="mt-5">
                 <v-flex xs12 class="grey--text">
                     <div>
-                        This is just a temporary frontpage. We are working on a proper one with a clean, simple design and some documentation.
+                        This is just a temporary frontpage.
                         <br>
                         Use the form above to enter the application or create an account to log in.
                     </div>

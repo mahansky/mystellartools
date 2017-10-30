@@ -1,10 +1,10 @@
 <template>
   <div>
-    This is the end... <br>
+    Not Found<br>
     <br>
-    ...there is just one way to <a @click="$router.go(-1)">go back</a>. <br>
+    <a @click="$router.go(-1)">Back</a>
     <br>
-    well, there is always a <a @click="$router.push({name:'welcome'})">homepage</a>, right?
+    <a @click="$router.push({name:'welcome'})">Homepage</a>
   </div>
 </template>
 
