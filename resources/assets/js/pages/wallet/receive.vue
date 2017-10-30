@@ -119,7 +119,15 @@
         stellarAddress: null,
         addressRules: [
           (v) => !!v || 'Stellar address is required',
-          (v) => /^[\w]+$/.test(v) || 'Only alphanumeric characters are allowed',
+          (v) => {
+            if (! /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(v)) {
+              if (! /^[\w]+$/.test(v)) {
+                return 'Only emails or alphanumeric names are allowed'
+              }
+            }
+
+            return true
+          }
         ]
       }
     },

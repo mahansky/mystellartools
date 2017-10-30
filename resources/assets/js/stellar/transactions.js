@@ -51,12 +51,12 @@ export const transactions = {
     }), memo)
   },
 
-  addSigner: (keypair, {publicKey, weight}) => {
+  addSigner: (keypair, {signer, weight}) => {
     return _submitTx(keypair, Operation.setOptions({
-      signer: new xdr.Signer({
-        key: new xdr.SignerKey.signerKeyTypeEd25519(StrKey.decodeEd25519PublicKey(publicKey)),
-        weight,
-      })
+      signer: {
+        ed25519PublicKey: signer,
+        weight: weight,
+      },
     }))
   },
 

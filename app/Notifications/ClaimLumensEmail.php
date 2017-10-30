@@ -13,18 +13,18 @@ class ClaimLumensEmail extends Notification
     use Queueable;
 
     /**
-     * @var Email
+     * @var string
      */
-    public $email;
+    public $token;
 
     /**
      * Create a new notification instance.
      *
-     * @param Email $email
+     * @param string $token
      */
-    public function __construct(Email $email)
+    public function __construct($token)
     {
-        $this->email = $email;
+        $this->token = $token;
     }
 
     /**
@@ -46,6 +46,8 @@ class ClaimLumensEmail extends Notification
      */
     public function toMail($notifiable)
     {
-        return (new MailMessage)->markdown('emails.claim');
+        return (new MailMessage)->markdown('emails.claim', [
+            'token' => $this->token,
+        ]);
     }
 }

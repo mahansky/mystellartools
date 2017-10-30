@@ -33,6 +33,7 @@
 </template>
 
 <script>
+  import { Stellar } from '../stellar'
   import { mapGetters } from 'vuex'
   import * as utils from '../utils'
   import axios from 'axios'

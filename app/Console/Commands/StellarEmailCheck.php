@@ -58,12 +58,13 @@ class StellarEmailCheck extends Command
                 // Set him as signer
                 $this->stellar->addSignerToAccount($creator, $email->secret_key);
 
-                // Send email to owner
-                Notification::route('mail', $email->email)->notify(new ClaimLumensEmail($email));
-
+                // Generate token
                 $email->update([
                     'token' => str_random(32),
                 ]);
+
+                // Send email to owner
+                Notification::route('mail', $email->email)->notify(new ClaimLumensEmail($email->token));
             }
         });
     }

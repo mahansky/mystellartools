@@ -68,7 +68,9 @@ class FederationController extends Controller
         return response([
             'stellar_address' => $address->stellar_address . '*' . config('app.domain'),
             'account_id'      => $address->account_id,
-        ], 200);
+        ], 200, [
+            'Access-Control-Allow-Origin' => '*',
+        ]);
     }
 
     public function store()

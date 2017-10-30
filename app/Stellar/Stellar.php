@@ -31,7 +31,7 @@ class Stellar
      */
     public function generateKeypair()
     {
-        $data = exec(implode(' ', [
+        $data = shell_exec(implode(' ', [
             $this->exec,
             'generate',
         ]));
@@ -47,17 +47,17 @@ class Stellar
      */
     public function accountDetails($publicKey)
     {
-        $response = $this->http->get(sprintf(
-            self::HORIZON,
-            '/accounts/',
-            $publicKey
-        ));
+        try {
+            $response = $this->http->get(implode('', [
+                self::HORIZON,
+                '/accounts/',
+                $publicKey,
+            ]));
 
-        if ($response->getStatusCode() !== 200) {
+            return json_decode((string)$response->getBody(), true);
+        } catch (\Exception $exception) {
             return null;
         }
-
-        return json_decode((string)$response->getBody(), true);
     }
 
     /**
@@ -67,12 +67,12 @@ class Stellar
      */
     public function accountCreator($publicKey)
     {
-        $response = $this->http->get(sprintf(
+        $response = $this->http->get(implode('', [
             self::HORIZON,
             '/accounts',
             "/{$publicKey}",
-            '/payments'
-        ));
+            '/payments',
+        ]));
 
         $data = json_decode((string)$response->getBody(), true);
         $firstPayment = $data['_embedded']['records'][0];

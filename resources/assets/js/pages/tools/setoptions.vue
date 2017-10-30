@@ -342,22 +342,18 @@
           attributes.setFlags = this.calcFlags(this.setFlags)
 
           if (this.signerType) {
-            let weight = this.signerWeight
-            let key
+            let signerType
 
             if (this.signerType === 'ed25519') {
-              key = new xdr.SignerKey.signerKeyTypeEd25519(StrKey.decodeEd25519PublicKey(this.signer))
+              signerType = 'ed25519PublicKey'
+            } else if (this.signerType === 'txhash') {
+              signerType = 'preAuthTx'
+            } else if (this.signerType === 'sha256') {
+              signerType = 'sha256Hash'
             }
 
-            if (this.signerType === 'txhash') {
-              key = new xdr.SignerKey.signerKeyTypePreAuthTx(Buffer.from(this.signer, 'hex'))
-            }
-
-            if (this.signerType === 'sha256') {
-              key = new xdr.SignerKey.signerKeyTypeHashX(Buffer.from(this.signer, 'hex'))
-            }
-
-            attributes.signer = new xdr.Signer({key, weight})
+            attributes.signer[signerType] = this.signer
+            attributes.signer.weight = this.signerWeight
           }
 
           submitTransaction('setOptions', attributes)
