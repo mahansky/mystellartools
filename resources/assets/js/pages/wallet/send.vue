@@ -126,7 +126,8 @@
                                     </td>
                                 </tr>
                             </table>
-                            <p class="grey--text">Every transaction costs extra <span v-html="amountFormat('0.0000100')"></span> XLM</p>
+                            <p class="grey--text">Every transaction costs extra <span
+                                    v-html="amountFormat('0.0000100')"></span> XLM</p>
 
                             <v-layout row wrap v-if="memo">
                                 <v-flex xs12>
@@ -214,6 +215,7 @@
   import BigNumber from 'bignumber.js'
   import { flash } from '../../utils'
   import { forEach } from 'lodash'
+  import { submitTransaction } from '../../stellar/internal'
 
   export default {
     metaInfo: () => ({
@@ -341,118 +343,119 @@
       verifyPayment () {
         let vm = this
 
-        StellarServer.loadAccount(this.$store.getters.keypair.publicKey())
-          .then(account => {
-            vm.loadedAccount = account
+        this.resolveAccountIdFromRecipient(this.recipient)
+          .then(({account_id}) => {
+            this.resolvedRecipient = account_id
 
-            let minimumBalance = 20 + (account.subentry_count) * 10
-            let nativeBalance = _(account.balances).find(balance => balance.asset_type === 'native').balance
-            let maxSend = new BigNumber(nativeBalance).minus(minimumBalance)
+            return StellarServer.loadAccount(this.$store.getters.keypair.publicKey())
+              .then(account => {
+                vm.loadedAccount = account
 
-            this.balance = nativeBalance
+                let selectedAsset = this.asset
+                let minimumNativeBalance = 20 + (account.subentry_count) * 10
+                let balance = _(account.balances).find(balance => {
+                  if (selectedAsset === 'XLM') {
+                    return balance.asset_type === 'native'
+                  }
 
-            if (maxSend.lt(new BigNumber(this.amount))) {
-              throw 'InsufficientBalanceError'
-            }
-          })
-          .then(() => {
-            this.resolvedRecipient = this.resolveAccountIdFromRecipient(this.recipient)
-          })
-          .then(() => {
-            if (new BigNumber(this.amount).gte(20)) {
-              return
-            }
+                  return balance.asset_code === selectedAsset
+                }).balance
 
-            return StellarServer.accounts()
-              .accountId(this.resolvedRecipient)
-              .call()
-              .catch(err => {
-                if (err.name === 'NotFoundError') {
-                  throw 'DestinationAccountNotExistError'
+                this.balance = balance
+
+                if (selectedAsset === 'XLM') {
+                  let maxSend = new BigNumber(balance).minus(minimumNativeBalance)
+
+                  if (maxSend.lt(new BigNumber(this.amount))) {
+                    throw new Error('InsufficientBalanceError')
+                  }
                 }
               })
+              .then(() => {
+                if (this.asset === 'XLM') {
+                  if (new BigNumber(this.amount).gte(20)) {
+                    return
+                  }
+
+                  return StellarServer.accounts()
+                    .accountId(this.resolvedRecipient)
+                    .call()
+                    .catch(err => {
+                      if (err.name === 'NotFoundError') {
+                        throw new Error('DestinationAccountNotExistError')
+                      }
+                    })
+                }
+              })
+              .then(() => {
+                vm.isVerifying = false
+              })
+              .catch(err => {
+                flash(vm.$store, err, 'error')
+              })
           })
-          .then(() => {
-            vm.isVerifying = false
-          })
-          .catch(err => {
-            flash(vm.$store, err, 'error')
+          .catch((err) => {
+            flash(this.$store, err, 'error')
           })
       },
 
-      async resolveAccountIdFromRecipient (recipient) {
+      resolveAccountIdFromRecipient (recipient) {
         if (StrKey.isValidEd25519PublicKey(recipient)) {
-          return recipient
+          return Promise.resolve({account_id: recipient})
         }
 
         if (recipient.indexOf('*') === -1) {
           recipient = recipient + '*mystellar.tools'
         }
 
-        let {accountId} = await FederationServer.resolve(recipient)
-
-        if (!accountId) {
-          throw 'Federation lookup failed'
-        }
-
-        return accountId
+        return FederationServer.resolve(recipient)
       },
 
       clickedSend () {
         this.isSending = true
 
-        let asset
+        let code, issuer
 
         if (this.asset === 'XLM') {
-          asset = Asset.native()
+          code = 'XLM'
+          issuer = null
         } else {
-          asset = new Asset(this.asset, this.$store.getters.keypair.publicKey())
+          code = this.asset
+          issuer = this.$store.getters.keypair.publicKey()
         }
 
         StellarServer.accounts()
           .accountId(this.resolvedRecipient)
           .call()
           .then(() => {
-            let operation = Operation.payment({
+            return submitTransaction('payment', {
               destination: this.resolvedRecipient,
-              asset,
+              code,
+              issuer,
               amount: this.amount,
+              memo: this.memo ? this.resolvedMemo : undefined,
             })
-
-            return this.submitTransaction(operation)
           })
           .then(() => {
             this.$router.push({name: 'payments'})
           })
           .catch(err => {
-            if (err.name === 'NotFoundError') {
-              let operation = Operation.createAccount({
+            if (err.name === 'NotFoundError' && this.asset === 'XLM') {
+              return submitTransaction('createAccount', {
                 destination: this.resolvedRecipient,
                 startingBalance: this.amount,
+                memo: this.memo ? this.resolvedMemo : undefined,
               })
-
-              return this.submitTransaction(operation)
-            } else {
-              flash(this.$store, err, 'error')
             }
+
+            throw err
           })
           .catch(err => {
             flash(this.$store, err, 'error')
           })
-      },
-
-      submitTransaction (operation) {
-        let transaction = new TransactionBuilder(this.loadedAccount).addOperation(operation)
-
-        if (this.memo) {
-          transaction.addMemo(this.resolvedMemo)
-        }
-
-        transaction = transaction.build()
-
-        transaction.sign(this.$store.getters.keypair)
-
-        return StellarServer.submitTransaction(transaction)
+          .then(() => {
+            this.isSending = false
+          })
       },
 
       setAsset () {

@@ -290,6 +290,8 @@
                   },
                 }).then(response => {
                   this.homeDomainStellarAddress = response.data.stellar_address
+                }).catch(() => {
+                  this.homeDomainStellarAddress = ''
                 })
               })
               .catch(err => {

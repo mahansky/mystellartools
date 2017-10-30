@@ -10,7 +10,7 @@
                             </v-toolbar-title>
                         </v-toolbar>
                         <v-card-text>
-                            <v-form ref="anchorForm" v-model="anchorFormValid" lazy-validation>
+                            <v-form ref="anchorForm" v-model="anchorFormValid" lazy-validation @submit.prevent="">
                                 <v-layout row>
                                     <v-flex xs10>
                                         <v-text-field
@@ -184,9 +184,9 @@
                 </v-flex>
             </v-layout>
 
-            <v-btn info loading flat v-if="!loaded"></v-btn>
-            <v-layout v-if="loaded && trustlines.length > 0">
-                <v-flex xs12>
+            <v-layout>
+                <v-btn info loading flat v-if="!loaded"></v-btn>
+                <v-flex xs12 v-if="loaded && trustlines.length > 0">
                     <div class="subheader">Trustlines</div>
 
                     <v-data-table
@@ -324,9 +324,8 @@
 
       submitTx (code, issuer, limit) {
         let vm = this
-        let asset = new Asset(code, issuer)
 
-        return submitTransaction('updateTrustline', {asset, limit})
+        return submitTransaction('updateTrustline', {code, issuer, limit})
           .then(() => {
             flash(vm.$store, 'Trustline updated', 'success')
 

@@ -140,6 +140,7 @@
                                     flat
                                     :class="{'blue--text': valid, 'red--text': !valid}"
                                     @click="setOptions"
+                                    :loading="isLoading"
                             >
                                 Set
                             </v-btn>
@@ -205,6 +206,7 @@
 
     data () {
       return {
+        isLoading: false,
         valid: false,
 
         masterWeight: '',
@@ -314,6 +316,8 @@
     methods: {
       setOptions () {
         if (this.$refs.form.validate()) {
+          this.isLoading = true
+
           let attributes = {}
 
           if (this.masterWeight)
@@ -358,10 +362,15 @@
 
           submitTransaction('setOptions', attributes)
             .then(() => {
-              flash(this.$store, 'Success!', 'success')
+              this.$router.push({name: 'account'})
+
+              flash(this.$store, 'Options updated', 'success')
             })
             .catch((err) => {
               flash(this.$store, err, 'error')
+            })
+            .then(() => {
+              this.isLoading = false
             })
         }
       },

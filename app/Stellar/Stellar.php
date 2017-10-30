@@ -8,17 +8,20 @@ class Stellar
 {
     const HORIZON = 'https://horizon.stellar.org';
 
-    const STELLAR_JS = '/Users/mprom/Code/interstellar/public/stellar.js';
-    const EXEC = '/usr/local/bin/node ' . self::STELLAR_JS;
-
     /**
      * @var Client
      */
     protected $http;
 
+    /**
+     * @var string
+     */
+    protected $exec;
+
     public function __construct(Client $http)
     {
         $this->http = $http;
+        $this->exec = config('stellar.node_path') . ' ' . config('stellar.stellar_path');
     }
 
     /**
@@ -29,7 +32,7 @@ class Stellar
     public function generateKeypair()
     {
         $data = exec(implode(' ', [
-            self::EXEC,
+            $this->exec,
             'generate',
         ]));
 
@@ -104,12 +107,13 @@ class Stellar
     public function submit($secretKey, $action, $data)
     {
         $command = implode(' ', [
-            self::EXEC,
+            $this->exec,
             escapeshellarg(json_encode([
                 'action' => $action,
                 'secret' => $secretKey,
                 'data'   => $data,
             ])),
+            '2>&1',
         ]);
 
         $response = trim(shell_exec($command));

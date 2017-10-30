@@ -17,14 +17,22 @@
                                     <small class="grey--text">{{ props.item.from }}</small>
                                 </template>
                                 <template v-else>
-                                    <span>{{ props.item.from }}</span>
+                                    <template v-if="props.item.type === 'payment'">
+                                        <span v-if="isIncoming(props.item)" v-text="props.item.from"></span>
+                                        <span v-if="!isIncoming(props.item)" v-text="props.item.to"></span>
+                                    </template>
+                                    <template v-if="props.item.type === 'create_account'">
+                                        <span v-text="props.item.account"></span>
+                                    </template>
                                 </template>
                             </td>
                             <td class="text-xs-right">
                                 <span :class="isIncoming(props.item) ? 'green--text' : 'red--text'">
                                     <template v-if="isIncoming(props.item)">+</template>
                                     <template v-if="!isIncoming(props.item)">-</template>
-                                    <span v-html="amountFormat(props.item.amount)"></span>
+
+                                    <span v-html="amountFormat(props.item.amount)" v-if="props.item.from !== props.item.to"></span>
+                                    <span v-else>0</span>
                                 </span>
                                 <span v-if="props.item.asset_code" v-text="props.item.asset_code"></span>
                                 <span v-else v-text="'XLM'"></span>

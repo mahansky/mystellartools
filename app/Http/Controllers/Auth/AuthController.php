@@ -54,7 +54,10 @@ class AuthController extends Controller
             'password' => 'required|min:6|confirmed',
         ]);
 
-        $user = User::create($data);
+        $userdata = $data;
+        $userdata['password'] = bcrypt($data['password']);
+
+        $user = User::create($userdata);
 
         $response = $this->oAuthLogin($data);
 
@@ -71,7 +74,7 @@ class AuthController extends Controller
                     'client_secret' => config('auth.client_secret'),
                     'username'      => $data['email'],
                     'password'      => $data['password'],
-                ]
+                ],
             ]);
         } catch (\Exception $exception) {
             return [

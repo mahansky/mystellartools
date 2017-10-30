@@ -49,9 +49,9 @@
                 </v-flex>
             </v-layout>
 
-            <v-btn info loading flat v-if="!loaded"></v-btn>
-            <v-layout row wrap v-if="loaded && items.length > 0">
-                <v-flex xs12>
+            <v-layout row wrap>
+                <v-btn info loading flat v-if="!loaded"></v-btn>
+                <v-flex xs12 v-if="loaded && items.length > 0">
                     <div class="subheader">DataEntries</div>
 
                     <v-data-table

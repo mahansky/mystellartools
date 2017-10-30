@@ -5,7 +5,17 @@ const mix = require('laravel-mix')
 // STELLAR NODEJS MIX
 
 if (process.argv.indexOf('--config=stellar.webpack.mix.js') !== -1) {
+  console.log('Building Stellar');
+
   mix.js('resources/assets/js/stellar/external.js', 'stellar.js')
+
+  mix.options({
+    uglify: {
+      compress: {
+        drop_console: false,
+      },
+    },
+  })
 
   mix.webpackConfig({
     target: 'node',

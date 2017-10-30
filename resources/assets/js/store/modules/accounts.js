@@ -6,7 +6,6 @@ import { Stellar } from '../../stellar'
 // state
 export const state = {
   accounts: null,
-  currentAccount: null,
 }
 
 // mutations
@@ -15,8 +14,8 @@ export const mutations = {
     state.accounts = accounts
   },
 
-  [types.STORE_CURRENT_ACCOUNT] (state, {account}) {
-    state.currentAccount = account
+  [types.REMOVE_ACCOUNTS] (state) {
+    state.accounts = null
   },
 }
 
@@ -41,14 +40,12 @@ export const actions = {
     commit(types.STORE_ACCOUNTS, payload)
   },
 
-  storeCurrentAccount ({commit}, payload) {
-    commit(types.STORE_CURRENT_ACCOUNT, payload)
+  removeAccounts ({commit}) {
+    commit(types.REMOVE_ACCOUNTS)
   },
 }
 
 // getters
 export const getters = {
   accounts: state => state.accounts,
-  hasAccounts: state => state.accounts ? state.accounts.length > 0 : false,
-  currentAccount: state => state.currentAccount,
 }

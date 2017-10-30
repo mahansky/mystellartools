@@ -210,6 +210,7 @@
 
     methods: {
       logout () {
+        this.$store.dispatch('removeAccounts')
         this.$store.dispatch('removeKeypair')
         this.$store.dispatch('logout')
         this.$router.push({name: 'welcome'})
