@@ -278,10 +278,12 @@
     created () {
       StellarServer.loadAccount(this.$store.getters.keypair.publicKey())
         .then(account => {
+          let promises = []
+
           this.account = account
 
           if (account.home_domain) {
-            return Stellar.StellarTomlResolver.resolve(account.home_domain)
+            promises.push(Stellar.StellarTomlResolver.resolve(account.home_domain)
               .then(toml => {
                 return axios.get(toml.FEDERATION_SERVER, {
                   params: {
@@ -292,6 +294,8 @@
                   this.homeDomainStellarAddress = response.data.stellar_address
                 }).catch(() => {
                   this.homeDomainStellarAddress = ''
+                }).then(() => {
+                  this.homeDomainStellarAddressLoading = false
                 })
               })
               .catch(err => {
@@ -299,12 +303,12 @@
               })
               .then(() => {
                 this.homeDomainStellarAddressLoading = false
-              })
+              }))
           } else {
             this.homeDomainStellarAddressLoading = false
           }
 
-          axios.get('/api/federation', {
+          promises.push(axios.get('/api/federation', {
             params: {
               q: account.id,
               type: 'id',
@@ -315,7 +319,9 @@
             this.stellarAddress = ''
           }).then(() => {
             this.stellarAddressLoading = false
-          })
+          }))
+
+          return Promise.all(promises)
         })
         .catch(() => {
           flash(this.$store, 'Unable to load data', 'error')

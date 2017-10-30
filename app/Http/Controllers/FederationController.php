@@ -17,6 +17,8 @@ class FederationController extends Controller
      */
     public function show(Stellar $stellar)
     {
+        $headers = ['Access-Control-Allow-Origin' => '*'];
+
         $validator = Validator::make(request()->all(), [
             'q'    => 'required',
             'type' => 'required|in:name,id',
@@ -25,7 +27,7 @@ class FederationController extends Controller
         if ($validator->fails()) {
             return response([
                 'detail' => 'Invalid request'
-            ], 400);
+            ], 400, $headers);
         }
 
         // If this is a name->account_id lookup
@@ -62,15 +64,13 @@ class FederationController extends Controller
         if ( ! $address) {
             return response([
                 'detail' => 'Not found.'
-            ], 404);
+            ], 404, $headers);
         }
 
         return response([
             'stellar_address' => $address->stellar_address . '*' . config('app.domain'),
             'account_id'      => $address->account_id,
-        ], 200, [
-            'Access-Control-Allow-Origin' => '*',
-        ]);
+        ], 200, $headers);
     }
 
     public function store()
