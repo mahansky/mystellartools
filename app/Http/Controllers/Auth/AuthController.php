@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\User;
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -115,5 +116,29 @@ class AuthController extends Controller
         }
 
         return json_decode((string)$response->getBody(), true) + ['success' => true];
+    }
+
+    public function changePassword()
+    {
+        $data = request()->validate([
+            'current' => 'required',
+            'new' => 'required|min:6',
+        ]);
+
+        if (! Hash::check($data['current'], auth()->user()->password)) {
+            return response([
+                'success' => false,
+                'message' => 'Invalid password',
+            ], 400);
+        }
+
+        auth()->user()->update([
+            'password' => bcrypt($data['new']),
+        ]);
+
+        return $this->oAuthLogin([
+            'email' => auth()->user()->email,
+            'password' => $data['new'],
+        ]);
     }
 }

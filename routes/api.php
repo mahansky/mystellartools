@@ -27,6 +27,8 @@ Route::post('refresh', 'Auth\AuthController@refresh');
 
 Route::group(['middleware' => 'auth:api'], function () {
 
+    Route::post('change-password', 'Auth\AuthController@changePassword');
+
     Route::get('user', 'UserController');
 
     Route::get('accounts', 'AccountController@index');

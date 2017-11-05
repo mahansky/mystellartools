@@ -37,7 +37,7 @@
                         Use the form above to enter the application or create an account to log in.
                     </div>
                     <div>
-                        Don't forget to respond to the original thread and leave some suggestions on how to improve the application.
+                        Don't forget to respond to the original <a href="https://galactictalk.org/d/530-mystellar-tools-stellar-wallet-and-tools-to-operate-with-stellar-network" target="_blank" rel="noreferrer nofollow">thread</a> and leave some suggestions on how to improve the application.
                     </div>
                     <div><a href="mailto:contact@mystellar.tools">contact@mystellar.tools</a></div>
                 </v-flex>

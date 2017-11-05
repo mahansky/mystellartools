@@ -9,3 +9,18 @@
     flex-grow: 0.3 !important;
   }
 }
+
+.settings-toolbar {
+  .toolbar__title {
+    overflow: inherit;
+  }
+
+  .tabs__bar {
+    height: 100%;
+
+    .tabs__slider {
+      height: 4px;
+      background-color: #fafafa;
+    }
+  }
+}
