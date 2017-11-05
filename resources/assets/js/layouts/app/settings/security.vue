@@ -45,16 +45,68 @@
             </v-flex>
             <v-flex lg6>
                 <v-card-text>
-                    <b>Enable Two-factor authentication</b>
-                    <p>
-                        To improve security of your account, you can enable 2FA.
-                        You will be asked to provide auth code on your next login.
-                        Code can be obtained from
-                        <a
-                                href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2"
-                                target="_blank" rel="noreferrer nofollow"
-                        >Google Authenticator</a>.
-                    </p>
+                    <v-btn flat info loading v-if="twoFactorLoading"></v-btn>
+                    <template v-if="!twoFactorLoading">
+                        <b>Two-factor authentication</b>
+                        <template v-if="twoFactorEnabled">
+                            <v-btn flat danger @click="disable2FA">Disable</v-btn>
+                        </template>
+
+                        <template v-if="!twoFactorEnabled">
+                            <p>
+                                To improve security of your account, you can enable 2FA.
+                                You will be asked to provide auth code on your next login.
+                                Code can be obtained from
+                                <a
+                                        href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2"
+                                        target="_blank" rel="noreferrer nofollow"
+                                >Google Authenticator</a> or compatible apps.
+                            </p>
+                            <v-layout row v-if="!twoFactorShow">
+                                <v-spacer></v-spacer>
+                                <v-btn flat info @click.stop="twoFactorShow = true">Proceed</v-btn>
+                            </v-layout>
+                            <v-card class="white" v-if="twoFactorShow">
+                                <v-form v-model="twoFactorValid" ref="twoFactorRef">
+                                    <v-container fluid grid-list-lg>
+                                        <v-layout row>
+                                            <v-flex md3>
+                                                <v-card-media
+                                                        :src="imageUrl"
+                                                        height="125px"
+                                                        contain
+                                                ></v-card-media>
+                                            </v-flex>
+                                            <v-flex md9>
+                                                <div>
+                                                    <p>
+                                                        Scan this QR code with your Google Authenticator compatible app
+                                                        and enter the 6 digit code you will get.
+                                                    </p>
+                                                    <v-text-field
+                                                            label="6 digit code from the app"
+                                                            v-model="secret"
+                                                            :rules="secretRules"
+                                                    ></v-text-field>
+                                                </div>
+                                            </v-flex>
+                                        </v-layout>
+                                    </v-container>
+                                    <v-card-actions>
+                                        <v-spacer></v-spacer>
+                                        <v-btn
+                                                flat
+                                                info
+                                                @click="enable2FA"
+                                                :class="{'blue--text': twoFactorValid, 'red--text': !twoFactorValid}"
+                                        >
+                                            Enable
+                                        </v-btn>
+                                    </v-card-actions>
+                                </v-form>
+                            </v-card>
+                        </template>
+                    </template>
                 </v-card-text>
             </v-flex>
         </v-layout>
@@ -76,7 +128,16 @@
           newPasswordAgain: '',
           passwordRules: [(v) => (!!v && v.length > 5) || 'Password must have at least 6 characters'],
           samePasswordRules: [(v) => (v === this.changePw.newPassword) || 'Passwords must be the same'],
-        }
+        },
+
+        twoFactorLoading: true,
+        twoFactorEnabled: false,
+        twoFactorShow: false,
+        twoFactorValid: false,
+
+        secret: '',
+        secretRules: [(v) => (!!v && v.length === 6) || 'Enter 6 digits'],
+        imageUrl: '',
       }
     },
 
@@ -99,13 +160,62 @@
               accessToken: response.data.access_token,
               refreshToken: response.data.refresh_token,
             })
-            
+
             flash(this.$store, 'Password changed', 'success')
           }).catch((err) => {
             flash(this.$store, err, 'error')
           })
         }
       },
+
+      enable2FA () {
+        if (this.$refs.twoFactorRef.validate()) {
+          this.twoFactorLoading = true
+
+          axios.get('/api/2fa/enable', {
+            secret: this.secret,
+          })
+            .catch(err => {
+              this.twoFactorEnabled = false
+
+              flash(this.$store, err, 'error')
+            })
+            .then(() => {
+              this.twoFactorLoading = false
+            })
+        }
+      },
+
+      disable2FA () {
+        this.twoFactorLoading = true
+
+        axios.get('/api/2fa/disable')
+          .catch(err => {
+            this.twoFactorEnabled = true
+
+            flash(this.$store, err, 'error')
+          })
+          .then(() => {
+            this.twoFactorLoading = false
+          })
+      },
+    },
+
+    created () {
+      axios.get('/api/2fa/check')
+        .then(response => {
+          this.twoFactorEnabled = response.data.enabled
+
+          if (!this.twoFactorEnabled) {
+            this.imageUrl = response.data.image_url
+          }
+        })
+        .catch(err => {
+          flash(this.$store, err, 'error')
+        })
+        .then(() => {
+          this.twoFactorLoading = false
+        })
     },
   }
 </script>

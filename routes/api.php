@@ -38,4 +38,8 @@ Route::group(['middleware' => 'auth:api'], function () {
 
     Route::post('transactions', 'TransactionController');
 
+    Route::get('2fa/check', 'Auth\TwoFactorAuthController@check');
+    Route::get('2fa/enable', 'Auth\TwoFactorAuthController@enable');
+    Route::get('2fa/disable', 'Auth\TwoFactorAuthController@disable');
+
 });

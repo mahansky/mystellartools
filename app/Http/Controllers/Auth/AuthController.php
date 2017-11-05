@@ -24,17 +24,27 @@ class AuthController extends Controller
         $data = request()->validate([
             'email'    => 'required',
             'password' => 'required',
+            'secret'   => 'nullable',
         ]);
 
         $response = $this->oAuthLogin($data);
 
-        if ($response['success']) {
-            $user = User::whereEmail($data['email'])->first();
-
-            return response()->json(['user' => $user] + $response, 200);
+        if (! $response['success']) {
+            return response()->json($response, 400);
         }
 
-        return response()->json($response, 400);
+        $user = User::whereEmail($data['email'])->first();
+
+        if ($user->google2fa) {
+            if (! app('2FA')->verifyKey($user->google2fa, $data['secret'])) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid secret key (Two-factor auth)',
+                ], 400);
+            }
+        }
+
+        return response()->json(['user' => $user] + $response, 200);
     }
 
     public function refresh()
