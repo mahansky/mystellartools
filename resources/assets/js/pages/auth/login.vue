@@ -21,6 +21,11 @@
                             v-model="password"
                             :rules="passwordRules"
                     ></v-text-field>
+                    <v-text-field
+                            label="2FA Secret"
+                            v-model="secret"
+                            :rules="secretRules"
+                    ></v-text-field>
                     <v-btn @click="login">Login</v-btn>
                 </v-form>
                 <router-link :to="{name: 'welcome'}">Back to homepage</router-link>
@@ -47,6 +52,8 @@
         emailRules: [(v) => /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(v) || 'Invalid email'],
         password: '',
         passwordRules: [(v) => !!v || 'Password is required'],
+        secret: '',
+        secretRules: [(v) => (!v || (!!v && v.length === 6)) || '6 digits or nothing if 2FA is disabled'],
       }
     },
 
@@ -56,6 +63,7 @@
           axios.post('/api/login', {
             email: this.email,
             password: this.password,
+            secret: this.secret ? this.secret : null,
           }).then((response) => {
             this.$store.dispatch('storeAuth', {
               user: response.data.user,
