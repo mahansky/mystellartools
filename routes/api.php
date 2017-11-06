@@ -19,6 +19,9 @@ Route::post('register', 'Auth\AuthController@register');
 Route::post('login', 'Auth\AuthController@login');
 Route::post('refresh', 'Auth\AuthController@refresh');
 
+Route::post('password/send', 'Auth\PasswordResetController@send');
+Route::post('password/reset', 'Auth\PasswordResetController@reset');
+
 /*
 | --------------------------------------------------------------------------
 | Member routes

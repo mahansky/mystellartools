@@ -28,6 +28,8 @@
                     ></v-text-field>
                     <v-btn @click="login">Login</v-btn>
                 </v-form>
+                <router-link :to="{name: 'password'}">Forgotten password</router-link>
+                <br>
                 <router-link :to="{name: 'welcome'}">Back to homepage</router-link>
             </v-flex>
         </v-layout>

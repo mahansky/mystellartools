@@ -21,6 +21,7 @@ export default ({ keypairGuard, keypairCanSignGuard, guestGuard }) => [
   ...guestGuard([
     { path: '/login', name: 'login', component: require('~/pages/auth/login.vue') },
     { path: '/register', name: 'register', component: require('~/pages/auth/register.vue') },
+    { path: '/password', name: 'password', component: require('~/pages/auth/password.vue') },
   ]),
 
   { path: '*', component: require('~/pages/errors/404.vue') }
