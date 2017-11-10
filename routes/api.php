@@ -45,4 +45,8 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('2fa/enable', 'Auth\TwoFactorAuthController@enable');
     Route::get('2fa/disable', 'Auth\TwoFactorAuthController@disable');
 
+    Route::get('contacts', 'ContactController@index');
+    Route::post('contacts', 'ContactController@store');
+    Route::delete('contacts/{id}', 'ContactController@destroy');
+
 });
