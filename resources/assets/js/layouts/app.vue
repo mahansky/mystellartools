@@ -164,6 +164,7 @@
   import Settings from './app/settings.vue'
   import axios from 'axios'
   import { flash } from '../utils'
+  import * as utils from '../utils'
 
   export default {
     name: 'app-layout',
@@ -210,9 +211,7 @@
 
     methods: {
       logout () {
-        this.$store.dispatch('removeAccounts')
-        this.$store.dispatch('removeKeypair')
-        this.$store.dispatch('logout')
+        utils.logout()
         this.$router.push({name: 'welcome'})
       },
 

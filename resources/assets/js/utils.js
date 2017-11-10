@@ -1,3 +1,5 @@
+import store from './store'
+
 export function flash (store, message, type) {
   store.dispatch('storeFlash', {
     message,
@@ -18,4 +20,10 @@ export function getQueryParameter (name, url) {
   if (!results[2]) return ''
 
   return decodeURIComponent(results[2].replace(/\+/g, ' '))
+}
+
+export function logout () {
+  store.dispatch('removeAccounts')
+  store.dispatch('removeKeypair')
+  store.dispatch('logout')
 }

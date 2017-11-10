@@ -46,6 +46,7 @@
   import { TransactionBuilder, Operation, Keypair } from 'stellar-sdk'
   import { flash } from '../../utils'
   import { submitTransaction } from '../../stellar/internal'
+  import * as utils from '../../utils'
 
   export default {
     metaInfo: () => ({
@@ -68,9 +69,7 @@
 
           submitTransaction('mergeAccounts', {destination: this.destination})
             .then(() => {
-              this.$store.dispatch('removeAccounts')
-              this.$store.dispatch('removeKeypair')
-              this.$store.dispatch('logout')
+              utils.logout()
               this.$router.push({name: 'welcome'})
             })
             .catch((err) => {
