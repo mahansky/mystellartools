@@ -18,3 +18,7 @@ export const REMOVE_FLASH = 'REMOVE_FLASH'
 // accounts.js
 export const STORE_ACCOUNTS = 'STORE_ACCOUNTS'
 export const REMOVE_ACCOUNTS = 'REMOVE_ACCOUNTS'
+
+// contacts.js
+export const STORE_CONTACTS = 'STORE_CONTACTS'
+export const REMOVE_CONTACTS = 'REMOVE_CONTACTS'

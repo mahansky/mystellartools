@@ -95,7 +95,6 @@
     data () {
       return {
         loaded: false,
-        dataset: [],
         headers: [
           {text: 'Name', value: 'name', align: 'left'},
           {text: 'Public key', value: 'public_key', align: 'left'},
@@ -146,7 +145,7 @@
 
     computed: {
       contacts () {
-        return map(this.dataset, (contact) => {
+        return map(this.$store.getters.contacts, (contact) => {
           Vue.set(contact, 'isDeleteLoading', false)
 
           return contact
@@ -177,7 +176,7 @@
 
         axios.get('/api/contacts')
           .then(response => {
-            this.dataset = response.data
+            this.$store.dispatch('storeContacts', response.data)
           })
           .catch(err => {
             flash(this.$store, err, 'error')
@@ -222,7 +221,7 @@
             flash(this.$store, err, 'error')
           }).then(() => {
             this.contactForm.isLoading = false
-            
+
             return this.fetch()
           })
         }
