@@ -16,6 +16,8 @@
                                         label="Recipient"
                                         :rules="recipientRules"
                                         v-model="recipient"
+                                        :append-icon="authCheck ? 'supervisor_account' : null"
+                                        :append-icon-cb="openContacts"
                                 ></v-text-field>
 
                                 <v-layout row>
@@ -167,6 +169,9 @@
                     <p>
                         <u>Public key</u> (address) of Stellar account or <u>any email address</u>.
                     </p>
+                    <p v-if="authCheck">
+                        Clicking on the icon on the right side of the input opens up your contact list.
+                    </p>
                     <p>
                         If you enter an email, that hasn't received any assets in the past, recipient will get a message with information on how to access his new assets.
                         If he doesn't claim them, you can <a href="#">revert the process</a>.
@@ -188,24 +193,39 @@
                             target="_blank" rel="noreferrer nofollow">documentation</a>.
                     </p>
                 </v-flex>
-                <!--<v-flex lg8 md12>-->
-                <!--<v-text-field v-model="contactsSearch" label="Search contacts" hide-details class="mt-5"></v-text-field>-->
-
-                <!--<v-data-table-->
-                <!--:headers="contactsHeaders"-->
-                <!--:search="contactsSearch"-->
-                <!--:items="contacts"-->
-                <!--hide-actions-->
-                <!--class="elevation-1 mt-3"-->
-                <!--&gt;-->
-                <!--<template slot="items" scope="props">-->
-                <!--<td>{{ props.item.name }}</td>-->
-                <!--<td>{{ props.item.key }}</td>-->
-                <!--</template>-->
-                <!--</v-data-table>-->
-                <!--</v-flex>-->
             </v-layout>
         </v-container>
+
+        <v-dialog v-model="contactsSelector" lazy absolute>
+            <v-card>
+                <v-card-text>
+                    <v-text-field
+                            v-model="contactsSearch"
+                            label="Search contacts"
+                            hide-details
+                    ></v-text-field>
+                </v-card-text>
+                <v-data-table
+                        :headers="contactsHeaders"
+                        :items="contacts"
+                        :search="contactsSearch"
+                        hide-actions
+                        class="elevation-1 mt-2"
+                >
+                    <template slot="items" scope="props">
+                        <td class="pt-2 pb-2">
+                            <div v-text="props.item.name"></div>
+                            <div v-text="props.item.public_key" class="grey--text text--darken-2"></div>
+                            <div v-if="props.item.memo_type">
+                                <span v-text="'MEMO_' + props.item.memo_type.toUpperCase() + ': '"></span>
+                                <span v-text="props.item.memo"></span>
+                            </div>
+                            <a href="#" @click.prevent.stop="selectContact(props.item)">Select</a>
+                        </td>
+                    </template>
+                </v-data-table>
+            </v-card>
+        </v-dialog>
     </main>
 </template>
 
@@ -294,22 +314,22 @@
         assetTypes: ['XLM'],
         assetRules: [(v) => (!!v && v.length > 0 && v.length <= 12) || 'Asset code is required, max 12 characters'],
 
-//        contactsSearch: '',
-//        contactsHeaders: [
-//          { text: 'Name', value: 'name', align: 'left' },
-//          { text: 'Address', value: 'key', align: 'left' },
-//        ],
-//        contacts: [
-//          {
-//            name: 'John Doe',
-//            key: 'GDP4SJE5Y5ODX627DO2F7ZNBAPVXRFHKKR3W4UJ6I4XMW3S3OH2XRWYD'
-//          },
-//          {
-//            name: 'Julia Clark',
-//            key: 'GDP4SJE5Y5ODX627DO2F7ZNBAPVXRFHKKR3W4UJ6I4XMW3S3OH2XRWYD'
-//          }
-//        ],
+        contactsSelector: false,
+        contactsSearch: '',
+        contactsHeaders: [
+          { text: 'Contacts', value: '', align: 'left', sortable: false },
+        ],
       }
+    },
+
+    computed: {
+      contacts () {
+        return this.$store.getters.contacts
+      },
+
+      authCheck () {
+        return this.$store.getters.authCheck
+      },
     },
 
     watch: {
@@ -472,6 +492,26 @@
 
       newBigNumber (value) {
         return new BigNumber(value)
+      },
+
+      openContacts () {
+        this.contactsSelector = true
+      },
+
+      selectContact (contact) {
+        this.contactsSelector = false
+
+        this.recipient = contact.public_key
+
+        if (contact.memo_type) {
+          this.memo = true
+          this.memoType = 'MEMO_' + contact.memo_type.toUpperCase()
+          this.memoValue = contact.memo
+        } else {
+          this.memo = false
+          this.memoType = ''
+          this.memoValue = ''
+        }
       },
     },
 

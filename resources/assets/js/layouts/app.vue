@@ -100,7 +100,7 @@
             <v-spacer></v-spacer>
             <div class="selected-account">
                 <span class="key ml-3" v-text="activeAccount"></span>
-                <v-btn v-if="unlocked" dark icon v-tooltip:bottom="{ html: 'Unlocked with secret' }">
+                <v-btn v-if="unlocked" dark icon v-tooltip:bottom="{ html: 'Unlocked' }">
                     <v-icon>lock_open</v-icon>
                 </v-btn>
                 <v-btn v-else dark icon v-tooltip:bottom="{ html: 'Click to unlock' }" @click.stop="clickedLock">
