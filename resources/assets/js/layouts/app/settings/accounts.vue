@@ -1,10 +1,10 @@
 <template>
     <v-container fluid grid-list-xl>
         <v-layout row wrap>
-            <v-flex lg12>
+            <v-flex xs12>
                 <v-card-text v-if="$store.getters.keypair">
                     <b>Current account</b>
-                    <p v-text="$store.getters.keypair.publicKey()"></p>
+                    <p v-text="$store.getters.keypair.publicKey()" class="break-all"></p>
                 </v-card-text>
 
                 <v-card-text v-if="$store.getters.authCheck">

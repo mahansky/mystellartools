@@ -8,6 +8,34 @@
                 floating
         >
             <v-list>
+                <div class="hidden-lg-and-up">
+                    <v-list-tile :to="{name: 'balance'}">
+                        <span v-text="activeAccount" class="break-all"></span>
+                    </v-list-tile>
+                    <v-list-tile @click.stop="() => {if(!unlocked) { drawer = !drawer; clickedLock();}}">
+                        <v-list-tile-action>
+                            <v-icon v-if="unlocked">lock_open</v-icon>
+                            <v-icon v-else>https</v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-content>
+                            <v-list-tile-title>
+                                <span v-if="unlocked">Unlocked</span>
+                                <span v-else>Click to unlock</span>
+                            </v-list-tile-title>
+                        </v-list-tile-content>
+                    </v-list-tile>
+                    <v-list-tile @click.stop="() => {drawer = !drawer; openDialog();}">
+                        <v-list-tile-action>
+                            <v-icon>settings</v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-content>
+                            <v-list-tile-title>Settings</v-list-tile-title>
+                        </v-list-tile-content>
+                    </v-list-tile>
+                    <v-divider></v-divider>
+                    <v-subheader>ACCOUNT</v-subheader>
+                </div>
+
                 <v-list-tile :to="{name: 'balance'}">
                     <v-list-tile-action>
                         <v-icon>account_balance_wallet</v-icon>
@@ -98,7 +126,7 @@
             <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
             <v-toolbar-title>MyStellar.Tools</v-toolbar-title>
             <v-spacer></v-spacer>
-            <div class="selected-account">
+            <div class="selected-account hidden-md-and-down">
                 <span class="key ml-3" v-text="activeAccount"></span>
                 <v-btn v-if="unlocked" dark icon v-tooltip:bottom="{ html: 'Unlocked' }">
                     <v-icon>lock_open</v-icon>
@@ -107,10 +135,10 @@
                     <v-icon>https</v-icon>
                 </v-btn>
             </div>
-            <v-btn icon @click.stop="openDialog" v-tooltip:bottom="{ html: 'Settings' }">
+            <v-btn icon @click.stop="openDialog" v-tooltip:bottom="{ html: 'Settings' }" class="hidden-md-and-down">
                 <v-icon>settings</v-icon>
             </v-btn>
-            <v-spacer></v-spacer>
+            <v-spacer class="hidden-md-and-down"></v-spacer>
             <v-btn icon @click="logout" v-tooltip:bottom="{ html: 'Logout' }">
                 <v-icon>exit_to_app</v-icon>
             </v-btn>

@@ -1,48 +1,152 @@
 <template>
     <main>
-        <v-container>
-            <v-layout>
-                <v-flex xs12>
-                    <h1 class="display-3">MyStellar.Tools</h1>
-                    <h2 class="display-1 grey--text text--darken-2">Stellar Wallet and Tools to operate with Stellar network</h2>
-                </v-flex>
-            </v-layout>
-            <v-layout class="mt-5">
-                <v-flex lg6>
-                    <v-form v-model="valid" ref="form">
-                        <v-text-field
-                                label="Public or private key of your Stellar account"
-                                v-model="key"
-                                :rules="keyRules"
-                                required
-                        ></v-text-field>
+        <div class="pattern">
+            <v-container class="rocket">
+                <v-layout>
+                    <v-flex xs12 md6 offset-md3>
+                        <v-form v-model="valid" ref="form" class="my-5 py-5">
+                            <v-text-field
+                                    label="Stellar Public or Private Key"
+                                    v-model="key"
+                                    :rules="keyRules"
+                                    required
+                            ></v-text-field>
 
-                        <v-btn dark @click="enter" :class="{ blue: valid, '': !valid }">enter</v-btn>
-                    </v-form>
-                </v-flex>
-                <v-flex lg6 class="text-xs-center">
-                    <v-btn info dark @click="$router.push({name: 'login'})">LOGIN</v-btn>
+                            <v-layout class="text-xs-center">
+                                <v-flex>
+                                    <v-btn dark @click="enter" :class="{ blue: valid, '': !valid }">enter</v-btn>
+                                    or
+                                    <a href="#" @click.prevent.stop="createDialog = true">create new account</a>
+                                </v-flex>
+                            </v-layout>
+                        </v-form>
+                    </v-flex>
+                </v-layout>
+            </v-container>
+        </div>
 
-                    <span>
-                    or create
-                    <router-link :to="{name: 'register'}">new account</router-link>
-                </span>
-                </v-flex>
-            </v-layout>
-            <v-layout class="mt-5">
-                <v-flex xs12 class="grey--text">
-                    <div>
-                        This is just a temporary frontpage.
-                        <br>
-                        Use the form above to enter the application or create an account to log in.
-                    </div>
-                    <div>
-                        Don't forget to respond to the original <a href="https://galactictalk.org/d/530-mystellar-tools-stellar-wallet-and-tools-to-operate-with-stellar-network" target="_blank" rel="noreferrer nofollow">thread</a> and leave some suggestions on how to improve the application.
-                    </div>
-                    <div><a href="mailto:contact@mystellar.tools">contact@mystellar.tools</a></div>
-                </v-flex>
-            </v-layout>
-        </v-container>
+        <div class="white py-5">
+            <v-container grid-list-lg>
+                <v-layout class="mb-3">
+                    <v-flex>
+                        <div class="headline">Features</div>
+                    </v-flex>
+                </v-layout>
+                <v-layout row wrap>
+                    <v-flex md4>
+                        <div class="title mb-3">
+                            <v-icon class="blue--text">language</v-icon>
+                            Account explorer
+                        </div>
+                        <p>
+                            You can view all information about every account on the network just by entering it's public key.</p>
+                    </v-flex>
+                    <v-flex md4>
+                        <div class="title mb-3">
+                            <v-icon class="blue--text">transform</v-icon>
+                            Payments
+                        </div>
+                        <p>Send, receive, view all the payments. <b>Send XLM to any email address</b>
+                            with option to stop the operation.</p>
+                    </v-flex>
+                    <v-flex md4>
+                        <div class="title mb-3">
+                            <v-icon class="blue--text">label_outline</v-icon>
+                            Federation service
+                        </div>
+                        <p>Multiple federation addresses with *mystellar.tools suffix.</p>
+                    </v-flex>
+                    <v-flex md4>
+                        <div class="title mb-3">
+                            <v-icon class="blue--text">settings_ethernet</v-icon>
+                            Trustlines
+                        </div>
+                        <p>Manage your trustlines with easy-to-use interface. Find anchors using it's domain name.</p>
+                    </v-flex>
+                    <v-flex md4>
+                        <div class="title mb-3">
+                            <v-icon class="blue--text">supervisor_account</v-icon>
+                            Membership
+                        </div>
+                        <p>Access additional features like <b>multiple accounts</b>, <b>contact list</b>
+                            and others with registration.</p>
+                    </v-flex>
+                    <v-flex md4>
+                        <div class="title mb-3">
+                            <v-icon class="blue--text">settings</v-icon>
+                            Advanced options
+                        </div>
+                        <p>MyStellar.Tools covers almost every operation you can do on Stellar network.</p>
+                    </v-flex>
+                </v-layout>
+
+                <v-divider class="my-5"></v-divider>
+
+                <v-layout>
+                    <v-flex>
+                        <div class="headline mb-3">About</div>
+                        <p>
+                            This project started as an entry for Stellar Build Challenge (November 2017).
+                            Main goal of MyStellar.Tools is to create a single place where you can do pretty much everything
+                            Stellar network has to offer. From simply sending assets through managing trustlines to trading on SDX.
+                        </p>
+                        <p>
+                            MyStellar.Tools is still in development.
+                            We are constantly working on new features.
+                            If you have any idea/tip/suggestion, don't hesitate to contact us.
+                        </p>
+                    </v-flex>
+                </v-layout>
+            </v-container>
+        </div>
+
+        <footer class="grey darken-4">
+            <v-container grid-list-lg>
+                <v-layout wrap row class="py-5">
+                    <v-flex lg4 xs12>
+                        <div class="headline">My<span class="blue--text">Stellar</span>.Tools</div>
+                    </v-flex>
+                    <v-flex lg4 xs12>
+                        <div class="subheading mb-3">MyStellar.Tools</div>
+                        <ul>
+                            <li><router-link :to="{name: 'help'}">Get started</router-link></li>
+                            <li><router-link :to="{name: 'register'}">Register</router-link></li>
+                            <li><router-link :to="{name: 'login'}">Login</router-link></li>
+                            <li class="mt-3"><a href="mailto:contact@mystellar.tools">contact@mystellar.tools</a></li>
+                        </ul>
+                    </v-flex>
+                    <v-flex lg4 xs12>
+                        <div class="subheading mb-3">Useful links</div>
+                        <ul>
+                            <li><a href="https://stellar.org" target="_blank" rel="noreferrer nofollow">Stellar.org</a></li>
+                            <li><a href="https://dashboard.stellar.org/" target="_blank" rel="noreferrer nofollow">Stellar Dashboard</a></li>
+                            <li><a href="https://www.stellar.org/laboratory/" target="_blank" rel="noreferrer nofollow">Stellar Laboratory</a></li>
+                            <li><a href="https://galactictalk.org/" target="_blank" rel="noreferrer nofollow">Galactic Talk</a></li>
+                        </ul>
+                    </v-flex>
+                </v-layout>
+            </v-container>
+        </footer>
+
+        <v-dialog v-model="createDialog" lazy absolute width="400">
+            <v-card>
+                <v-card-title>
+                    <div class="headline">Create new Stellar account</div>
+                </v-card-title>
+                <v-card-text>
+                    <div>Public key</div>
+                    <code v-text="newKeypair.publicKey()"></code>
+
+                    <div class="mt-2">Secret key</div>
+                    <code v-text="newKeypair.secret()"></code>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn icon flat @click="createNewKeypair"><v-icon>autorenew</v-icon></v-btn>
+                    <v-btn class="blue--text" flat @click.native="createDialog = false">Close</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </main>
 </template>
 
@@ -86,6 +190,8 @@
           return true
         }
       ],
+      createDialog: false,
+      newKeypair: Stellar.Keypair.random(),
     }),
 
     methods: {
@@ -103,7 +209,11 @@
           this.$store.dispatch('storeKeypair', {keypair})
           this.$router.push('balance')
         }
-      }
+      },
+
+      createNewKeypair () {
+        this.newKeypair = Stellar.Keypair.random()
+      },
     }
   }
 </script>

@@ -69,15 +69,15 @@
                             <v-card class="white" v-if="twoFactorShow">
                                 <v-form v-model="twoFactorValid" ref="twoFactorRef">
                                     <v-container fluid grid-list-lg>
-                                        <v-layout row>
-                                            <v-flex md3>
+                                        <v-layout wrap row>
+                                            <v-flex xs12 md3>
                                                 <v-card-media
                                                         :src="imageUrl"
                                                         height="125px"
                                                         contain
                                                 ></v-card-media>
                                             </v-flex>
-                                            <v-flex md9>
+                                            <v-flex xs12 md9>
                                                 <div>
                                                     <p>
                                                         Scan this QR code with your Google Authenticator compatible app

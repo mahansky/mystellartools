@@ -1,39 +1,55 @@
 <template>
-    <v-container>
-        <v-layout>
-            <v-flex xs12>
-                <h1 class="display-3">MyStellar.Tools</h1>
-                <h2 class="display-1 grey--text text--darken-2">
-                    Stellar Wallet and Tools to operate with Stellar network</h2>
-            </v-flex>
-        </v-layout>
-        <v-layout>
-            <v-flex xs12>
-                <v-form v-model="valid" ref="form">
-                    <v-text-field
-                            label="Email"
-                            v-model="email"
-                            :rules="emailRules"
-                    ></v-text-field>
-                    <v-text-field
-                            label="Password"
-                            type="password"
-                            v-model="password"
-                            :rules="passwordRules"
-                    ></v-text-field>
-                    <v-text-field
-                            label="2FA Secret"
-                            v-model="secret"
-                            :rules="secretRules"
-                    ></v-text-field>
-                    <v-btn @click="login">Login</v-btn>
-                </v-form>
-                <router-link :to="{name: 'password'}">Forgotten password</router-link>
-                <br>
-                <router-link :to="{name: 'welcome'}">Back to homepage</router-link>
-            </v-flex>
-        </v-layout>
-    </v-container>
+    <div>
+        <div class="pattern py-5">
+            <v-container>
+                <v-layout>
+                    <v-flex>
+                        <div class="display-2">Login</div>
+                    </v-flex>
+                </v-layout>
+            </v-container>
+        </div>
+
+        <v-container grid-list-lg>
+            <v-layout>
+                <v-flex md6>
+                    <v-form v-model="valid" ref="form">
+                        <v-text-field
+                                label="Email"
+                                v-model="email"
+                                :rules="emailRules"
+                        ></v-text-field>
+                        <v-text-field
+                                label="Password"
+                                type="password"
+                                v-model="password"
+                                :rules="passwordRules"
+                        ></v-text-field>
+                        <v-text-field
+                                label="2FA Secret"
+                                v-model="secret"
+                                :rules="secretRules"
+                                hint="Only if you have enabled the feature"
+                                permanent-hint
+                        ></v-text-field>
+
+                        <v-layout>
+                            <v-spacer></v-spacer>
+                            <div>
+                                <router-link :to="{name: 'password'}">Forgotten password</router-link>
+                                <v-btn
+                                        dark
+                                        @click="login"
+                                        :class="{ blue: valid, '': !valid }"
+                                        :loading="isLoading"
+                                >Login</v-btn>
+                            </div>
+                        </v-layout>
+                    </v-form>
+                </v-flex>
+            </v-layout>
+        </v-container>
+    </div>
 </template>
 
 <script>
@@ -50,6 +66,7 @@
     data () {
       return {
         valid: false,
+        isLoading: false,
         email: '',
         emailRules: [(v) => /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(v) || 'Invalid email'],
         password: '',
@@ -62,6 +79,8 @@
     methods: {
       login () {
         if (this.$refs.form.validate()) {
+          this.isLoading = true
+
           axios.post('/api/login', {
             email: this.email,
             password: this.password,
@@ -76,6 +95,8 @@
             this.$router.push({name: 'balance'})
           }).catch(err => {
             flash(this.$store, err, 'error')
+          }).then(() => {
+            this.isLoading = false
           })
         }
       }
