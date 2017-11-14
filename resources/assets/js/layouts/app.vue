@@ -139,7 +139,7 @@
                 <v-icon>settings</v-icon>
             </v-btn>
             <v-spacer class="hidden-md-and-down"></v-spacer>
-            <v-btn icon @click="logout" v-tooltip:bottom="{ html: 'Logout' }">
+            <v-btn icon @click="logout" v-tooltip:bottom="{ html: 'Exit' }">
                 <v-icon>exit_to_app</v-icon>
             </v-btn>
         </v-toolbar>

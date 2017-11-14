@@ -71,7 +71,7 @@
                             <v-btn
                                     flat
                                     :class="{'blue--text': contactForm.valid, 'red--text': !contactForm.valid}"
-                                    @click="save"
+                                    @click.stop="save"
                                     :loading="contactForm.isLoading"
                             >Save
                             </v-btn>

@@ -11,7 +11,7 @@
                             <v-toolbar-items class="hidden-sm-and-down">
                                 <v-btn flat @click="$router.push({name: 'help'})">Help</v-btn>
                                 <v-btn flat @click="$router.push({name: 'register'})">Register</v-btn>
-                                <v-btn info class="white--text" @click="$router.push({name: 'login'})">Login</v-btn>
+                                <v-btn flat info @click="$router.push({name: 'login'})">Login</v-btn>
                             </v-toolbar-items>
                         </v-toolbar>
 

@@ -152,6 +152,7 @@
 
 <script>
   import { mapGetters } from 'vuex'
+  import * as utils from '../utils'
 
   let Stellar = require('stellar-sdk')
 
@@ -214,6 +215,19 @@
       createNewKeypair () {
         this.newKeypair = Stellar.Keypair.random()
       },
-    }
+    },
+
+    created () {
+      let publicKey = utils.getQueryParameter('public_key')
+
+      if (publicKey) {
+        try {
+          let keypair = Stellar.Keypair.fromPublicKey(publicKey)
+
+          this.$store.dispatch('storeKeypair', {keypair})
+          this.$router.push('balance')
+        } catch (e) {}
+      }
+    },
   }
 </script>

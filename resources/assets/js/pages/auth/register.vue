@@ -11,7 +11,7 @@
         </div>
 
         <v-container grid-list-lg>
-            <v-layout>
+            <v-layout wrap row>
                 <v-flex md6>
                     <v-form v-model="valid" ref="form">
                         <v-text-field
