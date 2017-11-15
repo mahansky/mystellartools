@@ -97,7 +97,7 @@
             })
           })
           .then((response) => {
-            flash(this.$store, response, 'success')
+            flash(this.$store, response.data, 'success')
           })
           .catch(err => {
             flash(this.$store, err, 'error')
