@@ -47,6 +47,7 @@
   import { forEach } from 'lodash'
   import { flash } from '../../utils'
   import { submitTransaction } from '../../stellar/internal'
+  import axios from 'axios'
 
   export default {
     data () {
@@ -100,6 +101,9 @@
           })
           .catch(err => {
             flash(this.$store, err, 'error')
+          })
+          .then(() => {
+            this.checkLoading = false
           })
       },
     },
