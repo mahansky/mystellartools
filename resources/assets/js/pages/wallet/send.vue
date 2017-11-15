@@ -173,7 +173,8 @@
                         Clicking on the icon on the right side of the input opens up your contact list.
                     </p>
                     <p>
-                        If you enter an email, that hasn't received any assets in the past, recipient will get a message with information on how to access his new assets.
+                        If you enter an email, that hasn't received any assets in the past,
+                        recipient will get a message with information on how to access his new assets.
                         If he doesn't claim them, you can <router-link :to="{name: 'revoke'}">revert the process</router-link>.
                     </p>
                     <b>Asset</b>
@@ -393,7 +394,7 @@
               })
               .then(() => {
                 if (this.asset === 'XLM') {
-                  if (new BigNumber(this.amount).gte(20)) {
+                  if (new BigNumber(this.amount).gte(31)) {
                     return
                   }
 
@@ -475,6 +476,9 @@
           })
           .then(() => {
             this.isSending = false
+            this.clickedVerify = false
+
+            flash(this.$store, 'Success!', 'success')
           })
       },
 

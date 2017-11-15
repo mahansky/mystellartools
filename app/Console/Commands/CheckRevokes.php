@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Address;
 use App\Email;
 use App\Revoke;
 use App\Stellar\Stellar;
@@ -82,6 +83,9 @@ class CheckRevokes extends Command
 
             if ($response['tx_success']) {
                 $revoke->delete();
+                $email->delete();
+
+                Address::where('stellar_address', $email->email)->delete();
             }
         });
     }
