@@ -1,10 +1,10 @@
 <template>
     <v-container fluid grid-list-xl>
         <v-layout row wrap>
-            <v-flex lg12>
+            <v-flex xs12>
                 <v-card-text v-if="$store.getters.keypair">
                     <b>Current account</b>
-                    <p v-text="$store.getters.keypair.publicKey()"></p>
+                    <p v-text="$store.getters.keypair.publicKey()" class="break-all"></p>
                 </v-card-text>
 
                 <v-card-text v-if="$store.getters.authCheck">
@@ -69,7 +69,7 @@
                         <v-btn
                                 flat
                                 :class="{'blue--text': addForm.valid, 'red--text': !addForm.valid}"
-                                @click="add"
+                                @click.stop="add"
                                 :loading="addForm.isLoading"
                         >Add
                         </v-btn>
@@ -86,7 +86,7 @@
                     <p v-if="$store.getters.keypair && !unlocked" class="blue--text">
                         Use this form to unlock your account (enter your Secret key).
                     </p>
-                    <v-form v-model="viewForm.valid" ref="viewFormRef">
+                    <v-form v-model="viewForm.valid" ref="viewFormRef" @submit.prevent="">
                         <v-text-field
                                 label="Public or Secret key"
                                 v-model="viewForm.key"

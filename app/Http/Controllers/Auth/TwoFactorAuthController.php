@@ -38,7 +38,7 @@ class TwoFactorAuthController extends Controller
             return response(['message' => 'Timeout. Start again.'], 400);
         }
 
-        if (! app('2FA')->verifyKey(auth()->user()->google2fa, request('secret'))) {
+        if (! app('2FA')->verifyKey(decrypt($storedSecret), request('secret'))) {
             return response(['message' => 'Invalid secret.'], 400);
         }
 

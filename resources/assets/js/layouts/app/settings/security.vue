@@ -49,7 +49,11 @@
                     <template v-if="!twoFactorLoading">
                         <b>Two-factor authentication</b>
                         <template v-if="twoFactorEnabled">
-                            <v-btn flat danger @click="disable2FA">Disable</v-btn>
+                            <p>Your account is secured with two-factor auth.</p>
+                            <v-layout>
+                                <v-spacer></v-spacer>
+                                <v-btn flat error @click.stop="disable2FA">Disable</v-btn>
+                            </v-layout>
                         </template>
 
                         <template v-if="!twoFactorEnabled">
@@ -67,17 +71,17 @@
                                 <v-btn flat info @click.stop="twoFactorShow = true">Proceed</v-btn>
                             </v-layout>
                             <v-card class="white" v-if="twoFactorShow">
-                                <v-form v-model="twoFactorValid" ref="twoFactorRef">
+                                <v-form v-model="twoFactorValid" ref="twoFactorRef" @submit.prevent="">
                                     <v-container fluid grid-list-lg>
-                                        <v-layout row>
-                                            <v-flex md3>
+                                        <v-layout wrap row>
+                                            <v-flex xs12 md3>
                                                 <v-card-media
                                                         :src="imageUrl"
                                                         height="125px"
                                                         contain
                                                 ></v-card-media>
                                             </v-flex>
-                                            <v-flex md9>
+                                            <v-flex xs12 md9>
                                                 <div>
                                                     <p>
                                                         Scan this QR code with your Google Authenticator compatible app
@@ -97,7 +101,7 @@
                                         <v-btn
                                                 flat
                                                 info
-                                                @click="enable2FA"
+                                                @click.stop="enable2FA"
                                                 :class="{'blue--text': twoFactorValid, 'red--text': !twoFactorValid}"
                                         >
                                             Enable
@@ -172,9 +176,14 @@
         if (this.$refs.twoFactorRef.validate()) {
           this.twoFactorLoading = true
 
-          axios.get('/api/2fa/enable', {
+          axios.post('/api/2fa/enable', {
             secret: this.secret,
           })
+            .then(() => {
+              this.twoFactorEnabled = true
+
+              flash(this.$store, 'Two-factor authentication enabled', 'success')
+            })
             .catch(err => {
               this.twoFactorEnabled = false
 
@@ -189,7 +198,12 @@
       disable2FA () {
         this.twoFactorLoading = true
 
-        axios.get('/api/2fa/disable')
+        axios.post('/api/2fa/disable')
+          .then(() => {
+            this.twoFactorEnabled = false
+
+            flash(this.$store, 'Two-factor authentication disabled', 'success')
+          })
           .catch(err => {
             this.twoFactorEnabled = true
 

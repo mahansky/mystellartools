@@ -2,24 +2,23 @@
 
 namespace App\Notifications;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 class PasswordResetEmail extends Notification
 {
-    use Queueable;
-
     /**
-     * @var
-     */
-    protected $token;
-
-    /**
-     * Create a new notification instance.
+     * The password reset token.
      *
-     * @param $token
+     * @var string
+     */
+    public $token;
+
+    /**
+     * Create a notification instance.
+     *
+     * @param  string $token
+     * @return void
      */
     public function __construct($token)
     {
@@ -27,10 +26,10 @@ class PasswordResetEmail extends Notification
     }
 
     /**
-     * Get the notification's delivery channels.
+     * Get the notification's channels.
      *
-     * @param  mixed  $notifiable
-     * @return array
+     * @param  mixed $notifiable
+     * @return array|string
      */
     public function via($notifiable)
     {
@@ -38,17 +37,16 @@ class PasswordResetEmail extends Notification
     }
 
     /**
-     * Get the mail representation of the notification.
+     * Build the mail representation of the notification.
      *
-     * @param  mixed  $notifiable
+     * @param  mixed $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
     {
         return (new MailMessage)
-            ->subject('Password reset')
-            ->markdown('emails.passwordreset', [
-                'token' => $this->token,
-            ]);
+            ->line('You are receiving this email because we received a password reset request for your account.')
+            ->action('Reset Password', url(config('app.url') . '/password?token=' . $this->token))
+            ->line('If you did not request a password reset, no further action is required.');
     }
 }

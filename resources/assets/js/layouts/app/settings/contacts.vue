@@ -1,7 +1,7 @@
 <template>
     <v-container fluid grid-list-xl>
         <v-layout row wrap>
-            <v-flex lg12>
+            <v-flex xs12>
                 <v-card-text>
                     <b>List of your contacts</b>
 
@@ -71,7 +71,7 @@
                             <v-btn
                                     flat
                                     :class="{'blue--text': contactForm.valid, 'red--text': !contactForm.valid}"
-                                    @click="save"
+                                    @click.stop="save"
                                     :loading="contactForm.isLoading"
                             >Save
                             </v-btn>

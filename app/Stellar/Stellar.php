@@ -47,17 +47,11 @@ class Stellar
      */
     public function accountDetails($publicKey)
     {
-        try {
-            $response = $this->http->get(implode('', [
-                self::HORIZON,
-                '/accounts/',
-                $publicKey,
-            ]));
-
-            return json_decode((string)$response->getBody(), true);
-        } catch (\Exception $exception) {
-            return null;
-        }
+        return $this->getJSON(implode('', [
+            self::HORIZON,
+            '/accounts/',
+            $publicKey,
+        ]));
     }
 
     /**
@@ -67,17 +61,29 @@ class Stellar
      */
     public function accountCreator($publicKey)
     {
-        $response = $this->http->get(implode('', [
+        $data = $this->payments($publicKey);
+
+        $firstPayment = $data[0];
+
+        return $firstPayment['source_account'];
+    }
+
+    /**
+     * @param $publicKey
+     * @param string $order
+     * @param int $limit
+     * @return mixed
+     */
+    public function payments($publicKey, $order = 'asc', $limit = 10)
+    {
+        return $this->getJSON(implode('', [
             self::HORIZON,
             '/accounts',
             "/{$publicKey}",
             '/payments',
-        ]));
-
-        $data = json_decode((string)$response->getBody(), true);
-        $firstPayment = $data['_embedded']['records'][0];
-
-        return $firstPayment['source_account'];
+            "?order={$order}",
+            "&limit={$limit}"
+        ]))['_embedded']['records'];
     }
 
     /**
@@ -93,6 +99,18 @@ class Stellar
         return $this->submit($secretKey, 'addSigner', [
             'signer' => $signer,
             'weight' => $weight,
+        ]);
+    }
+
+    /**
+     * @param $secretKey
+     * @param $destination
+     * @return mixed
+     */
+    public function mergeAccounts($secretKey, $destination)
+    {
+        return $this->submit($secretKey, 'mergeAccounts', [
+            'destination' => $destination,
         ]);
     }
 
@@ -119,5 +137,20 @@ class Stellar
         $response = trim(shell_exec($command));
 
         return json_decode($response, true);
+    }
+
+    /**
+     * @param $url
+     * @return mixed|null
+     */
+    private function getJSON($url)
+    {
+        try {
+            $response = $this->http->get($url);
+
+            return json_decode((string)$response->getBody(), true);
+        } catch (\Exception $exception) {
+            return null;
+        }
     }
 }

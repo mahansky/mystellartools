@@ -14,13 +14,13 @@
                 </v-tabs-bar>
             </v-toolbar>
             <v-tabs-items>
-                <v-tabs-content id="accounts" key="accounts">
+                <v-tabs-content id="accounts" key="accounts" lazy>
                     <accounts></accounts>
                 </v-tabs-content>
-                <v-tabs-content id="contacts" key="contacts" v-if="authCheck">
+                <v-tabs-content id="contacts" key="contacts" v-if="authCheck" lazy>
                     <contacts></contacts>
                 </v-tabs-content>
-                <v-tabs-content id="security" key="security" v-if="authCheck">
+                <v-tabs-content id="security" key="security" v-if="authCheck" lazy>
                     <security></security>
                 </v-tabs-content>
             </v-tabs-items>

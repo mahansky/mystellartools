@@ -1,21 +1,34 @@
 <template>
-  <div>
-    Not Found<br>
-    <br>
-    <a @click="$router.go(-1)">Back</a>
-    <br>
-    <a @click="$router.push({name:'welcome'})">Homepage</a>
-  </div>
+    <main>
+        <div class="pattern py-5">
+            <v-container>
+                <v-layout>
+                    <v-flex>
+                        <div class="display-2">Page not found</div>
+                    </v-flex>
+                </v-layout>
+            </v-container>
+        </div>
+
+        <v-container>
+            <v-layout>
+                <v-flex xs12>
+                    You can go <a href="#" @click="$router.go(-1)">back</a> or to the
+                    <a href="#" @click="$router.push({name:'welcome'})">homepage</a>.
+                </v-flex>
+            </v-layout>
+        </v-container>
+    </main>
 </template>
 
 <script>
-export default {
-  metaInfo: () => ({
-    title: 'Not found',
-  }),
+  export default {
+    metaInfo: () => ({
+      title: 'Not found',
+    }),
 
-  name: 'not-found',
+    name: 'not-found',
 
-  layout: 'default'
-}
+    layout: 'default'
+  }
 </script>

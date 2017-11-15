@@ -22,7 +22,7 @@ class SearchTest extends TestCase
             ->assertStatus(200)
             ->assertJsonFragment([
                 'account_id'      => $address->account_id,
-                'stellar_address' => $address->stellar_address . '*' . parse_url(config('APP_URL'), PHP_URL_HOST),
+                'stellar_address' => $this->fullAddress($address->stellar_address),
             ]);
     }
 
@@ -50,7 +50,36 @@ class SearchTest extends TestCase
             ->assertStatus(200)
             ->assertJsonFragment([
                 'account_id'      => $address->account_id,
-                'stellar_address' => $address->stellar_address . '*' . parse_url(config('APP_URL'), PHP_URL_HOST),
+                'stellar_address' => $this->fullAddress($address->stellar_address),
             ]);
+    }
+
+    /** @test */
+    public function it_has_all_results()
+    {
+        $address1 = Address::create([
+            'account_id'      => 'x',
+            'stellar_address' => 'a',
+        ]);
+
+        $address2 = Address::create([
+            'account_id'      => 'x',
+            'stellar_address' => 'b',
+        ]);
+
+        $this->get(route('federation', ['q' => 'x', 'type' => 'id']))
+            ->assertStatus(200)
+            ->assertJsonFragment([
+                'account_id'      => $address1->account_id,
+                'all'             => [
+                    $this->fullAddress($address1->stellar_address),
+                    $this->fullAddress($address2->stellar_address),
+                ],
+            ]);
+    }
+
+    private function fullAddress($name)
+    {
+        return $name . '*' . parse_url(config('app.url'), PHP_URL_HOST);
     }
 }

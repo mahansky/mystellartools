@@ -36,7 +36,7 @@ class AuthController extends Controller
         $user = User::whereEmail($data['email'])->first();
 
         if ($user->google2fa) {
-            if (! app('2FA')->verifyKey($user->google2fa, $data['secret'])) {
+            if (! app('2FA')->verifyKey($user->google2fa, $data['secret'] ?? '000000')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Invalid secret key (Two-factor auth)',

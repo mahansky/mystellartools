@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Validator;
 
 class FederationController extends Controller
 {
+    protected $headers = ['Access-Control-Allow-Origin' => '*'];
+
     /**
      * Search for stellar addresses and the other way around
      *
@@ -17,8 +19,6 @@ class FederationController extends Controller
      */
     public function show(Stellar $stellar)
     {
-        $headers = ['Access-Control-Allow-Origin' => '*'];
-
         $validator = Validator::make(request()->all(), [
             'q'    => 'required',
             'type' => 'required|in:name,id',
@@ -27,7 +27,7 @@ class FederationController extends Controller
         if ($validator->fails()) {
             return response([
                 'detail' => 'Invalid request'
-            ], 400, $headers);
+            ], 400, $this->headers);
         }
 
         // If this is a name->account_id lookup
@@ -64,13 +64,19 @@ class FederationController extends Controller
         if ( ! $address) {
             return response([
                 'detail' => 'Not found.'
-            ], 404, $headers);
+            ], 404, $this->headers);
         }
 
-        return response([
+        $response = [
             'stellar_address' => $address->stellar_address . '*' . config('app.domain'),
             'account_id'      => $address->account_id,
-        ], 200, $headers);
+        ];
+
+        $response['all'] = Address::where('account_id', $address->account_id)->get()->map(function ($addr) {
+            return $addr->stellar_address . '*' . config('app.domain');
+        });
+
+        return response($response, 200, $this->headers);
     }
 
     public function store()
@@ -80,17 +86,19 @@ class FederationController extends Controller
             'stellar_address' => 'required',
         ]);
 
-        if (Address::where('account_id', request('account_id'))->exists()) {
-            return response(['detail' => 'Account already has an adress.'], 409);
+        $count = Address::where('account_id', request('account_id'))->count();
+
+        if ((! auth('api')->check() && $count > 0) || (auth('api')->check() && $count > 2)) {
+            return response(['detail' => 'Maximum limit of Stellar addresses per account reached.'], 409, $this->headers);
         }
 
         if (Address::where('stellar_address', request('stellar_address'))->exists()) {
-            return response(['detail' => 'Stellar address already taken.'], 409);
+            return response(['detail' => 'Stellar address already taken.'], 409, $this->headers);
         }
 
         if (! filter_var($data['stellar_address'], FILTER_VALIDATE_EMAIL)) {
             if (! preg_match('/^[\w]+$/', $data['stellar_address'])) {
-                return response(['detail' => 'Invalid input'], 400);
+                return response(['detail' => 'Invalid input'], 400, $this->headers);
             }
         }
 
@@ -99,6 +107,6 @@ class FederationController extends Controller
         return response([
             'stellar_address' => $address->stellar_address . '*' . config('app.domain'),
             'account_id'      => $address->account_id,
-        ], 200);
+        ], 200, $this->headers);
     }
 }

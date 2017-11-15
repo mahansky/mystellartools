@@ -1,6 +1,7 @@
 export default ({ keypairGuard, keypairCanSignGuard, guestGuard }) => [
   { path: '/', name: 'welcome', component: require('~/pages/welcome.vue') },
   { path: '/claim', name: 'claim', component: require('~/pages/claim.vue') },
+  { path: '/help', name: 'help', component: require('~/pages/help.vue') },
 
   ...keypairGuard([
     { path: '/balance', name: 'balance', component: require('~/pages/wallet/balance.vue') },
@@ -12,6 +13,7 @@ export default ({ keypairGuard, keypairCanSignGuard, guestGuard }) => [
 
   ...keypairCanSignGuard([
     { path: '/send', name: 'send', component: require('~/pages/wallet/send.vue') },
+    { path: '/revoke', name: 'revoke', component: require('~/pages/wallet/revoke.vue') },
     { path: '/trustlines', name: 'trustlines', component: require('~/pages/tools/trustlines.vue') },
     { path: '/setoptions', name: 'setoptions', component: require('~/pages/tools/setoptions.vue') },
     { path: '/data', name: 'data', component: require('~/pages/tools/data.vue') },
