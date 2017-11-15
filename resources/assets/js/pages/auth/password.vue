@@ -10,7 +10,7 @@
             </v-container>
         </div>
 
-        <v-container grid-list-lg>
+        <v-container grid-list-lg class="mt-3">
             <v-layout>
                 <v-flex md6 v-if="!token">
                     <v-form v-model="emailForm.valid" ref="emailFormRef">
@@ -109,7 +109,7 @@
 
     methods: {
       send () {
-        if (this.$refs.emailForm.validate()) {
+        if (this.$refs.emailFormRef.validate()) {
           this.emailForm.isLoading = true
 
           axios.post('/api/password/send', {
@@ -125,7 +125,7 @@
       },
 
       reset () {
-        if (this.$refs.pwForm.validate()) {
+        if (this.$refs.pwFormRef.validate()) {
           this.pwForm.isLoading = true
 
           axios.post('/api/password/reset', {

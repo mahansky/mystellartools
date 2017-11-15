@@ -10,7 +10,7 @@
             </v-container>
         </div>
 
-        <v-container grid-list-lg>
+        <v-container grid-list-lg class="mt-3">
             <v-layout class="mt-3">
                 <v-flex xs12>
                     <v-btn flat loading info v-if="!secret"></v-btn>

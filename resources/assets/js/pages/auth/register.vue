@@ -10,7 +10,7 @@
             </v-container>
         </div>
 
-        <v-container grid-list-lg>
+        <v-container grid-list-lg class="mt-3">
             <v-layout wrap row>
                 <v-flex md6>
                     <v-form v-model="valid" ref="form">
@@ -50,7 +50,7 @@
                     <ul>
                         <li>Multiple accounts</li>
                         <li>Contact list</li>
-                        <li>Simpler transaction signing - replace secret key with any password</li>
+                        <li>Simpler transaction signing - replace secret key with a password</li>
                         <li>2FA Auth</li>
                         <li>and others...</li>
                     </ul>

@@ -10,7 +10,7 @@
             </v-container>
         </div>
 
-        <v-container grid-list-lg>
+        <v-container grid-list-lg class="mt-3">
             <v-layout>
                 <v-flex md6>
                     <v-form v-model="valid" ref="form">

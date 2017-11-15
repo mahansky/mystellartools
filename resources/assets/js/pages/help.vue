@@ -10,7 +10,7 @@
             </v-container>
         </div>
 
-        <v-container>
+        <v-container class="mt-3">
             <v-layout>
                 <v-flex xs12>
                     <div class="textblock">
@@ -28,7 +28,7 @@
                             Click on the lock icon in the blue toolbar and enter it to the "Switch" form.
                         </p>
                         <p>
-                            If you are logged in and viewing an account with password stored on our servers,
+                            If you are logged in and viewing your account secured with password,
                             you have to unlock it by clicking the lock icon again and entering password
                             in the dialog.
                         </p>
@@ -53,7 +53,7 @@
                     </div>
 
                     <div class="textblock">
-                        <div class="headline">I have a idea/suggestion/problem...</div>
+                        <div class="headline">I have an idea/suggestion/problem...</div>
                         <p>
                             Feel free to contact us <a href="mailto:contact@mystellar.tools">contact@mystellar.tools</a>.
                         </p>

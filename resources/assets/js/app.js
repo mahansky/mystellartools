@@ -11,8 +11,3 @@ new Vue({
   router,
   ...App
 })
-
-import { Keypair } from 'stellar-sdk'
-let keypair = Keypair.fromSecret('SDXYE46DX7FB4XXMEKKZ2GYLVYUSTKULAVUFP7BVLNLKVQDJYNRRD7LK')
-store.dispatch('storeKeypair', {keypair})
-router.push({name: 'revoke'})
