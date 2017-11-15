@@ -35,6 +35,28 @@
                     </div>
 
                     <div class="textblock">
+                        <div class="headline">Sending Lumens (XLM) to any email address</div>
+                        <p>
+                            You can send XLM to any email address by simply entering it as a recipient
+                            in the send form.
+                            If the email hasn't received any Lumens in the past, you will have to
+                            send at least 31 XLM.
+                            It's because of the <b>Revoke</b> function (described below).
+                            Recipient will receive an email with instructions on how to access the Lumens.
+                        </p>
+                    </div>
+
+                    <div class="textblock">
+                        <div class="headline">Revoking payment</div>
+                        <p>
+                            <i>You can stop only payments to a new email address.</i>
+                            Click on the <b>revert the process</b> in the Send form.
+                            After entering the email, you will get your Lumens back
+                            (recipient's account will merge with yours).
+                        </p>
+                    </div>
+
+                    <div class="textblock">
                         <div class="headline">Account viewer</div>
                         <p>
                             You can use MyStellar.Tools as an account viewer.
