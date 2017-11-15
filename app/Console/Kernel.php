@@ -30,6 +30,9 @@ class Kernel extends ConsoleKernel
         $schedule->command('interstellar:check-emails')
             ->everyMinute();
 
+        $schedule->command('interstellar:check-revokes')
+            ->everyMinute();
+
         $schedule->command('interstellar:delete-emails')
             ->hourly();
     }

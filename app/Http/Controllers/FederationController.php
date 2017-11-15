@@ -67,10 +67,16 @@ class FederationController extends Controller
             ], 404, $this->headers);
         }
 
-        return response([
+        $response = [
             'stellar_address' => $address->stellar_address . '*' . config('app.domain'),
             'account_id'      => $address->account_id,
-        ], 200, $this->headers);
+        ];
+
+        $response['all'] = Address::where('account_id', $address->account_id)->get()->map(function ($addr) {
+            return $addr->stellar_address . '*' . config('app.domain');
+        });
+
+        return response($response, 200, $this->headers);
     }
 
     public function store()
@@ -80,8 +86,10 @@ class FederationController extends Controller
             'stellar_address' => 'required',
         ]);
 
-        if (! auth()->check() && Address::where('account_id', request('account_id'))->exists()) {
-            return response(['detail' => 'Account already has an adress.'], 409, $this->headers);
+        $count = Address::where('account_id', request('account_id'))->count();
+
+        if ((! auth('api')->check() && $count > 0) || (auth('api')->check() && $count > 2)) {
+            return response(['detail' => 'Maximum limit of Stellar addresses per account reached.'], 409, $this->headers);
         }
 
         if (Address::where('stellar_address', request('stellar_address'))->exists()) {

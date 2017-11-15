@@ -183,13 +183,13 @@
                         <v-card-text>
                             <v-btn loading flat info v-if="stellarAddressLoading"></v-btn>
                             <template v-else>
-                                <div class="datablock" v-if="!stellarAddress">
+                                <div class="datablock" v-if="stellarAddresses.length === 0">
                                     You don't have a Stellar address on our servers.
                                     <router-link :to="{name: 'receive'}">Setup</router-link>
                                 </div>
-                                <div class="datablock" v-if="stellarAddress">
+                                <div class="datablock" v-else>
                                     <div class="name">Our federation server</div>
-                                    <span v-text="stellarAddress"></span>
+                                    <div v-for="stellarAddress in stellarAddresses" v-text="stellarAddress"></div>
                                 </div>
                             </template>
 
@@ -268,7 +268,7 @@
     data () {
       return {
         stellarAddressLoading: true,
-        stellarAddress: '',
+        stellarAddresses: [],
         homeDomainStellarAddressLoading: true,
         homeDomainStellarAddress: '',
         account: null,
@@ -314,9 +314,9 @@
               type: 'id',
             },
           }).then(response => {
-            this.stellarAddress = response.data.stellar_address
+            this.stellarAddresses = response.data.all
           }).catch(err => {
-            this.stellarAddress = ''
+            this.stellarAddresses = []
           }).then(() => {
             this.stellarAddressLoading = false
           }))

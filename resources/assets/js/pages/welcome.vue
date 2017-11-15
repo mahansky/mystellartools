@@ -16,7 +16,7 @@
                                 <v-flex>
                                     <v-btn dark @click="enter" :class="{ blue: valid, '': !valid }">enter</v-btn>
                                     or
-                                    <a href="#" @click.prevent.stop="createDialog = true">create new account</a>
+                                    <a href="#" @click.prevent.stop="createDialog = true">create new Stellar account</a>
                                 </v-flex>
                             </v-layout>
                         </v-form>

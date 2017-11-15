@@ -174,7 +174,7 @@
                     </p>
                     <p>
                         If you enter an email, that hasn't received any assets in the past, recipient will get a message with information on how to access his new assets.
-                        If he doesn't claim them, you can <a href="#">revert the process</a>.
+                        If he doesn't claim them, you can <router-link :to="{name: 'revoke'}">revert the process</router-link>.
                     </p>
                     <b>Asset</b>
                     <p>
