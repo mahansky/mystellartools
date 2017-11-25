@@ -60,7 +60,8 @@
                         <div class="headline">Account viewer</div>
                         <p>
                             You can use MyStellar.Tools as an account viewer.
-                            Simply create a link in this format
+                            Just enter the app with any public key and you will get all the available info.
+                            You can also create links to automatically enter the app:
                             <code>https://mystellar.tools/?public_key=YOURPUBLICKEY</code>.
                         </p>
                         <p>Example <a href="https://mystellar.tools/?public_key=GAAZI4TCR3TY5OJHCTJC2A4QSY6CJWJH5IAJTGKIN2ER7LBNVKOCCWN7">https://mystellar.tools/?public_key=GAAZI4TCR3TY5OJHCTJC2A4QSY6CJWJH5IAJTGKIN2ER7LBNVKOCCWN7</a></p>

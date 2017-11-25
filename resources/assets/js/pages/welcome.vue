@@ -82,8 +82,21 @@
 
                 <v-divider class="my-5"></v-divider>
 
-                <v-layout>
-                    <v-flex>
+                <v-layout row wrap>
+                    <v-flex lg6>
+                        <div class="headline mb-3">Plans</div>
+                        <p>Here is a list of planned features:</p>
+                        <ul>
+                            <li>Ledger Nano S support</li>
+                            <li>Paper Wallet generator</li>
+                            <li>Multi-sig coordinator</li>
+                            <li>Stellar Network explorer</li>
+                            <li>Stellar Distributed Exchange trading tools</li>
+                            <li>Simple fiat&lt;-&gt;XLM transfer</li>
+                            <li>Improve existing features</li>
+                        </ul>
+                    </v-flex>
+                    <v-flex lg6>
                         <div class="headline mb-3">About</div>
                         <p>
                             This project started as an entry for Stellar Build Challenge (November 2017).
