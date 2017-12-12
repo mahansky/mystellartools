@@ -65,11 +65,10 @@
                     </v-flex>
                     <v-flex md4>
                         <div class="title mb-3">
-                            <v-icon class="blue--text">supervisor_account</v-icon>
-                            Membership
+                            <v-icon class="blue--text">save</v-icon>
+                            Browser based
                         </div>
-                        <p>Access additional features like <b>multiple accounts</b>, <b>contact list</b>
-                            and others with registration.</p>
+                        <p>Everything is stored in the browser (possible to store encrypted keys). Share the data with another browser (ex. smartphone) using simple link.</p>
                     </v-flex>
                     <v-flex md4>
                         <div class="title mb-3">
@@ -122,9 +121,9 @@
                     <v-flex lg4 xs12>
                         <div class="subheading mb-3">MyStellar.Tools</div>
                         <ul>
-                            <li><router-link :to="{name: 'help'}">Get started</router-link></li>
-                            <li><router-link :to="{name: 'register'}">Register</router-link></li>
-                            <li><router-link :to="{name: 'login'}">Login</router-link></li>
+                            <li>
+                                <router-link :to="{name: 'help'}">Get started</router-link>
+                            </li>
                             <li class="mt-3"><a href="mailto:contact@mystellar.tools">contact@mystellar.tools</a></li>
                         </ul>
                     </v-flex>

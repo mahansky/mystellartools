@@ -17,7 +17,9 @@
                         <div class="headline">Stellar, Lumens, XLM, Basic concepts</div>
                         <p>
                             Check out the
-                            <a href="https://www.stellar.org/how-it-works/stellar-basics/" target="_blank" rel="noreferrer nofollow">official website</a>.
+                            <a href="https://www.stellar.org/how-it-works/stellar-basics/" target="_blank" rel="noreferrer nofollow">official website</a>
+                            or our
+                            <router-link :to="{name: 'stellar101'}">guide</router-link>.
                         </p>
                     </div>
 
