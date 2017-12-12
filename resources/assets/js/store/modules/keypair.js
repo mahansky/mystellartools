@@ -5,6 +5,8 @@ export const state = {
   keypair: null, // keypair
   sss: false, // server side signed
   sssOk: false, // server side signed unlocked
+  ledger: false, // accessed through Ledger (device)
+  bip32Path: '',
 }
 
 // mutations
@@ -17,12 +19,18 @@ export const mutations = {
   [types.REMOVE_KEYPAIR] (state) {
     state.keypair = null
     state.sss = false
+    state.ledger = false
   },
 
   [types.UPDATE_SSS] (state, {sss, sssOk}) {
     state.sss = sss
     state.sssOk = sssOk
-  }
+  },
+
+  [types.ACCESS_WITH_LEDGER] (state, {bip32Path}) {
+    state.ledger = true
+    state.bip32Path = bip32Path
+  },
 }
 
 // actions
@@ -37,7 +45,11 @@ export const actions = {
 
   updateSss ({commit}, payload) {
     commit(types.UPDATE_SSS, payload)
-  }
+  },
+
+  accessWithLedger({commit}, payload) {
+    commit(types.ACCESS_WITH_LEDGER, payload)
+  },
 }
 
 // getters
@@ -46,4 +58,6 @@ export const getters = {
   keypairCanSign: state => state.keypair ? state.keypair.canSign() : false,
   keypairSss: state => state.keypair ? state.sss : false,
   keypairSssOk: state => state.keypair ? state.sssOk : false,
+  keypairLedger: state => state.ledger,
+  keypairBip32Path: state => state.bip32Path,
 }

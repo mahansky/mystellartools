@@ -2,9 +2,9 @@
     <main>
         <div class="pattern">
             <v-container class="rocket">
-                <v-layout>
+                <v-layout row wrap>
                     <v-flex xs12 md6 offset-md3>
-                        <v-form v-model="valid" ref="form" class="my-5 py-5">
+                        <v-form v-model="valid" ref="form" class="mt-4 pt-4" lazy-validation>
                             <v-text-field
                                     label="Stellar Public or Private Key"
                                     v-model="key"
@@ -20,6 +20,24 @@
                                 </v-flex>
                             </v-layout>
                         </v-form>
+                    </v-flex>
+                    <v-flex xs12 md6 offset-md3>
+                        <div class="mt-5 mb-4 pb-4">
+                            <div class="text-xs-center">
+                                <a @click.stop="ledgerDialog = true"
+                                   class="grey--text"
+                                   @mouseover="ledgerActive = true"
+                                   @mouseleave="ledgerActive = false"
+                                >
+                                    <span>Sign in with</span><br>
+                                    <img src="/img/ledger_logo.png"
+                                         alt="Ledger"
+                                         style="opacity: 0.5;"
+                                         class="pointer"
+                                    >
+                                </a>
+                            </div>
+                        </div>
                     </v-flex>
                 </v-layout>
             </v-container>
@@ -86,7 +104,6 @@
                         <div class="headline mb-3">Plans</div>
                         <p>Here is a list of planned features:</p>
                         <ul>
-                            <li>Ledger Nano S support</li>
                             <li>Paper Wallet generator</li>
                             <li>Multi-sig coordinator</li>
                             <li>Stellar Network explorer</li>
@@ -154,8 +171,44 @@
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn icon flat @click="createNewKeypair"><v-icon>autorenew</v-icon></v-btn>
+                    <v-btn icon flat @click="createNewKeypair">
+                        <v-icon>autorenew</v-icon>
+                    </v-btn>
                     <v-btn class="blue--text" flat @click.native="createDialog = false">Close</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+
+        <v-dialog v-model="ledgerDialog" lazy absolute width="400">
+            <v-card>
+                <v-card-title>
+                    <div class="headline">Sign in with Ledger</div>
+                </v-card-title>
+                <v-card-text>
+                    <p>
+                        Available on Chrome and Opera.
+                        Install the Stellar app from Ledger and enable browser support in the app settings.
+                    </p>
+                    <v-checkbox label="Use default account" v-model="ledgerDefaultAccount" light color="info"></v-checkbox>
+                    <v-text-field
+                            v-if="!ledgerDefaultAccount"
+                            label="BIP32 path"
+                            v-model="ledgerBip32Path"
+                    ></v-text-field>
+                    <div class="red--text pt-1" v-html="ledgerError ? ledgerError : '&nbsp;'"></div>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                            class="grey--text"
+                            flat
+                            @click.native="ledgerDialog = false"
+                    >Close</v-btn>
+                    <v-btn
+                            flat
+                            :class="{'blue--text': isLedgerConnected, 'grey--text': !isLedgerConnected}"
+                            @click="proceedWithLedger"
+                    >Sign in</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -165,6 +218,7 @@
 <script>
   import { mapGetters } from 'vuex'
   import * as utils from '../utils'
+  import StellarLedger from 'stellar-ledger-api'
 
   let Stellar = require('stellar-sdk')
 
@@ -178,7 +232,11 @@
     computed: {
       hasKeypair () {
         return !!this.$store.keypair
-      }
+      },
+
+      isLedgerConnected () {
+        return this.ledgerStatus === 'Connected'
+      },
     },
 
     data: () => ({
@@ -205,6 +263,12 @@
       ],
       createDialog: false,
       newKeypair: Stellar.Keypair.random(),
+
+      ledgerDialog: false,
+      ledgerError: 'Failed to connect',
+      ledgerStatus: '',
+      ledgerDefaultAccount: true,
+      ledgerBip32Path: "44'/148'/0'",
     }),
 
     methods: {
@@ -227,6 +291,32 @@
       createNewKeypair () {
         this.newKeypair = Stellar.Keypair.random()
       },
+
+      connectLedger () {
+        this.ledgerStatus = 'Not connected'
+
+        new StellarLedger.Api(new StellarLedger.comm(20))
+          .connect(() => {
+            this.ledgerStatus = 'Connected'
+          }, (err) => {
+            this.ledgerStatus = 'Error: ' + err
+            this.ledgerError = 'Error: ' + err
+          })
+      },
+
+      proceedWithLedger() {
+        try {
+          new StellarLedger.Api(new StellarLedger.comm(20)).getPublicKey_async(this.bip32Path).then((result) => {
+            this.$store.dispatch('storeKeypair', {keypair: Stellar.Keypair.fromPublicKey(result['publicKey'])})
+            this.$store.dispatch('accessWithLedger', {bip32Path: this.bip32Path})
+            this.$router.push({name: 'balance'})
+          }).catch(() => {
+            this.ledgerError = 'Failed to connect'
+          });
+        } catch (err) {
+          this.ledgerError = 'Failed to connect'
+        }
+      },
     },
 
     created () {
@@ -240,6 +330,8 @@
           this.$router.push('balance')
         } catch (e) {}
       }
+
+      this.connectLedger()
     },
   }
 </script>
