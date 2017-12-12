@@ -9,7 +9,7 @@ Vue.use(Meta)
 Vue.use(Router)
 
 const router = make(
-  routes({keypairGuard, keypairCanSignGuard, guestGuard})
+  routes({keypairGuard, keypairCanSignGuard})
 )
 
 sync(store, router)
@@ -31,18 +31,6 @@ function make (routes) {
 
   // Register before guard.
   router.beforeEach(async (to, from, next) => {
-    if (store.getters.authCheck && store.getters.authUser === null) {
-      try {
-        await store.dispatch('fetchUser')
-      } catch (e) { }
-    }
-
-    if (store.getters.authCheck && store.getters.accounts === null) {
-      try {
-        await store.dispatch('fetchAccounts')
-      } catch (e) { }
-    }
-
     setLayout(router, to)
     next()
   })
@@ -84,11 +72,7 @@ function setLayout (router, to) {
 function keypairGuard (routes) {
   return beforeEnter(routes, (to, from, next) => {
     if (!store.getters.keypair) {
-      if (!store.getters.authCheck) {
-        return next({name: 'welcome'})
-      } else if (to.name !== 'balance') {
-        return next({name: 'balance'})
-      }
+      return next({name: 'welcome'})
     }
 
     return next()
@@ -102,16 +86,6 @@ function keypairCanSignGuard (routes) {
     }
 
     return next({name: 'balance'})
-  })
-}
-
-function guestGuard (routes) {
-  return beforeEnter(routes, (to, from, next) => {
-    if (store.getters.authCheck) {
-      next({name: 'balance'})
-    } else {
-      next()
-    }
   })
 }
 

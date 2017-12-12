@@ -1,7 +1,5 @@
 import * as types from '../mutation-types'
-import store from '../../store'
-import axios from 'axios'
-import { Stellar } from '../../stellar'
+import { remove } from 'lodash'
 
 // state
 export const state = {
@@ -10,38 +8,25 @@ export const state = {
 
 // mutations
 export const mutations = {
-  [types.STORE_ACCOUNTS] (state, accounts) {
-    state.accounts = accounts
+  [types.STORE_ACCOUNT] (state, account) {
+    state.accounts.push(account)
   },
 
-  [types.REMOVE_ACCOUNTS] (state) {
-    state.accounts = null
+  [types.REMOVE_ACCOUNT] (state, publicKey) {
+    remove(state.accounts, function (account) {
+      return account.public_key === publicKey
+    })
   },
 }
 
 // actions
 export const actions = {
-  async fetchAccounts ({commit}) {
-    try {
-      const {data} = await axios.get('/api/accounts')
-
-      commit(types.STORE_ACCOUNTS, data.data)
-
-      if (data.data.length > 0) {
-        store.dispatch('storeKeypair', {
-          keypair: Stellar.Keypair.fromPublicKey(data.data[0].public_key),
-          sss: data.data[0].sss,
-        })
-      }
-    } catch (e) {}
+  storeAccount ({commit}, account) {
+    commit(types.STORE_ACCOUNT, account)
   },
 
-  storeAccounts ({commit}, payload) {
-    commit(types.STORE_ACCOUNTS, payload)
-  },
-
-  removeAccounts ({commit}) {
-    commit(types.REMOVE_ACCOUNTS)
+  removeAccount ({commit}, publicKey) {
+    commit(types.REMOVE_ACCOUNT, publicKey)
   },
 }
 

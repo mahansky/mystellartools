@@ -7,7 +7,7 @@
                     <p v-text="$store.getters.keypair.publicKey()" class="break-all"></p>
                 </v-card-text>
 
-                <v-card-text v-if="$store.getters.authCheck">
+                <v-card-text>
                     <b>List of your accounts</b>
 
                     <v-data-table
@@ -26,8 +26,7 @@
                                     <span class="table-row-detail">
                                         <a href="#" @click.prevent="use(props.item)" class="mr-3">Use</a>
 
-                                        <a v-if="!props.item.isDeleteLoading" href="#" @click.prevent.stop="remove(props.item)" class="red--text">Delete</a>
-                                        <v-btn v-if="props.item.isDeleteLoading" flat small loading class="red--text"></v-btn>
+                                        <a href="#" @click.prevent.stop="remove(props.item)" class="red--text">Delete</a>
                                     </span>
                             </td>
                         </template>
@@ -35,7 +34,7 @@
                 </v-card-text>
             </v-flex>
 
-            <v-flex lg6 v-if="$store.getters.authCheck">
+            <v-flex lg6>
                 <v-card-text>
                     <b>Add account to your list</b>
                     <p>
@@ -70,9 +69,7 @@
                                 flat
                                 :class="{'blue--text': addForm.valid, 'red--text': !addForm.valid}"
                                 @click.stop="add"
-                                :loading="addForm.isLoading"
-                        >Add
-                        </v-btn>
+                        >Add</v-btn>
                     </v-layout>
                 </v-card-text>
             </v-flex>
@@ -99,9 +96,7 @@
                                 flat
                                 :class="{'blue--text': viewForm.valid, 'red--text': !viewForm.valid}"
                                 @click="view"
-                        >
-                            Switch
-                        </v-btn>
+                        >Switch</v-btn>
                     </v-layout>
                 </v-card-text>
             </v-flex>
@@ -145,7 +140,6 @@
 
         addForm: {
           pw: false,
-          isLoading: false,
           valid: false,
           name: '',
           nameRules: [(v) => !!v || 'Name is required'],
@@ -193,22 +187,12 @@
     },
 
     computed: {
-      user () {
-        return this.$store.getters.authUser
-      },
-
       unlocked () {
         return this.$store.getters.keypairCanSign
       },
 
       accounts () {
-        return map(this.$store.getters.accounts, (account) => {
-          let acc = account
-
-          Vue.set(acc, 'isDeleteLoading', false)
-
-          return acc
-        })
+        return this.$store.getters.accounts
       },
     },
 
@@ -235,30 +219,17 @@
 
       add () {
         if (this.$refs.addFormRef.validate()) {
-          this.addForm.isLoading = true
-
-          let attr = {
+          let account = {
             name: this.addForm.name,
             public_key: this.addForm.keypair.publicKey()
           }
 
           if (this.addForm.keypair.canSign()) {
-            attr.secret_key = this.addForm.keypair.secret()
-            attr.password = this.addForm.password
+            account.secret_key = this.addForm.keypair.secret()
+            account.password = this.addForm.password
           }
 
-          axios.post('/api/accounts', attr)
-            .then((response) => {
-              this.$store.dispatch('storeAccounts', response.data.data)
-
-              flash(this.$store, 'Account added', 'success')
-            })
-            .catch((err) => {
-              flash(this.$store, err, 'error')
-            })
-            .then(() => {
-              this.addForm.isLoading = false
-            })
+          this.$store.dispatch('storeAccount', account)
         }
       },
 
@@ -284,20 +255,7 @@
       },
 
       remove (account) {
-        account.isDeleteLoading = true
-
-        axios.post('/api/accounts', {
-          public_key: account.public_key,
-          _method: 'delete',
-        }).then((response) => {
-          this.$store.dispatch('storeAccounts', response.data.data)
-
-          flash(this.$store, 'Account deleted', 'success')
-        }).catch((err) => {
-          flash(this.$store, err, 'error')
-        }).then(() => {
-          account.isDeleteLoading = true
-        })
+        this.$store.dispatch('removeAccount', account.public_key)
       },
     },
   }

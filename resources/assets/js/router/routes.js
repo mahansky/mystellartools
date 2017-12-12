@@ -1,4 +1,4 @@
-export default ({ keypairGuard, keypairCanSignGuard, guestGuard }) => [
+export default ({ keypairGuard, keypairCanSignGuard }) => [
   { path: '/', name: 'welcome', component: require('~/pages/welcome.vue') },
   { path: '/claim', name: 'claim', component: require('~/pages/claim.vue') },
   { path: '/help', name: 'help', component: require('~/pages/help.vue') },
@@ -19,12 +19,6 @@ export default ({ keypairGuard, keypairCanSignGuard, guestGuard }) => [
     { path: '/setoptions', name: 'setoptions', component: require('~/pages/tools/setoptions.vue') },
     { path: '/data', name: 'data', component: require('~/pages/tools/data.vue') },
     { path: '/merge', name: 'merge', component: require('~/pages/tools/merge.vue') },
-  ]),
-
-  ...guestGuard([
-    { path: '/login', name: 'login', component: require('~/pages/auth/login.vue') },
-    { path: '/register', name: 'register', component: require('~/pages/auth/register.vue') },
-    { path: '/password', name: 'password', component: require('~/pages/auth/password.vue') },
   ]),
 
   { path: '*', component: require('~/pages/errors/404.vue') }

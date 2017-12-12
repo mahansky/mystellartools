@@ -5,9 +5,7 @@
                 <v-card-text>
                     <b>List of your contacts</b>
 
-                    <v-btn info loading flat v-if="!loaded"></v-btn>
                     <v-data-table
-                            v-if="loaded"
                             :headers="headers"
                             :items="contacts"
                             hide-actions
@@ -24,10 +22,9 @@
                             </td>
                             <td class="text-xs-right">
                                 <span class="table-row-detail">
-                                    <a v-if="!props.item.isDeleteLoading" href="#"
-                                       @click.prevent.stop="remove(props.item)" class="red--text">Delete</a>
-                                    <v-btn v-if="props.item.isDeleteLoading" flat small loading
-                                           class="red--text"></v-btn>
+                                    <a href="#" @click.prevent.stop="remove(props.item)" class="red--text">
+                                        Delete
+                                    </a>
                                 </span>
                             </td>
                         </template>
@@ -72,9 +69,7 @@
                                     flat
                                     :class="{'blue--text': contactForm.valid, 'red--text': !contactForm.valid}"
                                     @click.stop="save"
-                                    :loading="contactForm.isLoading"
-                            >Save
-                            </v-btn>
+                            >Save</v-btn>
                         </v-layout>
                     </v-form>
                 </v-card-text>
@@ -102,7 +97,6 @@
           {text: '', value: '', align: 'right', sortable: false},
         ],
         contactForm: {
-          isLoading: false,
           valid: false,
           name: '',
           nameRules: [(v) => !!v || 'Name is required'],
@@ -145,11 +139,7 @@
 
     computed: {
       contacts () {
-        return map(this.$store.getters.contacts, (contact) => {
-          Vue.set(contact, 'isDeleteLoading', false)
-
-          return contact
-        })
+        return this.$store.getters.contacts
       },
     },
 
@@ -171,65 +161,25 @@
     },
 
     methods: {
-      fetch () {
-        this.loaded = false
-
-        axios.get('/api/contacts')
-          .then(response => {
-            this.$store.dispatch('storeContacts', response.data)
-          })
-          .catch(err => {
-            flash(this.$store, err, 'error')
-          })
-          .then(() => {
-            this.loaded = true
-          })
-      },
-
       remove (contact) {
-        contact.isDeleteLoading = true
-
-        axios.delete(`/api/contacts/${contact.id}`)
-          .then(() => {
-            flash(this.$store, 'Contact deleted', 'success')
-          })
-          .catch(err => {
-            flash(this.$store, err, 'error')
-          })
-          .then(() => {
-            return this.fetch()
-          })
+        this.$store.dispatch('removeContact', contact.public_key)
       },
 
       save () {
         if (this.$refs.contactFormRef.validate()) {
-          this.contactForm.isLoading = true
-
-          let params = {
+          let contact = {
             name: this.contactForm.name,
             public_key: this.contactForm.publicKey,
           }
 
           if (this.contactForm.memoType) {
-            params.memo_type = this.contactForm.memoType.split('_')[1].toLowerCase()
-            params.memo = this.contactForm.memoValue
+            contact.memo_type = this.contactForm.memoType.split('_')[1].toLowerCase()
+            contact.memo = this.contactForm.memoValue
           }
 
-          axios.post('/api/contacts', params).then(() => {
-            flash(this.$store, 'Contact added', 'success')
-          }).catch(err => {
-            flash(this.$store, err, 'error')
-          }).then(() => {
-            this.contactForm.isLoading = false
-
-            return this.fetch()
-          })
+          this.$store.dispatch('storeContact', contact)
         }
       },
-    },
-
-    created () {
-      this.fetch()
     },
   }
 </script>

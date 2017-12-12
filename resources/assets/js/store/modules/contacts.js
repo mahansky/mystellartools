@@ -1,4 +1,5 @@
 import * as types from '../mutation-types'
+import { remove } from 'lodash'
 
 // state
 export const state = {
@@ -7,23 +8,25 @@ export const state = {
 
 // mutations
 export const mutations = {
-  [types.STORE_CONTACTS] (state, contacts) {
-    state.contacts = contacts
+  [types.STORE_CONTACT] (state, contact) {
+    state.contacts.push(contact)
   },
 
-  [types.REMOVE_CONTACTS] (state) {
-    state.contacts = []
+  [types.REMOVE_CONTACT] (state, publicKey) {
+    remove(state.contacts, function (contact) {
+      return contact.public_key === publicKey
+    })
   },
 }
 
 // actions
 export const actions = {
-  storeContacts ({commit}, payload) {
-    commit(types.STORE_CONTACTS, payload)
+  storeContact ({commit}, contact) {
+    commit(types.STORE_CONTACT, contact)
   },
 
-  removeContacts ({commit}) {
-    commit(types.REMOVE_CONTACTS)
+  removeContact ({commit}, publicKey) {
+    commit(types.REMOVE_CONTACT, publicKey)
   },
 }
 

@@ -16,7 +16,7 @@
                                         label="Recipient"
                                         :rules="recipientRules"
                                         v-model="recipient"
-                                        :append-icon="authCheck ? 'supervisor_account' : null"
+                                        append-icon="supervisor_account"
                                         :append-icon-cb="openContacts"
                                 ></v-text-field>
 
@@ -169,7 +169,7 @@
                     <p>
                         <u>Public key</u> (address) of Stellar account or <u>any email address</u>.
                     </p>
-                    <p v-if="authCheck">
+                    <p>
                         Clicking on the icon on the right side of the input opens up your contact list.
                     </p>
                     <p>
@@ -326,10 +326,6 @@
     computed: {
       contacts () {
         return this.$store.getters.contacts
-      },
-
-      authCheck () {
-        return this.$store.getters.authCheck
       },
     },
 
