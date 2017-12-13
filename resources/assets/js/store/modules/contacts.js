@@ -17,6 +17,10 @@ export const mutations = {
       return contact.public_key === publicKey
     })
   },
+
+  [types.REMOVE_CONTACTS] (state) {
+    state.contacts = []
+  },
 }
 
 // actions
@@ -27,6 +31,10 @@ export const actions = {
 
   removeContact ({commit}, publicKey) {
     commit(types.REMOVE_CONTACT, publicKey)
+  },
+
+  removeContacts ({commit}) {
+    commit(types.REMOVE_CONTACT)
   },
 }
 

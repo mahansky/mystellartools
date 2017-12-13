@@ -178,7 +178,6 @@
                             flat
                             class="blue--text"
                             @click="unlockSecret"
-                            :loading="passwordForm.isLoading"
                     >
                         Unlock
                     </v-btn>
@@ -193,6 +192,7 @@
   import axios from 'axios'
   import { flash } from '../utils'
   import * as utils from '../utils'
+  import { find } from 'lodash'
 
   export default {
     name: 'app-layout',
@@ -209,7 +209,6 @@
         passwordForm: {
           valid: false,
           pw: true,
-          isLoading: false,
           password: '',
         },
       }
@@ -217,7 +216,7 @@
 
     computed: {
       unlocked () {
-        return this.$store.getters.keypairCanSign || this.$store.getters.keypairSssOk
+        return this.$store.getters.keypairCanSign
       },
 
       activeAccount () {
@@ -240,7 +239,6 @@
     methods: {
       logout () {
         utils.logout()
-        this.$router.push({name: 'welcome'})
       },
 
       openDialog () {
@@ -248,40 +246,42 @@
       },
 
       unlockSecret () {
-        this.passwordForm.isLoading = true
+        let publicKey = this.activeAccount
 
-        axios.post('/api/unlock', {
-          public_key: this.activeAccount,
-          password: this.passwordForm.password,
-        }).then(() => {
-          this.passwordDialog = false
-          this.passwordForm.password = ''
+        try {
+          let account = find(this.$store.getters.accounts, function (account) {
+            return account.public_key === publicKey
+          })
 
-          this.$store.dispatch('updateSss', {
-            sss: true,
-            sssOk: true,
+          let secret = CryptoJS.AES.decrypt(account.secret_key, this.passwordForm.password).toString(CryptoJS.enc.Utf8);
+console.log(secret)
+
+          this.$store.dispatch('storeKeypair', {
+            keypair: Stellar.Keypair.fromSecret(secret)
           })
 
           flash(this.$store, 'Account unlocked', 'success')
-        }).catch((err) => {
-          flash(this.$store, err, 'error')
-        }).then(() => {
-          this.passwordForm.isLoading = false
-        })
+        } catch (e) {
+          console.log(e)
+          flash(this.$store, 'Incorrect password', 'error')
+        }
       },
 
       clickedLock () {
-        if (this.$store.getters.keypairSss && !this.$store.getters.keypairSssOk) {
-          this.passwordDialog = true
-        }
+        let publicKey = this.activeAccount
 
-        if (!this.$store.getters.keypairSss && !this.$store.getters.keypairCanSign) {
+        let account = find(this.$store.getters.accounts, function (account) {
+          return account.public_key === publicKey
+        })
+
+        if (account && account.secret_key) {
+          this.passwordDialog = true
+        } else {
           this.dialog = !this.dialog
         }
       },
 
       closeDialog () {
-        console.log('closing dialog')
         this.dialog = false
       }
     },

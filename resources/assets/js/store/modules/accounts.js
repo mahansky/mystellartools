@@ -1,14 +1,21 @@
 import * as types from '../mutation-types'
 import { remove } from 'lodash'
+const AES = require('crypto-js/aes')
 
 // state
 export const state = {
-  accounts: null,
+  accounts: [],
 }
 
 // mutations
 export const mutations = {
   [types.STORE_ACCOUNT] (state, account) {
+    if (account.secret_key) {
+      account.secret_key = AES.encrypt(account.secret_key, account.password).toString()
+
+      delete account['password']
+    }
+
     state.accounts.push(account)
   },
 
@@ -16,6 +23,10 @@ export const mutations = {
     remove(state.accounts, function (account) {
       return account.public_key === publicKey
     })
+  },
+
+  [types.REMOVE_ACCOUNTS] (state) {
+    state.accounts = []
   },
 }
 
@@ -27,6 +38,10 @@ export const actions = {
 
   removeAccount ({commit}, publicKey) {
     commit(types.REMOVE_ACCOUNT, publicKey)
+  },
+
+  removeAccounts ({commit}) {
+    commit(types.REMOVE_ACCOUNT)
   },
 }
 

@@ -20,7 +20,7 @@
                             <td v-text="props.item.name"></td>
                             <td v-text="props.item.public_key"></td>
                             <td>
-                                <v-icon v-if="props.item.sss">check</v-icon>
+                                <v-icon v-if="props.item.secret_key">check</v-icon>
                             </td>
                             <td class="text-xs-right">
                                     <span class="table-row-detail">
@@ -234,7 +234,7 @@
       },
 
       closeDialog () {
-        this.$parent.closeDialog()
+        this.$parent.$parent.$parent.closeDialog()
       },
 
       use (account) {
@@ -244,7 +244,7 @@
 
         this.$store.dispatch('storeKeypair', {
           keypair: Stellar.Keypair.fromPublicKey(selectedAccount.public_key),
-          sss: selectedAccount.sss,
+          hasEncryptedSecret: !!selectedAccount.secret_key,
         })
 
         flash(this.$store, 'Account switched', 'success')

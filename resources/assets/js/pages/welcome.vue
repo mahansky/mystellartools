@@ -105,10 +105,9 @@
                         <p>Here is a list of planned features:</p>
                         <ul>
                             <li>Paper Wallet generator</li>
-                            <li>Multi-sig coordinator</li>
-                            <li>Stellar Network explorer</li>
                             <li>Stellar Distributed Exchange trading tools</li>
-                            <li>Simple fiat&lt;-&gt;XLM transfer</li>
+                            <li>Stellar Network explorer</li>
+                            <li>Multi-sig coordinator</li>
                             <li>Improve existing features</li>
                         </ul>
                     </v-flex>
