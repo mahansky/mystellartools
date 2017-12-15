@@ -2,8 +2,8 @@
     <div>
         <table class="first-padding">
             <tr>
-                <td><b>Funder</b></td>
-                <td><span v-text="operation.funder"></span></td>
+                <td><b>Account</b></td>
+                <td><span v-text="operation.account"></span></td>
             </tr>
             <tr>
                 <td><b>Starting balance</b></td>

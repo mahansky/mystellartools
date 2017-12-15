@@ -9,9 +9,7 @@
                             <v-spacer></v-spacer>
                             <v-toolbar-side-icon class="hidden-md-and-up" @click="isNavbarOpen = !isNavbarOpen"></v-toolbar-side-icon>
                             <v-toolbar-items class="hidden-sm-and-down">
-                                <v-btn flat @click="$router.push({name: 'help'})">Help</v-btn>
-                                <v-btn flat @click="$router.push({name: 'register'})">Register</v-btn>
-                                <v-btn flat info @click="$router.push({name: 'login'})">Login</v-btn>
+                                <v-btn flat @click="$router.push({name: 'help'})">Get started</v-btn>
                             </v-toolbar-items>
                         </v-toolbar>
 
@@ -19,9 +17,7 @@
                             <v-expansion-panel-content v-model="isNavbarOpen">
                                 <div class="mobile-nav">
                                     <ul>
-                                        <li><router-link :to="{name: 'register'}">Register</router-link></li>
-                                        <li><router-link :to="{name: 'login'}">Login</router-link></li>
-                                        <li><router-link :to="{name: 'help'}">Help</router-link></li>
+                                        <li><router-link :to="{name: 'help'}">Get started</router-link></li>
                                     </ul>
                                 </div>
                             </v-expansion-panel-content>

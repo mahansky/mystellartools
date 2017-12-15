@@ -32,7 +32,6 @@ if (process.argv.indexOf('--config=stellar.webpack.mix.js') !== -1) {
 mix
   .js('resources/assets/js/app.js', 'public/js')
   .sass('resources/assets/sass/app.scss', 'public/css')
-  .disableNotifications()
 
 if (mix.inProduction()) {
   mix.version()

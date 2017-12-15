@@ -1,47 +1,48 @@
 import * as types from '../mutation-types'
-import store from '../../store'
-import axios from 'axios'
-import { Stellar } from '../../stellar'
+import { remove } from 'lodash'
+
+const AES = require('crypto-js/aes')
 
 // state
 export const state = {
-  accounts: null,
+  accounts: [],
 }
 
 // mutations
 export const mutations = {
-  [types.STORE_ACCOUNTS] (state, accounts) {
-    state.accounts = accounts
+  [types.STORE_ACCOUNT] (state, account) {
+    if (account.secret_key) {
+      account.secret_key = AES.encrypt(account.secret_key, account.password).toString()
+
+      delete account['password']
+    }
+
+    state.accounts.push(account)
+  },
+
+  [types.REMOVE_ACCOUNT] (state, publicKey) {
+    remove(state.accounts, function (account) {
+      return account.public_key === publicKey
+    })
   },
 
   [types.REMOVE_ACCOUNTS] (state) {
-    state.accounts = null
+    state.accounts = []
   },
 }
 
 // actions
 export const actions = {
-  async fetchAccounts ({commit}) {
-    try {
-      const {data} = await axios.get('/api/accounts')
-
-      commit(types.STORE_ACCOUNTS, data.data)
-
-      if (data.data.length > 0) {
-        store.dispatch('storeKeypair', {
-          keypair: Stellar.Keypair.fromPublicKey(data.data[0].public_key),
-          sss: data.data[0].sss,
-        })
-      }
-    } catch (e) {}
+  storeAccount ({commit}, account) {
+    commit(types.STORE_ACCOUNT, account)
   },
 
-  storeAccounts ({commit}, payload) {
-    commit(types.STORE_ACCOUNTS, payload)
+  removeAccount ({commit}, publicKey) {
+    commit(types.REMOVE_ACCOUNT, publicKey)
   },
 
   removeAccounts ({commit}) {
-    commit(types.REMOVE_ACCOUNTS)
+    commit(types.REMOVE_ACCOUNT)
   },
 }
 

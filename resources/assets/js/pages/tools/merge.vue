@@ -70,7 +70,6 @@
           submitTransaction('mergeAccounts', {destination: this.destination})
             .then(() => {
               utils.logout()
-              this.$router.push({name: 'welcome'})
             })
             .catch((err) => {
               flash(this.$store, err, 'error')
