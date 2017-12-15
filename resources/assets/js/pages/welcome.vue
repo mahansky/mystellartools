@@ -86,7 +86,7 @@
                             <v-icon class="blue--text">save</v-icon>
                             Browser based
                         </div>
-                        <p>Everything is stored in the browser (possible to store encrypted keys). Share the data with another browser (ex. smartphone) using simple link.</p>
+                        <p>Everything is stored in the browser (possible to store encrypted keys).</p>
                     </v-flex>
                     <v-flex md4>
                         <div class="title mb-3">
@@ -106,7 +106,7 @@
                         <ul>
                             <li>Paper Wallet generator</li>
                             <li>Stellar Distributed Exchange trading tools</li>
-                            <li>Stellar Network explorer</li>
+                            <li>Stellar network explorer</li>
                             <li>Multi-sig coordinator</li>
                             <li>Improve existing features</li>
                         </ul>

@@ -163,7 +163,20 @@
                     <div class="textblock">
                         <div class="headline"><a href="#ledger" name="#ledger">Ledger Nano S</a></div>
                         <p>
-                            TODO
+                            MyStellar.Tools supports Ledger Nano S. Go to the main page and click on the image "Sign in with Ledger".
+                            If you have your device plugged into computer, you should be able to click the "Sign in" button.
+                        </p>
+                        <p>
+                            You can setup inflation destination as described <a href="#inflation-how-to">above</a>.
+                        </p>
+                        <p>
+                            <b>You have to use latest Chrome or Opera browser</b> to be able to use Ledger Nano S with MyStellar.Tools.
+                        </p>
+                    </div>
+
+                    <div class="textblock">
+                        <p class="grey--text">
+                            <i>Some paragraphs were copied from Stellar's website https://stellar.org</i>
                         </p>
                     </div>
                 </v-flex>

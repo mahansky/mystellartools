@@ -193,6 +193,9 @@
   import { flash } from '../utils'
   import * as utils from '../utils'
   import { find } from 'lodash'
+  import { Keypair } from 'stellar-sdk'
+
+  const CryptoJS = require('crypto-js')
 
   export default {
     name: 'app-layout',
@@ -254,15 +257,15 @@
           })
 
           let secret = CryptoJS.AES.decrypt(account.secret_key, this.passwordForm.password).toString(CryptoJS.enc.Utf8);
-console.log(secret)
 
           this.$store.dispatch('storeKeypair', {
-            keypair: Stellar.Keypair.fromSecret(secret)
+            keypair: Keypair.fromSecret(secret)
           })
+
+          this.passwordDialog = false
 
           flash(this.$store, 'Account unlocked', 'success')
         } catch (e) {
-          console.log(e)
           flash(this.$store, 'Incorrect password', 'error')
         }
       },

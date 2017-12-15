@@ -88,7 +88,7 @@ class FederationController extends Controller
 
         $count = Address::where('account_id', request('account_id'))->count();
 
-        if ((! auth('api')->check() && $count > 0) || (auth('api')->check() && $count > 2)) {
+        if ($count > 2) {
             return response(['detail' => 'Maximum limit of Stellar addresses per account reached.'], 409, $this->headers);
         }
 

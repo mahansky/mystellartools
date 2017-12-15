@@ -3,12 +3,9 @@ import { StrKey } from 'stellar-sdk'
 export const Stellar = require('stellar-sdk')
 
 Stellar.Network.usePublicNetwork()
-export const HorizonURL = 'https://horizon.stellar.org'
-// export const HorizonURL = 'https://mystellar.tools:8000'
-export const StellarServer = new Stellar.Server(HorizonURL)
 
-// Stellar.Network.useTestNetwork()
-// export const StellarServer = new Stellar.Server('https://horizon-testnet.stellar.org')
+export const HorizonURL = 'https://mystellar.tools:8000'
+export const StellarServer = new Stellar.Server(HorizonURL)
 
 export const ruleAccountIsValid = (input, allowFederation = true) => {
   let ok = false

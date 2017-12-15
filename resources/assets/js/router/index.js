@@ -81,7 +81,7 @@ function keypairGuard (routes) {
 
 function keypairCanSignGuard (routes) {
   return beforeEnter(routes, (to, from, next) => {
-    if (store.getters.keypairCanSign) {
+    if (store.getters.keypairCanSign || store.getters.keypairLedger) {
       return next()
     }
 

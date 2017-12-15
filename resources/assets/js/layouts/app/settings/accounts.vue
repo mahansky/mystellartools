@@ -230,6 +230,10 @@
           }
 
           this.$store.dispatch('storeAccount', account)
+
+          this.addForm.name = ''
+          this.addForm.key = ''
+          this.addForm.password = ''
         }
       },
 
