@@ -207,6 +207,7 @@
                             flat
                             :class="{'blue--text': isLedgerConnected, 'grey--text': !isLedgerConnected}"
                             @click="proceedWithLedger"
+                            :loading="ledgerLoading"
                     >Sign in</v-btn>
                 </v-card-actions>
             </v-card>
@@ -263,6 +264,7 @@
       createDialog: false,
       newKeypair: Stellar.Keypair.random(),
 
+      ledgerLoading: false,
       ledgerDialog: false,
       ledgerError: 'Failed to connect',
       ledgerStatus: '',
@@ -304,6 +306,8 @@
       },
 
       proceedWithLedger() {
+        this.ledgerLoading = true
+
         try {
           new StellarLedger.Api(new StellarLedger.comm(20)).getPublicKey_async(this.bip32Path).then((result) => {
             this.$store.dispatch('storeKeypair', {keypair: Stellar.Keypair.fromPublicKey(result['publicKey'])})
@@ -311,9 +315,12 @@
             this.$router.push({name: 'balance'})
           }).catch(() => {
             this.ledgerError = 'Failed to connect'
-          });
+          }).then(() => {
+            this.ledgerLoading = false
+          })
         } catch (err) {
           this.ledgerError = 'Failed to connect'
+          this.ledgerLoading = false
         }
       },
     },

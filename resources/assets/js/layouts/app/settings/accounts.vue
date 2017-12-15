@@ -43,18 +43,32 @@
                         You will be asked to enter a password that will be used to encrypt your Secret key.
                     </p>
                     <v-form v-model="addForm.valid" ref="addFormRef">
+                        <v-checkbox
+                                label="Adding Ledger Nano S account?"
+                                v-model="addForm.ledger"
+                                light
+                                color="blue"
+                                hide-details
+                        ></v-checkbox>
                         <v-text-field
                                 label="Name"
                                 v-model="addForm.name"
                                 :rules="addForm.nameRules"
                         ></v-text-field>
                         <v-text-field
+                                v-if="addForm.ledger"
+                                label="Bip 32 Path"
+                                v-model="addForm.bip32Path"
+                                :rules="addForm.bip32PathRules"
+                        ></v-text-field>
+                        <v-text-field
+                                v-if="!addForm.ledger"
                                 label="Public or Secret key"
                                 v-model="addForm.key"
                                 :rules="addForm.keyRules"
                         ></v-text-field>
                         <v-text-field
-                                v-if="addForm.isSecret"
+                                v-if="!addForm.ledger && addForm.isSecret"
                                 label="Password"
                                 v-model="addForm.password"
                                 :rules="addForm.passwordRules"
@@ -66,6 +80,7 @@
                     <v-layout row>
                         <v-spacer></v-spacer>
                         <v-btn
+                                :loading="addForm.loading"
                                 flat
                                 :class="{'blue--text': addForm.valid, 'red--text': !addForm.valid}"
                                 @click.stop="add"
@@ -110,6 +125,7 @@
   import { flash } from '~/utils'
   import { contains, filter, includes, map } from 'lodash'
   import Vue from 'vue'
+  import StellarLedger from 'stellar-ledger-api'
 
   export default {
     data () {
@@ -139,6 +155,7 @@
         },
 
         addForm: {
+          loading: false,
           pw: false,
           valid: false,
           name: '',
@@ -146,6 +163,10 @@
           key: '',
           keypair: null,
           keyRules: [(v) => {
+            if (this.addForm.ledger) {
+              return true
+            }
+
             if (this.addForm.key.startsWith('G')) {
               try {
                 this.addForm.keypair = Stellar.Keypair.fromPublicKey(v)
@@ -175,6 +196,9 @@
           password: '',
           passwordRules: [(v) => (!!v && v.length > 6 && v.length <= 32) || 'Password must have 6 - 32 characters'],
           isSecret: false,
+          ledger: false,
+          bip32Path: "44'/148'/0'",
+          bip32PathRules: [(v) => !!v || 'Bip 32 path is required'],
         },
 
         headers: [
@@ -219,21 +243,49 @@
 
       add () {
         if (this.$refs.addFormRef.validate()) {
-          let account = {
-            name: this.addForm.name,
-            public_key: this.addForm.keypair.publicKey()
+          this.addForm.loading = true
+
+          if (this.addForm.ledger) {
+            try {
+              new StellarLedger.Api(new StellarLedger.comm(20)).getPublicKey_async(this.addForm.bip32Path).then((result) => {
+                this.$store.dispatch('storeAccount', {
+                  name: this.addForm.name,
+                  public_key: result['publicKey'],
+                  bip32Path: this.addForm.bip32Path,
+                })
+
+                this.addForm.name = ''
+                this.addForm.key = ''
+                this.addForm.password = ''
+              }).catch(() => {
+                flash(this.$store, 'Problem with contacting Ledger Nano S', 'error')
+              }).then(() => {
+                this.addForm.loading = false
+              })
+            } catch (err) {
+              this.addForm.loading = false
+
+              flash(this.$store, 'Problem with contacting Ledger Nano S', 'error')
+            }
+          } else {
+            let account = {
+              name: this.addForm.name,
+              public_key: this.addForm.keypair.publicKey(),
+            }
+
+            if (this.addForm.keypair.canSign()) {
+              account.secret_key = this.addForm.keypair.secret()
+              account.password = this.addForm.password
+            }
+
+            this.$store.dispatch('storeAccount', account)
+
+            this.addForm.name = ''
+            this.addForm.key = ''
+            this.addForm.password = ''
+
+            this.addForm.loading = false
           }
-
-          if (this.addForm.keypair.canSign()) {
-            account.secret_key = this.addForm.keypair.secret()
-            account.password = this.addForm.password
-          }
-
-          this.$store.dispatch('storeAccount', account)
-
-          this.addForm.name = ''
-          this.addForm.key = ''
-          this.addForm.password = ''
         }
       },
 
@@ -248,8 +300,13 @@
 
         this.$store.dispatch('storeKeypair', {
           keypair: Stellar.Keypair.fromPublicKey(selectedAccount.public_key),
-          hasEncryptedSecret: !!selectedAccount.secret_key,
         })
+
+        if (selectedAccount.bip32Path) {
+          this.$store.dispatch('accessWithLedger', {
+            bip32Path: this.bip32Path
+          })
+        }
 
         flash(this.$store, 'Account switched', 'success')
 

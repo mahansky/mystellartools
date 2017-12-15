@@ -41,15 +41,10 @@
                         <p>
                             If you don't exit the app using top right button "Exit", all the data such as
                             Accounts and Contacts are stored in your browser for your next visit.
-                            If you haven't stored your current account in the Accounts (in settings),
-                            it will not be remembered.
                         </p>
                         <p>
                             If you add a secret key as an account, you will be asked to type in a password
                             that will be used to encrypt it so it's safely stored in the browser.
-                        </p>
-                        <p>
-                            If you have
                         </p>
                     </div>
 

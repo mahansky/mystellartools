@@ -38,7 +38,7 @@
 
     data () {
       return {
-        active: '',
+        active: 'accounts',
       }
     },
 

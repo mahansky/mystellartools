@@ -16,7 +16,7 @@
                             <td v-text="props.item.public_key"></td>
                             <td>
                                 <template v-if="props.item.memo_type">
-                                    <span v-text="props.item.memo_type"></span>
+                                    <span v-text="props.item.memo_type.toUpperCase()"></span>:
                                     <span v-text="props.item.memo"></span>
                                 </template>
                             </td>
