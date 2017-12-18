@@ -41,24 +41,13 @@ if (mix.inProduction()) {
     'vform',
     'axios',
     'vuex',
-    'jquery',
-    'popper.js',
     'vue-meta',
-    'bootstrap',
     'vue-router',
     'vuex-router-sync'
   ])
 }
 
 mix.webpackConfig({
-  plugins: [
-    new webpack.ProvidePlugin({
-      $: 'jquery',
-      jQuery: 'jquery',
-      'window.jQuery': 'jquery',
-      Popper: ['popper.js', 'default']
-    })
-  ],
   resolve: {
     alias: {
       '~': path.join(__dirname, './resources/assets/js')
