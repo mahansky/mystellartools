@@ -21,11 +21,13 @@
         "laravel-mix": "^1.0"
     },
     "dependencies": {
+        "aws-sdk": "^2.171.0",
         "axios": "^0.16.2",
         "bignumber.js": "^4.1.0",
-        "crypto-js": "^3.1.9-1",
+        "crypto-js": "3.1.8",
         "lodash": "^4.17.4",
         "moment": "^2.18.1",
+        "shebang-loader": "^0.0.1",
         "stellar-ledger-api": "^1.1.1",
         "stellar-sdk": "^0.7.3",
         "vform": "^0.8.1",

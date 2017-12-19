@@ -195,7 +195,7 @@
                             hide-actions
                             class="elevation-1"
                     >
-                        <template slot="items" scope="props">
+                        <template slot="items" slot-scope="props">
                             <td v-text="props.item.asset_code"></td>
                             <td v-text="props.item.asset_issuer"></td>
                             <td v-text="props.item.limit"></td>
