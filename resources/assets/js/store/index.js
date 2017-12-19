@@ -49,7 +49,6 @@ export default new Vuex.Store({
     setState: function (key, state, storage) {
       let newState = JSON.parse(JSON.stringify(state))
 
-      console.log(state)
       if (state.keypair && state.keypair.keypair) {
         let publicKey = state.keypair.keypair.publicKey()
 
