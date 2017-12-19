@@ -60,7 +60,7 @@
                             hide-actions
                             class="elevation-1"
                     >
-                        <template slot="items" scope="props">
+                        <template slot="items" slot-scope="props">
                             <td v-text="props.item.key"></td>
                             <td>
                                 <span v-text="decode(props.item.value)"></span>

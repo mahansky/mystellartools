@@ -10,7 +10,7 @@
                             hide-actions
                             class="elevation-1 mt-3 mb-4"
                     >
-                        <template slot="items" scope="props">
+                        <template slot="items" slot-scope="props">
                             <td>
                                 <template v-if="props.item.name">
                                     {{ props.item.name }}

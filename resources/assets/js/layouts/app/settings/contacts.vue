@@ -11,7 +11,7 @@
                             hide-actions
                             class="elevation-1 mt-2 mb-3"
                     >
-                        <template slot="items" scope="props">
+                        <template slot="items" slot-scope="props">
                             <td v-text="props.item.name"></td>
                             <td v-text="props.item.public_key"></td>
                             <td>

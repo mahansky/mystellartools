@@ -213,7 +213,7 @@
                         hide-actions
                         class="elevation-1 mt-2"
                 >
-                    <template slot="items" scope="props">
+                    <template slot="items" slot-scope="props">
                         <td class="pt-2 pb-2">
                             <div v-text="props.item.name"></div>
                             <div v-text="props.item.public_key" class="grey--text text--darken-2"></div>

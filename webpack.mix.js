@@ -5,23 +5,28 @@ const mix = require('laravel-mix')
 // STELLAR NODEJS MIX
 
 if (process.argv.indexOf('--config=stellar.webpack.mix.js') !== -1) {
-  console.log('Building Stellar');
+  console.log('Building Stellar')
 
   mix.js('resources/assets/js/stellar/external.js', 'stellar.js')
-
-  mix.options({
-    uglify: {
-      compress: {
-        drop_console: false,
-      },
-    },
-  })
 
   mix.webpackConfig({
     target: 'node',
     plugins: [
       new webpack.IgnorePlugin(/vertx/),
+      new webpack.IgnorePlugin(/package/),
     ],
+    module: {
+      rules: [
+        {
+          test: /\.js$/,
+          use: [
+            {
+              loader: 'shebang-loader'
+            }
+          ],
+        }
+      ]
+    }
   })
 
   return
@@ -43,7 +48,14 @@ if (mix.inProduction()) {
     'vuex',
     'vue-meta',
     'vue-router',
-    'vuex-router-sync'
+    'vuex-router-sync',
+    'crypto-js',
+    'stellar-ledger-api',
+    'vuex-persistedstate',
+    'moment',
+    'lodash',
+    'bignumber.js',
+    'vue-analytics',
   ])
 }
 
