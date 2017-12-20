@@ -237,6 +237,7 @@
   import { flash } from '../../utils'
   import { forEach } from 'lodash'
   import { submitTransaction } from '../../stellar/internal'
+  import { knownAccounts } from '../../stellar/known_accounts'
 
   export default {
     metaInfo: () => ({
@@ -364,6 +365,14 @@
           .then(({account_id}) => {
             this.resolvedRecipient = account_id
 
+            if (this.memoValue === '' && this.resolvedRecipient in knownAccounts && knownAccounts[this.resolvedRecipient].requiredMemoType) {
+              this.memo = true
+              this.memoType = knownAccounts[this.resolvedRecipient].requiredMemoType
+              this.memoValue = ''
+
+              throw new Error(knownAccounts[this.resolvedRecipient].name + ' requires MEMO to be set!')
+            }
+
             return StellarServer.loadAccount(this.$store.getters.keypair.publicKey())
               .then(account => {
                 vm.loadedAccount = account
@@ -408,10 +417,14 @@
                 vm.isVerifying = false
               })
               .catch(err => {
+                this.clickedVerify = false
+
                 flash(vm.$store, err, 'error')
               })
           })
           .catch((err) => {
+            this.clickedVerify = false
+
             flash(this.$store, err, 'error')
           })
       },
