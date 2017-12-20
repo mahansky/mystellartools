@@ -193,8 +193,9 @@
                             v-if="!ledgerDefaultAccount"
                             label="BIP32 path"
                             v-model="ledgerBip32Path"
+                            :rules="ledgerBip32PathRules"
                     ></v-text-field>
-                    <div class="red--text pt-1" v-html="ledgerError ? ledgerError : '&nbsp;'"></div>
+                    <div class="red--text pt-1" v-html="ledgerError" v-if="ledgerError"></div>
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
@@ -219,6 +220,7 @@
   import { mapGetters } from 'vuex'
   import * as utils from '../utils'
   import StellarLedger from 'stellar-ledger-api'
+  import { ruleBip32Path } from '../stellar/index'
 
   let Stellar = require('stellar-sdk')
 
@@ -270,6 +272,7 @@
       ledgerStatus: '',
       ledgerDefaultAccount: true,
       ledgerBip32Path: "44'/148'/0'",
+      ledgerBip32PathRules: [(v) => ruleBip32Path(v)],
     }),
 
     methods: {
@@ -299,6 +302,7 @@
         new StellarLedger.Api(new StellarLedger.comm(20))
           .connect(() => {
             this.ledgerStatus = 'Connected'
+            this.ledgerError = ''
           }, (err) => {
             this.ledgerStatus = 'Error: ' + err
             this.ledgerError = 'Error: ' + err
@@ -309,9 +313,9 @@
         this.ledgerLoading = true
 
         try {
-          new StellarLedger.Api(new StellarLedger.comm(20)).getPublicKey_async(this.bip32Path).then((result) => {
+          new StellarLedger.Api(new StellarLedger.comm(20)).getPublicKey_async(this.ledgerBip32Path).then((result) => {
             this.$store.dispatch('storeKeypair', {keypair: Stellar.Keypair.fromPublicKey(result['publicKey'])})
-            this.$store.dispatch('accessWithLedger', {bip32Path: this.bip32Path})
+            this.$store.dispatch('accessWithLedger', {bip32Path: this.ledgerBip32Path})
             this.$router.push({name: 'balance'})
           }).catch(() => {
             this.ledgerError = 'Failed to connect'

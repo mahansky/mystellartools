@@ -99,10 +99,24 @@
                         Use this form to unlock your account (enter your Secret key).
                     </p>
                     <v-form v-model="viewForm.valid" ref="viewFormRef" @submit.prevent="">
+                        <v-checkbox
+                                label="Switching to Ledger Nano S account?"
+                                v-model="viewForm.ledger"
+                                light
+                                color="blue"
+                                hide-details
+                        ></v-checkbox>
                         <v-text-field
+                                v-if="!viewForm.ledger"
                                 label="Public or Secret key"
                                 v-model="viewForm.key"
                                 :rules="viewForm.rules"
+                        ></v-text-field>
+                        <v-text-field
+                                v-if="viewForm.ledger"
+                                label="Bip 32 Path"
+                                v-model="viewForm.bip32Path"
+                                :rules="viewForm.bip32PathRules"
                         ></v-text-field>
                     </v-form>
                     <v-layout row>
@@ -126,14 +140,22 @@
   import { contains, filter, includes, map } from 'lodash'
   import Vue from 'vue'
   import StellarLedger from 'stellar-ledger-api'
+  import { ruleBip32Path } from '../../../stellar/index'
 
   export default {
     data () {
       return {
         viewForm: {
           valid: false,
+          ledger: false,
+          bip32Path: "44'/148'/0'",
+          bip32PathRules: [(v) => ruleBip32Path(v)],
           key: '',
           rules: [(v) => {
+            if (this.viewForm.ledger) {
+              return true
+            }
+
             if (this.viewForm.key.startsWith('G')) {
               try {
                 Stellar.Keypair.fromPublicKey(v)
@@ -198,7 +220,7 @@
           isSecret: false,
           ledger: false,
           bip32Path: "44'/148'/0'",
-          bip32PathRules: [(v) => !!v || 'Bip 32 path is required'],
+          bip32PathRules: [(v) => ruleBip32Path(v)],
         },
 
         headers: [
@@ -212,7 +234,7 @@
 
     computed: {
       unlocked () {
-        return this.$store.getters.keypairCanSign
+        return this.$store.getters.keypairCanSign || this.$store.getters.keypairLedger
       },
 
       accounts () {
@@ -222,22 +244,39 @@
 
     methods: {
       view () {
-        if (this.$refs.viewFormRef.validate()) {
-          if (this.viewForm.key.startsWith('G')) {
-            this.$store.dispatch('storeKeypair', {
-              keypair: Stellar.Keypair.fromPublicKey(this.viewForm.key)
+        if (this.viewForm.ledger) {
+          try {
+            new StellarLedger.Api(new StellarLedger.comm(20)).getPublicKey_async(this.viewForm.bip32Path).then((result) => {
+              this.$store.dispatch('storeKeypair', {keypair: Stellar.Keypair.fromPublicKey(result['publicKey'])})
+              this.$store.dispatch('accessWithLedger', {bip32Path: this.viewForm.bip32Path})
+
+              this.closeDialog()
+
+              this.$router.push({name: 'balance'})
+            }).catch(() => {
+              flash(this.$store, 'Failed to connect to Ledger', 'error')
             })
-          } else {
-            this.$store.dispatch('storeKeypair', {
-              keypair: Stellar.Keypair.fromSecret(this.viewForm.key)
-            })
+          } catch (err) {
+            flash(this.$store, 'Failed to connect to Ledger', 'error')
           }
+        } else {
+          if (this.$refs.viewFormRef.validate()) {
+            if (this.viewForm.key.startsWith('G')) {
+              this.$store.dispatch('storeKeypair', {
+                keypair: Stellar.Keypair.fromPublicKey(this.viewForm.key)
+              })
+            } else {
+              this.$store.dispatch('storeKeypair', {
+                keypair: Stellar.Keypair.fromSecret(this.viewForm.key)
+              })
+            }
 
-          this.viewForm.key = ''
+            this.viewForm.key = ''
 
-          this.closeDialog()
+            this.closeDialog()
 
-          this.$router.push({name: 'balance'})
+            this.$router.push({name: 'balance'})
+          }
         }
       },
 

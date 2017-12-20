@@ -22,3 +22,17 @@ export const ruleAccountIsValid = (input, allowFederation = true) => {
 
   return ok ? true : 'Invalid account'
 }
+
+export const ruleBip32Path = (path) => {
+  if (!path.startsWith("44'/148'")) {
+    return 'Not a Stellar BIP32 path'
+  }
+
+  path.split('/').forEach(function (element) {
+    if (!element.toString().endsWith('\'')) {
+      return 'Invalid BIP32 path'
+    }
+  })
+
+  return true
+}
