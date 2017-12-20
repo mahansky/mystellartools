@@ -170,7 +170,7 @@
                             You can setup inflation destination as described <a href="#inflation-how-to">above</a>.
                         </p>
                         <p>
-                            <b>You have to use latest Chrome or Opera browser</b> to be able to use Ledger Nano S with MyStellar.Tools.
+                            <b>You have to use latest version of your browser</b> to be able to use Ledger Nano S with MyStellar.Tools.
                         </p>
                     </div>
 

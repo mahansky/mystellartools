@@ -219,7 +219,7 @@
 
     computed: {
       unlocked () {
-        return this.$store.getters.keypairCanSign
+        return this.$store.getters.keypairCanSign || this.$store.getters.keypairLedger
       },
 
       activeAccount () {

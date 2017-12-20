@@ -384,13 +384,13 @@
                   let maxSend = new BigNumber(balance).minus(minimumNativeBalance)
 
                   if (maxSend.lt(new BigNumber(this.amount))) {
-                    throw new Error('InsufficientBalanceError')
+                    throw new Error('Insufficient balance')
                   }
                 }
               })
               .then(() => {
                 if (this.asset === 'XLM') {
-                  if (new BigNumber(this.amount).gte(31)) {
+                  if (new BigNumber(this.amount).gte(20)) {
                     return
                   }
 
@@ -399,7 +399,7 @@
                     .call()
                     .catch(err => {
                       if (err.name === 'NotFoundError') {
-                        throw new Error('DestinationAccountNotExistError')
+                        throw new Error('Account does not exist. You need to send at least 20 XLM.')
                       }
                     })
                 }
@@ -467,14 +467,15 @@
 
             throw err
           })
+          .then(() => {
+            flash(this.$store, 'Success!', 'success')
+          })
           .catch(err => {
             flash(this.$store, err, 'error')
           })
           .then(() => {
             this.isSending = false
             this.clickedVerify = false
-
-            flash(this.$store, 'Success!', 'success')
           })
       },
 
