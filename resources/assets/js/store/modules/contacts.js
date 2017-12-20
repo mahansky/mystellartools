@@ -1,5 +1,4 @@
 import * as types from '../mutation-types'
-import { remove } from 'lodash'
 
 // state
 export const state = {
@@ -13,9 +12,11 @@ export const mutations = {
   },
 
   [types.REMOVE_CONTACT] (state, publicKey) {
-    remove(state.contacts, function (contact) {
-      return contact.public_key === publicKey
-    })
+    for (let i = state.contacts.length - 1; i >= 0; --i) {
+      if (state.contacts[i].public_key === publicKey) {
+        state.contacts.splice(i, 1);
+      }
+    }
   },
 
   [types.REMOVE_CONTACTS] (state) {
