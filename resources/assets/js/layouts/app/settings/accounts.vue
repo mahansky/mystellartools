@@ -216,7 +216,7 @@
             return true
           }],
           password: '',
-          passwordRules: [(v) => (!!v && v.length > 6 && v.length <= 32) || 'Password must have 6 - 32 characters'],
+          passwordRules: [(v) => (!!v && v.length >= 6 && v.length <= 32) || 'Password must have 6 - 32 characters'],
           isSecret: false,
           ledger: false,
           bip32Path: "44'/148'/0'",
