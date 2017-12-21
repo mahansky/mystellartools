@@ -1,4 +1,6 @@
 import * as types from '../mutation-types'
+import { knownAccounts } from '../../stellar/known_accounts'
+import store from '../index'
 
 // state
 export const state = {
@@ -43,3 +45,19 @@ export const actions = {
 export const getters = {
   contacts: state => state.contacts,
 }
+
+// init
+setTimeout(function () {
+  if (store.getters.contacts === 0) {
+    for (let acc in knownAccounts) {
+      if (knownAccounts.hasOwnProperty(acc)) {
+        store.dispatch('storeContact', {
+          public_key: acc,
+          name: knownAccounts[acc].name,
+          memo_type: knownAccounts[acc].requiredMemoType,
+          memo: '',
+        })
+      }
+    }
+  }
+}, 10)
