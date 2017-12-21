@@ -173,7 +173,7 @@
           }
 
           if (this.contactForm.memoType) {
-            contact.memo_type = this.contactForm.memoType.split('_')[1].toLowerCase()
+            contact.memo_type = this.contactForm.memoType
             contact.memo = this.contactForm.memoValue
           }
 

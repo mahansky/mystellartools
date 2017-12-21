@@ -47,6 +47,7 @@
   import { flash } from '../../utils'
   import { submitTransaction } from '../../stellar/internal'
   import * as utils from '../../utils'
+  import { knownAccounts } from '../../stellar/known_accounts'
 
   export default {
     metaInfo: () => ({
@@ -66,6 +67,12 @@
       merge () {
         if (this.$refs.form.validate()) {
           this.isLoading = true
+
+          if (this.destination in knownAccounts && knownAccounts[this.destination].mergeOpAccepted === false) {
+            this.isLoading = false
+
+            flash(this.$store, knownAccounts[this.destination].name + ' does not support this operation', 'error')
+          }
 
           submitTransaction('mergeAccounts', {destination: this.destination})
             .then(() => {

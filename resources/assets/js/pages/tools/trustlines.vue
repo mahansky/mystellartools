@@ -279,9 +279,11 @@
 
           Stellar.StellarTomlResolver.resolve(this.anchorDomain)
             .then(toml => {
-              this.anchorResults = toml.CURRENCIES
+              if (toml.CURRENCIES) {
+                this.anchorResults = toml.CURRENCIES
+              }
             })
-            .catch(err => {
+            .catch(() => {
               this.anchorResults = []
             })
             .then(() => {
