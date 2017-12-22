@@ -125,10 +125,7 @@
 
           vm.startListening()
 
-          let promises = []
-
           for (let i = 0; i < Math.min(vm.payments.length, 10); i++) {
-//            promises.push(vm.fetchAdditionalInfo(vm.payments[i]))
             this.loadInfo(vm.payments[i])
           }
 
@@ -149,7 +146,9 @@
           .stream({
             onmessage: (payment) => {
               if (payment.type !== 'account_merge') {
-                vm.payments.unshift(payment)
+                if (! vm.payments.some((p) => p.id === payment.id)) {
+                  vm.payments.unshift(payment)
+                }
               }
             }
           })
