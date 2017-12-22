@@ -73,10 +73,36 @@
   }
 
   .textblock {
-    margin-bottom: 40px;
+    margin-bottom: 50px;
 
     .headline {
       margin-bottom: 16px;
+    }
+
+    .title {
+      margin-bottom: 16px;
+      margin-top: 32px;
+    }
+
+    .headline + .title {
+      margin-top: 16px;
+    }
+
+    a[name] {
+      color: inherit;
+      cursor: pointer;
+      position: relative;
+      text-decoration: none;
+
+      &:hover {
+        &:before {
+          display: block;
+          content: '#';
+          position: absolute;
+          left: -25px;
+          color: rgba(0, 0, 0, .2);
+        }
+      }
     }
   }
 }

@@ -17,7 +17,9 @@
                         <div class="headline">Stellar, Lumens, XLM, Basic concepts</div>
                         <p>
                             Check out the
-                            <a href="https://www.stellar.org/how-it-works/stellar-basics/" target="_blank" rel="noreferrer nofollow">official website</a>.
+                            <a href="https://www.stellar.org/how-it-works/stellar-basics/" target="_blank" rel="noreferrer nofollow">official website</a>
+                            or our
+                            <router-link :to="{name: 'stellar101'}">guide</router-link>.
                         </p>
                     </div>
 
@@ -31,6 +33,18 @@
                             If you are logged in and viewing your account secured with password,
                             you have to unlock it by clicking the lock icon again and entering password
                             in the dialog.
+                        </p>
+                    </div>
+
+                    <div class="textblock">
+                        <div class="headline">Data stored in browser</div>
+                        <p>
+                            If you don't exit the app using top right button "Exit", all the data such as
+                            Accounts and Contacts are stored in your browser for your next visit.
+                        </p>
+                        <p>
+                            If you add a secret key as an account, you will be asked to type in a password
+                            that will be used to encrypt it so it's safely stored in the browser.
                         </p>
                     </div>
 
@@ -60,7 +74,8 @@
                         <div class="headline">Account viewer</div>
                         <p>
                             You can use MyStellar.Tools as an account viewer.
-                            Simply create a link in this format
+                            Just enter the app with any public key and you will get all the available info.
+                            You can also create links to automatically enter the app:
                             <code>https://mystellar.tools/?public_key=YOURPUBLICKEY</code>.
                         </p>
                         <p>Example <a href="https://mystellar.tools/?public_key=GAAZI4TCR3TY5OJHCTJC2A4QSY6CJWJH5IAJTGKIN2ER7LBNVKOCCWN7">https://mystellar.tools/?public_key=GAAZI4TCR3TY5OJHCTJC2A4QSY6CJWJH5IAJTGKIN2ER7LBNVKOCCWN7</a></p>

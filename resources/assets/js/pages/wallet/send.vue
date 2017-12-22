@@ -16,7 +16,7 @@
                                         label="Recipient"
                                         :rules="recipientRules"
                                         v-model="recipient"
-                                        :append-icon="authCheck ? 'supervisor_account' : null"
+                                        append-icon="supervisor_account"
                                         :append-icon-cb="openContacts"
                                 ></v-text-field>
 
@@ -169,7 +169,7 @@
                     <p>
                         <u>Public key</u> (address) of Stellar account or <u>any email address</u>.
                     </p>
-                    <p v-if="authCheck">
+                    <p>
                         Clicking on the icon on the right side of the input opens up your contact list.
                     </p>
                     <p>
@@ -179,12 +179,11 @@
                     </p>
                     <b>Asset</b>
                     <p>
-                        You can choose one of the assets your account has (see
-                        <router-link :to="{name: 'balance'}">Balance</router-link>
-                        ) or you can issue new asset directly using this form.
+                        You can choose one of the assets your account has
+                        (see <router-link :to="{name: 'balance'}">Balance</router-link>)
+                        or you can issue new asset directly using this form.
                         Recipient will have to trust you first. Trust can be created using
-                        <router-link :to="{name: 'trustlines'}">Trustlines</router-link>
-                        .
+                        <router-link :to="{name: 'trustlines'}">Trustlines</router-link>.
                     </p>
                     <b>Memo</b>
                     <p>
@@ -213,12 +212,12 @@
                         hide-actions
                         class="elevation-1 mt-2"
                 >
-                    <template slot="items" scope="props">
+                    <template slot="items" slot-scope="props">
                         <td class="pt-2 pb-2">
                             <div v-text="props.item.name"></div>
-                            <div v-text="props.item.public_key" class="grey--text text--darken-2"></div>
+                            <div v-text="props.item.public_key" class="grey--text text--darken-2" style="word-break: break-all"></div>
                             <div v-if="props.item.memo_type">
-                                <span v-text="'MEMO_' + props.item.memo_type.toUpperCase() + ': '"></span>
+                                <span v-text="props.item.memo_type + ': '"></span>
                                 <span v-text="props.item.memo"></span>
                             </div>
                             <a href="#" @click.prevent.stop="selectContact(props.item)">Select</a>
@@ -237,6 +236,7 @@
   import { flash } from '../../utils'
   import { forEach } from 'lodash'
   import { submitTransaction } from '../../stellar/internal'
+  import { knownAccounts } from '../../stellar/known_accounts'
 
   export default {
     metaInfo: () => ({
@@ -327,10 +327,6 @@
       contacts () {
         return this.$store.getters.contacts
       },
-
-      authCheck () {
-        return this.$store.getters.authCheck
-      },
     },
 
     watch: {
@@ -368,6 +364,14 @@
           .then(({account_id}) => {
             this.resolvedRecipient = account_id
 
+            if (this.memoValue === '' && this.resolvedRecipient in knownAccounts && knownAccounts[this.resolvedRecipient].requiredMemoType) {
+              this.memo = true
+              this.memoType = knownAccounts[this.resolvedRecipient].requiredMemoType
+              this.memoValue = ''
+
+              throw new Error(knownAccounts[this.resolvedRecipient].name + ' requires MEMO to be set!')
+            }
+
             return StellarServer.loadAccount(this.$store.getters.keypair.publicKey())
               .then(account => {
                 vm.loadedAccount = account
@@ -388,13 +392,13 @@
                   let maxSend = new BigNumber(balance).minus(minimumNativeBalance)
 
                   if (maxSend.lt(new BigNumber(this.amount))) {
-                    throw new Error('InsufficientBalanceError')
+                    throw new Error('Insufficient balance')
                   }
                 }
               })
               .then(() => {
                 if (this.asset === 'XLM') {
-                  if (new BigNumber(this.amount).gte(31)) {
+                  if (new BigNumber(this.amount).gte(20)) {
                     return
                   }
 
@@ -403,7 +407,7 @@
                     .call()
                     .catch(err => {
                       if (err.name === 'NotFoundError') {
-                        throw new Error('DestinationAccountNotExistError')
+                        throw new Error('Account does not exist. You need to send at least 20 XLM.')
                       }
                     })
                 }
@@ -412,10 +416,14 @@
                 vm.isVerifying = false
               })
               .catch(err => {
+                this.clickedVerify = false
+
                 flash(vm.$store, err, 'error')
               })
           })
           .catch((err) => {
+            this.clickedVerify = false
+
             flash(this.$store, err, 'error')
           })
       },
@@ -471,14 +479,15 @@
 
             throw err
           })
+          .then(() => {
+            flash(this.$store, 'Success!', 'success')
+          })
           .catch(err => {
             flash(this.$store, err, 'error')
           })
           .then(() => {
             this.isSending = false
             this.clickedVerify = false
-
-            flash(this.$store, 'Success!', 'success')
           })
       },
 
@@ -509,7 +518,7 @@
 
         if (contact.memo_type) {
           this.memo = true
-          this.memoType = 'MEMO_' + contact.memo_type.toUpperCase()
+          this.memoType = contact.memo_type.toUpperCase()
           this.memoValue = contact.memo
         } else {
           this.memo = false

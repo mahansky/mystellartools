@@ -8,8 +8,7 @@
                 <v-toolbar-title>Settings</v-toolbar-title>
                 <v-tabs-bar class="blue">
                     <v-tabs-item href="#accounts">Accounts</v-tabs-item>
-                    <v-tabs-item href="#contacts" v-if="authCheck">Contacts</v-tabs-item>
-                    <v-tabs-item href="#security" v-if="authCheck">Security</v-tabs-item>
+                    <v-tabs-item href="#contacts">Contacts</v-tabs-item>
                     <v-tabs-slider class="white"></v-tabs-slider>
                 </v-tabs-bar>
             </v-toolbar>
@@ -17,11 +16,8 @@
                 <v-tabs-content id="accounts" key="accounts" lazy>
                     <accounts></accounts>
                 </v-tabs-content>
-                <v-tabs-content id="contacts" key="contacts" v-if="authCheck" lazy>
+                <v-tabs-content id="contacts" key="contacts" lazy>
                     <contacts></contacts>
-                </v-tabs-content>
-                <v-tabs-content id="security" key="security" v-if="authCheck" lazy>
-                    <security></security>
                 </v-tabs-content>
             </v-tabs-items>
         </v-tabs>
@@ -33,35 +29,21 @@
 <script>
   import Accounts from './settings/accounts.vue'
   import Contacts from './settings/contacts.vue'
-  import Security from './settings/security.vue'
 
   export default {
     components: {
       Accounts,
       Contacts,
-      Security,
     },
 
     data () {
       return {
-        active: '',
+        active: 'accounts',
       }
-    },
-
-    computed: {
-      authCheck () {
-        return this.$store.getters.authCheck
-      },
     },
 
     methods: {
       closeDialog () {
-        if (!this.$store.getters.keypair) {
-          if (this.$store.getters.authCheck) {
-            return
-          }
-        }
-
         this.$emit('close-dialog')
       },
     },

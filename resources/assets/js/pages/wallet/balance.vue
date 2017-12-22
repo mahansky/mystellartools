@@ -128,10 +128,8 @@
           .forAccount(this.$store.getters.keypair.publicKey())
           .cursor('now')
           .stream({
-            onmessage: (payment) => {
-              if (payment.type !== 'account_merge') {
-                vm.fetchData()
-              }
+            onmessage: () => {
+              vm.fetchData()
             }
           })
       },

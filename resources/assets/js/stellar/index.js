@@ -3,12 +3,9 @@ import { StrKey } from 'stellar-sdk'
 export const Stellar = require('stellar-sdk')
 
 Stellar.Network.usePublicNetwork()
-export const HorizonURL = 'https://horizon.stellar.org'
-// export const HorizonURL = 'https://mystellar.tools:8000'
-export const StellarServer = new Stellar.Server(HorizonURL)
 
-// Stellar.Network.useTestNetwork()
-// export const StellarServer = new Stellar.Server('https://horizon-testnet.stellar.org')
+export const HorizonURL = 'https://mystellar.tools:8000'
+export const StellarServer = new Stellar.Server(HorizonURL)
 
 export const ruleAccountIsValid = (input, allowFederation = true) => {
   let ok = false
@@ -24,4 +21,18 @@ export const ruleAccountIsValid = (input, allowFederation = true) => {
   }
 
   return ok ? true : 'Invalid account'
+}
+
+export const ruleBip32Path = (path) => {
+  if (!path.startsWith("44'/148'")) {
+    return 'Not a Stellar BIP32 path'
+  }
+
+  path.split('/').forEach(function (element) {
+    if (!element.toString().endsWith('\'')) {
+      return 'Invalid BIP32 path'
+    }
+  })
+
+  return true
 }

@@ -195,7 +195,7 @@
                             hide-actions
                             class="elevation-1"
                     >
-                        <template slot="items" scope="props">
+                        <template slot="items" slot-scope="props">
                             <td v-text="props.item.asset_code"></td>
                             <td v-text="props.item.asset_issuer"></td>
                             <td v-text="props.item.limit"></td>
@@ -279,9 +279,11 @@
 
           Stellar.StellarTomlResolver.resolve(this.anchorDomain)
             .then(toml => {
-              this.anchorResults = toml.CURRENCIES
+              if (toml.CURRENCIES) {
+                this.anchorResults = toml.CURRENCIES
+              }
             })
-            .catch(err => {
+            .catch(() => {
               this.anchorResults = []
             })
             .then(() => {

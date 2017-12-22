@@ -7,7 +7,7 @@
                     <p v-text="$store.getters.keypair.publicKey()" class="break-all"></p>
                 </v-card-text>
 
-                <v-card-text v-if="$store.getters.authCheck">
+                <v-card-text>
                     <b>List of your accounts</b>
 
                     <v-data-table
@@ -16,18 +16,17 @@
                             hide-actions
                             class="elevation-1 mt-2 mb-3"
                     >
-                        <template slot="items" scope="props">
+                        <template slot="items" slot-scope="props">
                             <td v-text="props.item.name"></td>
                             <td v-text="props.item.public_key"></td>
                             <td>
-                                <v-icon v-if="props.item.sss">check</v-icon>
+                                <v-icon v-if="props.item.secret_key">check</v-icon>
                             </td>
                             <td class="text-xs-right">
                                     <span class="table-row-detail">
                                         <a href="#" @click.prevent="use(props.item)" class="mr-3">Use</a>
 
-                                        <a v-if="!props.item.isDeleteLoading" href="#" @click.prevent.stop="remove(props.item)" class="red--text">Delete</a>
-                                        <v-btn v-if="props.item.isDeleteLoading" flat small loading class="red--text"></v-btn>
+                                        <a href="#" @click.prevent.stop="remove(props.item)" class="red--text">Delete</a>
                                     </span>
                             </td>
                         </template>
@@ -35,7 +34,7 @@
                 </v-card-text>
             </v-flex>
 
-            <v-flex lg6 v-if="$store.getters.authCheck">
+            <v-flex lg6>
                 <v-card-text>
                     <b>Add account to your list</b>
                     <p>
@@ -44,18 +43,32 @@
                         You will be asked to enter a password that will be used to encrypt your Secret key.
                     </p>
                     <v-form v-model="addForm.valid" ref="addFormRef">
+                        <v-checkbox
+                                label="Adding Ledger Nano S account?"
+                                v-model="addForm.ledger"
+                                light
+                                color="blue"
+                                hide-details
+                        ></v-checkbox>
                         <v-text-field
                                 label="Name"
                                 v-model="addForm.name"
                                 :rules="addForm.nameRules"
                         ></v-text-field>
                         <v-text-field
+                                v-if="addForm.ledger"
+                                label="Bip 32 Path"
+                                v-model="addForm.bip32Path"
+                                :rules="addForm.bip32PathRules"
+                        ></v-text-field>
+                        <v-text-field
+                                v-if="!addForm.ledger"
                                 label="Public or Secret key"
                                 v-model="addForm.key"
                                 :rules="addForm.keyRules"
                         ></v-text-field>
                         <v-text-field
-                                v-if="addForm.isSecret"
+                                v-if="!addForm.ledger && addForm.isSecret"
                                 label="Password"
                                 v-model="addForm.password"
                                 :rules="addForm.passwordRules"
@@ -67,12 +80,11 @@
                     <v-layout row>
                         <v-spacer></v-spacer>
                         <v-btn
+                                :loading="addForm.loading"
                                 flat
                                 :class="{'blue--text': addForm.valid, 'red--text': !addForm.valid}"
                                 @click.stop="add"
-                                :loading="addForm.isLoading"
-                        >Add
-                        </v-btn>
+                        >Add</v-btn>
                     </v-layout>
                 </v-card-text>
             </v-flex>
@@ -87,10 +99,24 @@
                         Use this form to unlock your account (enter your Secret key).
                     </p>
                     <v-form v-model="viewForm.valid" ref="viewFormRef" @submit.prevent="">
+                        <v-checkbox
+                                label="Switching to Ledger Nano S account?"
+                                v-model="viewForm.ledger"
+                                light
+                                color="blue"
+                                hide-details
+                        ></v-checkbox>
                         <v-text-field
+                                v-if="!viewForm.ledger"
                                 label="Public or Secret key"
                                 v-model="viewForm.key"
                                 :rules="viewForm.rules"
+                        ></v-text-field>
+                        <v-text-field
+                                v-if="viewForm.ledger"
+                                label="Bip 32 Path"
+                                v-model="viewForm.bip32Path"
+                                :rules="viewForm.bip32PathRules"
                         ></v-text-field>
                     </v-form>
                     <v-layout row>
@@ -99,9 +125,7 @@
                                 flat
                                 :class="{'blue--text': viewForm.valid, 'red--text': !viewForm.valid}"
                                 @click="view"
-                        >
-                            Switch
-                        </v-btn>
+                        >Switch</v-btn>
                     </v-layout>
                 </v-card-text>
             </v-flex>
@@ -115,14 +139,23 @@
   import { flash } from '~/utils'
   import { contains, filter, includes, map } from 'lodash'
   import Vue from 'vue'
+  import StellarLedger from 'stellar-ledger-api'
+  import { ruleBip32Path } from '../../../stellar/index'
 
   export default {
     data () {
       return {
         viewForm: {
           valid: false,
+          ledger: false,
+          bip32Path: "44'/148'/0'",
+          bip32PathRules: [(v) => ruleBip32Path(v)],
           key: '',
           rules: [(v) => {
+            if (this.viewForm.ledger) {
+              return true
+            }
+
             if (this.viewForm.key.startsWith('G')) {
               try {
                 Stellar.Keypair.fromPublicKey(v)
@@ -144,14 +177,18 @@
         },
 
         addForm: {
+          loading: false,
           pw: false,
-          isLoading: false,
           valid: false,
           name: '',
           nameRules: [(v) => !!v || 'Name is required'],
           key: '',
           keypair: null,
           keyRules: [(v) => {
+            if (this.addForm.ledger) {
+              return true
+            }
+
             if (this.addForm.key.startsWith('G')) {
               try {
                 this.addForm.keypair = Stellar.Keypair.fromPublicKey(v)
@@ -179,8 +216,11 @@
             return true
           }],
           password: '',
-          passwordRules: [(v) => (!!v && v.length > 6 && v.length <= 32) || 'Password must have 6 - 32 characters'],
+          passwordRules: [(v) => (!!v && v.length >= 6 && v.length <= 32) || 'Password must have 6 - 32 characters'],
           isSecret: false,
+          ledger: false,
+          bip32Path: "44'/148'/0'",
+          bip32PathRules: [(v) => ruleBip32Path(v)],
         },
 
         headers: [
@@ -193,77 +233,103 @@
     },
 
     computed: {
-      user () {
-        return this.$store.getters.authUser
-      },
-
       unlocked () {
-        return this.$store.getters.keypairCanSign
+        return this.$store.getters.keypairCanSign || this.$store.getters.keypairLedger
       },
 
       accounts () {
-        return map(this.$store.getters.accounts, (account) => {
-          let acc = account
-
-          Vue.set(acc, 'isDeleteLoading', false)
-
-          return acc
-        })
+        return this.$store.getters.accounts
       },
     },
 
     methods: {
       view () {
-        if (this.$refs.viewFormRef.validate()) {
-          if (this.viewForm.key.startsWith('G')) {
-            this.$store.dispatch('storeKeypair', {
-              keypair: Stellar.Keypair.fromPublicKey(this.viewForm.key)
+        if (this.viewForm.ledger) {
+          try {
+            new StellarLedger.Api(new StellarLedger.comm(20)).getPublicKey_async(this.viewForm.bip32Path).then((result) => {
+              this.$store.dispatch('storeKeypair', {keypair: Stellar.Keypair.fromPublicKey(result['publicKey'])})
+              this.$store.dispatch('accessWithLedger', {bip32Path: this.viewForm.bip32Path})
+
+              this.closeDialog()
+
+              this.$router.push({name: 'balance'})
+            }).catch(() => {
+              flash(this.$store, 'Failed to connect to Ledger', 'error')
             })
-          } else {
-            this.$store.dispatch('storeKeypair', {
-              keypair: Stellar.Keypair.fromSecret(this.viewForm.key)
-            })
+          } catch (err) {
+            flash(this.$store, 'Failed to connect to Ledger', 'error')
           }
+        } else {
+          if (this.$refs.viewFormRef.validate()) {
+            if (this.viewForm.key.startsWith('G')) {
+              this.$store.dispatch('storeKeypair', {
+                keypair: Stellar.Keypair.fromPublicKey(this.viewForm.key)
+              })
+            } else {
+              this.$store.dispatch('storeKeypair', {
+                keypair: Stellar.Keypair.fromSecret(this.viewForm.key)
+              })
+            }
 
-          this.viewForm.key = ''
+            this.viewForm.key = ''
 
-          this.closeDialog()
+            this.closeDialog()
 
-          this.$router.push({name: 'balance'})
+            this.$router.push({name: 'balance'})
+          }
         }
       },
 
       add () {
         if (this.$refs.addFormRef.validate()) {
-          this.addForm.isLoading = true
+          this.addForm.loading = true
 
-          let attr = {
-            name: this.addForm.name,
-            public_key: this.addForm.keypair.publicKey()
+          if (this.addForm.ledger) {
+            try {
+              new StellarLedger.Api(new StellarLedger.comm(20)).getPublicKey_async(this.addForm.bip32Path).then((result) => {
+                this.$store.dispatch('storeAccount', {
+                  name: this.addForm.name,
+                  public_key: result['publicKey'],
+                  bip32Path: this.addForm.bip32Path,
+                })
+
+                this.addForm.name = ''
+                this.addForm.key = ''
+                this.addForm.password = ''
+              }).catch(() => {
+                flash(this.$store, 'Problem with contacting Ledger Nano S', 'error')
+              }).then(() => {
+                this.addForm.loading = false
+              })
+            } catch (err) {
+              this.addForm.loading = false
+
+              flash(this.$store, 'Problem with contacting Ledger Nano S', 'error')
+            }
+          } else {
+            let account = {
+              name: this.addForm.name,
+              public_key: this.addForm.keypair.publicKey(),
+            }
+
+            if (this.addForm.keypair.canSign()) {
+              account.secret_key = this.addForm.keypair.secret()
+              account.password = this.addForm.password
+            }
+
+            this.$store.dispatch('storeAccount', account)
+
+            this.addForm.name = ''
+            this.addForm.key = ''
+            this.addForm.password = ''
+
+            this.addForm.loading = false
           }
-
-          if (this.addForm.keypair.canSign()) {
-            attr.secret_key = this.addForm.keypair.secret()
-            attr.password = this.addForm.password
-          }
-
-          axios.post('/api/accounts', attr)
-            .then((response) => {
-              this.$store.dispatch('storeAccounts', response.data.data)
-
-              flash(this.$store, 'Account added', 'success')
-            })
-            .catch((err) => {
-              flash(this.$store, err, 'error')
-            })
-            .then(() => {
-              this.addForm.isLoading = false
-            })
         }
       },
 
       closeDialog () {
-        this.$parent.closeDialog()
+        this.$parent.$parent.$parent.closeDialog()
       },
 
       use (account) {
@@ -273,8 +339,13 @@
 
         this.$store.dispatch('storeKeypair', {
           keypair: Stellar.Keypair.fromPublicKey(selectedAccount.public_key),
-          sss: selectedAccount.sss,
         })
+
+        if (selectedAccount.bip32Path) {
+          this.$store.dispatch('accessWithLedger', {
+            bip32Path: this.bip32Path
+          })
+        }
 
         flash(this.$store, 'Account switched', 'success')
 
@@ -284,20 +355,7 @@
       },
 
       remove (account) {
-        account.isDeleteLoading = true
-
-        axios.post('/api/accounts', {
-          public_key: account.public_key,
-          _method: 'delete',
-        }).then((response) => {
-          this.$store.dispatch('storeAccounts', response.data.data)
-
-          flash(this.$store, 'Account deleted', 'success')
-        }).catch((err) => {
-          flash(this.$store, err, 'error')
-        }).then(() => {
-          account.isDeleteLoading = true
-        })
+        this.$store.dispatch('removeAccount', account.public_key)
       },
     },
   }

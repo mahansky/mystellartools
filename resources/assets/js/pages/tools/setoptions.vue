@@ -333,7 +333,7 @@
             attributes.highTreshold = this.highTreshold
 
           if (this.inflationDest)
-            attributes.inflationDest = Keypair.fromPublicKey(this.inflationDest).xdrAccountId()
+            attributes.inflationDest = this.inflationDest
 
           if (this.homeDomain)
             attributes.homeDomain = this.homeDomain

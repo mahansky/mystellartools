@@ -6,7 +6,7 @@ use GuzzleHttp\Client;
 
 class Stellar
 {
-    const HORIZON = 'https://horizon.stellar.org';
+    const HORIZON = 'https://mystellar.tools:8000';
 
     /**
      * @var Client
@@ -58,6 +58,7 @@ class Stellar
      * Returns public key of the account's creator
      *
      * @param $publicKey
+     * @return string
      */
     public function accountCreator($publicKey)
     {
