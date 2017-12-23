@@ -7,7 +7,7 @@
             </tr>
             <tr>
                 <td><b>Starting balance</b></td>
-                <td><span v-html="amountFormat(operation.starting_balance)"></span> XLM</td>
+                <td><amount :amount="operation.starting_balance"></amount> XLM</td>
             </tr>
         </table>
     </div>

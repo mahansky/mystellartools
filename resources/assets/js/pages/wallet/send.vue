@@ -116,20 +116,21 @@
                                 <tr>
                                     <td><span>Sending</span></td>
                                     <td>
-                                        <span v-html="amountFormat(newBigNumber(amount).toFixed(7))"></span>
+                                        <amount :amount="newBigNumber(amount).toFixed(7)"></amount>
                                         <span v-text="asset"></span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td><span>New balance</span></td>
                                     <td>
-                                        <span v-html="amountFormat(newBigNumber(balance).minus(amount).toFixed(7))"></span>
+                                        <amount :amount="newBigNumber(balance).minus(amount).toFixed(7)"></amount>
                                         <span v-text="asset"></span>
                                     </td>
                                 </tr>
                             </table>
-                            <p class="grey--text">Every transaction costs extra <span
-                                    v-html="amountFormat('0.0000100')"></span> XLM</p>
+                            <p class="grey--text">
+                                Every transaction costs extra <amount amount="0.0000100"></amount> XLM
+                            </p>
 
                             <v-layout row wrap v-if="memo">
                                 <v-flex xs12>

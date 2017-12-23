@@ -1,7 +1,7 @@
 <template>
     <div>
         <h4 class="mb-1 mt-0">
-            <span v-html="amountFormat(token.balance)"></span>
+            <amount :amount="token.balance"></amount>
             <small>{{ token.asset_code }}</small>
         </h4>
         <table class="mb-3">
@@ -11,7 +11,7 @@
             </tr>
             <tr v-if="token.limit">
                 <td class="grey--text text--darken-2">Limit</td>
-                <td><span class="grey--text" v-html="amountFormat(token.limit)"></span></td>
+                <td><amount :amount="token.limit" class="grey--text"></amount></td>
             </tr>
         </table>
     </div>

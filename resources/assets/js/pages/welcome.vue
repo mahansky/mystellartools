@@ -138,9 +138,9 @@
   import * as utils from '../utils'
   import { Stellar } from '~/stellar'
 
-  import Ledger from './welcome/ledger.vue'
-  import Key from './welcome/key.vue'
-  import Create from './welcome/create.vue'
+  import Ledger from './welcome/ledger'
+  import Key from './welcome/key'
+  import Create from './welcome/create'
 
   export default {
     metaInfo: () => ({

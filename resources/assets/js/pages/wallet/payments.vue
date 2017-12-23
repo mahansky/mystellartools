@@ -31,7 +31,7 @@
                                     <template v-if="isIncoming(props.item)">+</template>
                                     <template v-if="!isIncoming(props.item)">-</template>
 
-                                    <span v-html="amountFormat(props.item.amount)" v-if="props.item.from !== props.item.to"></span>
+                                    <amount :amount="props.item.amount" v-if="props.item.from !== props.item.to"></amount>
                                     <span v-else>0</span>
                                 </span>
                                 <span v-if="props.item.asset_code" v-text="props.item.asset_code"></span>
