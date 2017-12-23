@@ -2,12 +2,10 @@ import * as types from '../mutation-types'
 import { knownAccounts } from '../../stellar/known_accounts'
 import store from '../index'
 
-// state
 export const state = {
   contacts: [],
 }
 
-// mutations
 export const mutations = {
   [types.STORE_CONTACT] (state, contact) {
     state.contacts.push(contact)
@@ -26,7 +24,6 @@ export const mutations = {
   },
 }
 
-// actions
 export const actions = {
   storeContact ({commit}, contact) {
     commit(types.STORE_CONTACT, contact)
@@ -41,12 +38,11 @@ export const actions = {
   },
 }
 
-// getters
 export const getters = {
   contacts: state => state.contacts,
 }
 
-// init
+// TODO: Load it using a proper callback
 setTimeout(function () {
   if (store.getters.contacts === 0) {
     for (let acc in knownAccounts) {

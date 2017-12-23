@@ -1,7 +1,5 @@
 <template>
   <div id="app">
-    <loading ref="loading"></loading>
-
     <transition name="page" mode="out-in">
       <component v-if="layout" :is="layout"></component>
     </transition>
@@ -11,7 +9,6 @@
 </template>
 
 <script>
-import Loading from './Loading'
 import Flash from './Flash'
 
 // Load layout components dynamically.
@@ -30,7 +27,6 @@ export default {
   el: '#app',
 
   components: {
-    Loading,
     Flash,
   },
 
@@ -49,7 +45,6 @@ export default {
   }),
 
   mounted () {
-    this.$loading = this.$refs.loading
     this.$flash = this.$refs.flash
   },
 

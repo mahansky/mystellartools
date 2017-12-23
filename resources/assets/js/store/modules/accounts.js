@@ -2,12 +2,10 @@ import * as types from '../mutation-types'
 
 const AES = require('crypto-js/aes')
 
-// state
 export const state = {
   accounts: [],
 }
 
-// mutations
 export const mutations = {
   [types.STORE_ACCOUNT] (state, account) {
     if (account.secret_key) {
@@ -32,7 +30,6 @@ export const mutations = {
   },
 }
 
-// actions
 export const actions = {
   storeAccount ({commit}, account) {
     commit(types.STORE_ACCOUNT, account)
@@ -47,7 +44,6 @@ export const actions = {
   },
 }
 
-// getters
 export const getters = {
   accounts: state => state.accounts,
 }

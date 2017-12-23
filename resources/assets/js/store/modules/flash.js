@@ -1,15 +1,15 @@
 import * as types from '../mutation-types'
 
-// state
 export const state = {
   message: '',
   type: '',
 }
 
-// mutations
 export const mutations = {
   [types.STORE_FLASH] (state, payload) {
     state.message = payload.message
+
+    // TODO: Replace this tryhard code
 
     if (payload.message.message) {
       state.message = payload.message.message
@@ -53,7 +53,6 @@ export const mutations = {
   },
 }
 
-// actions
 export const actions = {
   storeFlash ({commit}, payload) {
     commit(types.STORE_FLASH, payload)
@@ -68,7 +67,6 @@ export const actions = {
   }
 }
 
-// getters
 export const getters = {
   flash: state => {
     return {
