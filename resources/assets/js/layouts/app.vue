@@ -264,9 +264,9 @@
 
           this.passwordDialog = false
 
-          flash(this.$store, 'Account unlocked', 'success')
+          flash('Account unlocked', 'success')
         } catch (e) {
-          flash(this.$store, 'Incorrect password', 'error')
+          flash('Incorrect password', 'error')
         }
       },
 

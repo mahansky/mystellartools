@@ -418,13 +418,13 @@
               .catch(err => {
                 this.clickedVerify = false
 
-                flash(vm.$store, err, 'error')
+                flash(err, 'error')
               })
           })
           .catch((err) => {
             this.clickedVerify = false
 
-            flash(this.$store, err, 'error')
+            flash(err, 'error')
           })
       },
 
@@ -480,10 +480,10 @@
             throw err
           })
           .then(() => {
-            flash(this.$store, 'Success!', 'success')
+            flash('Success!', 'success')
           })
           .catch(err => {
-            flash(this.$store, err, 'error')
+            flash(err, 'error')
           })
           .then(() => {
             this.isSending = false
@@ -542,7 +542,7 @@
           this.loaded = true
         })
         .catch(err => {
-          flash(this.$store, err, 'error')
+          flash(err, 'error')
         })
     },
   }

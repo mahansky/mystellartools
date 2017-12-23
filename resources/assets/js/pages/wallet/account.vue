@@ -324,7 +324,7 @@
           return Promise.all(promises)
         })
         .catch(() => {
-          flash(this.$store, 'Unable to load data', 'error')
+          flash('Unable to load data', 'error')
         })
     },
 

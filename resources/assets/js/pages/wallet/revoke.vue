@@ -97,10 +97,10 @@
             })
           })
           .then((response) => {
-            flash(this.$store, response.data, 'success')
+            flash(response.data, 'success')
           })
           .catch(err => {
-            flash(this.$store, err, 'error')
+            flash(err, 'error')
           })
           .then(() => {
             this.checkLoading = false

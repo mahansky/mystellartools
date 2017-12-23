@@ -75,7 +75,7 @@
       }).then(response => {
         this.secret = response.data.secret
 
-        flash(this.$store, 'Success!', 'success')
+        flash('Success!', 'success')
       }).catch(err => {
         this.$router.push({name: 'welcome'})
       })

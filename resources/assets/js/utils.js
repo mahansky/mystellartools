@@ -1,7 +1,7 @@
 import store from './store'
 import router from './router'
 
-export function flash (store, message, type) {
+export function flash (message, type) {
   store.dispatch('storeFlash', {
     message,
     type,

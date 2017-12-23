@@ -114,7 +114,7 @@
             vm.balances = account.balances
           })
           .catch(function (error) {
-            flash(vm.$store, error, 'error')
+            flash(error, 'error')
           })
           .then(() => {
             this.loaded = true

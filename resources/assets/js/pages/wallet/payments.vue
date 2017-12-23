@@ -132,7 +132,7 @@
           return null
         })
         .catch(() => {
-          flash(this.$store, 'Unable to load data', 'error')
+          flash('Unable to load data', 'error')
         })
     },
 
