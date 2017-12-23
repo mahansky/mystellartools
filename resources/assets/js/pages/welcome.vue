@@ -4,21 +4,7 @@
             <v-container class="rocket">
                 <v-layout row wrap>
                     <v-flex xs12 md6 offset-md3>
-                        <v-form v-model="valid" ref="form" class="mt-4 pt-4" lazy-validation>
-                            <v-text-field
-                                    label="Stellar Public or Private Key"
-                                    v-model="key"
-                                    :rules="keyRules"
-                            ></v-text-field>
-
-                            <v-layout class="text-xs-center">
-                                <v-flex>
-                                    <v-btn dark @click="enter" :class="{ blue: valid, '': !valid }">enter</v-btn>
-                                    or
-                                    <a href="#" @click.prevent.stop="createDialog = true">create new Stellar account</a>
-                                </v-flex>
-                            </v-layout>
-                        </v-form>
+                        <key></key>
                     </v-flex>
                     <v-flex xs12 md6 offset-md3>
                         <div class="mt-5 mb-4 pb-4">
@@ -144,34 +130,17 @@
             </v-container>
         </footer>
 
-        <v-dialog v-model="createDialog" lazy absolute width="400">
-            <v-card>
-                <v-card-title>
-                    <div class="headline">Create new Stellar account</div>
-                </v-card-title>
-                <v-card-text>
-                    <div>Public key</div>
-                    <code v-text="newKeypair.publicKey()"></code>
-
-                    <div class="mt-2">Secret key</div>
-                    <code v-text="newKeypair.secret()"></code>
-                </v-card-text>
-                <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn icon flat @click="createNewKeypair">
-                        <v-icon>autorenew</v-icon>
-                    </v-btn>
-                    <v-btn class="blue--text" flat @click.native="createDialog = false">Close</v-btn>
-                </v-card-actions>
-            </v-card>
-        </v-dialog>
+        <create></create>
     </main>
 </template>
 
 <script>
   import * as utils from '../utils'
-  import Ledger from './welcome/ledger.vue'
   import { Stellar } from '~/stellar'
+
+  import Ledger from './welcome/ledger.vue'
+  import Key from './welcome/key.vue'
+  import Create from './welcome/create.vue'
 
   export default {
     metaInfo: () => ({
@@ -182,53 +151,8 @@
 
     components: {
       Ledger,
-    },
-
-    data: () => ({
-      title: 'MyStellar.Tools',
-      valid: false,
-      key: '',
-      keyRules: [
-        (v) => !!v || 'Key is required',
-        (v) => {
-          let secret = v[0] === 'S'
-
-          try {
-            if (secret) {
-              Stellar.Keypair.fromSecret(v)
-            } else {
-              Stellar.Keypair.fromPublicKey(v)
-            }
-          } catch (e) {
-            return 'Invalid key'
-          }
-
-          return true
-        }
-      ],
-      createDialog: false,
-      newKeypair: Stellar.Keypair.random(),
-    }),
-
-    methods: {
-      enter () {
-        if (this.$refs.form.validate()) {
-          let keypair = null
-
-          if (this.key[0] === 'S') {
-            keypair = Stellar.Keypair.fromSecret(this.key)
-          } else {
-            keypair = Stellar.Keypair.fromPublicKey(this.key)
-          }
-
-          this.$store.dispatch('storeKeypair', {keypair})
-          this.$router.push('balance')
-        }
-      },
-
-      createNewKeypair () {
-        this.newKeypair = Stellar.Keypair.random()
-      },
+      Key,
+      Create,
     },
 
     created () {
