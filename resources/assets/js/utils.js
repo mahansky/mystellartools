@@ -1,5 +1,8 @@
+import Vue from 'vue'
 import store from './store'
 import router from './router'
+
+export const events = new Vue()
 
 export function flash (message, type) {
   store.dispatch('storeFlash', {
