@@ -12,7 +12,7 @@
             <tr>
                 <td><b>Amount</b></td>
                 <td>
-                    <span v-html="amountFormat(operation.amount)"></span>
+                    <amount :amount="operation.amount"></amount>
                     <span v-if="operation.asset_type === 'native'">XLM</span>
                     <span v-else v-text="operation.asset_code"></span>
                 </td>

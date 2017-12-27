@@ -360,10 +360,10 @@
             .then(() => {
               this.$router.push({name: 'account'})
 
-              flash(this.$store, 'Options updated', 'success')
+              flash('Options updated', 'success')
             })
             .catch((err) => {
-              flash(this.$store, err, 'error')
+              flash(err, 'error')
             })
             .then(() => {
               this.isLoading = false

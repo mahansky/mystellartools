@@ -193,7 +193,7 @@
           }).then(() => {
             this.fetch()
           }).catch(error => {
-            flash(this.$store, error.response.data.detail, 'error')
+            flash(error.response.data.detail, 'error')
           })
         }
       }

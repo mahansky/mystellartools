@@ -254,10 +254,10 @@
 
               this.$router.push({name: 'balance'})
             }).catch(() => {
-              flash(this.$store, 'Failed to connect to Ledger', 'error')
+              flash('Failed to connect to Ledger', 'error')
             })
           } catch (err) {
-            flash(this.$store, 'Failed to connect to Ledger', 'error')
+            flash('Failed to connect to Ledger', 'error')
           }
         } else {
           if (this.$refs.viewFormRef.validate()) {
@@ -297,14 +297,14 @@
                 this.addForm.key = ''
                 this.addForm.password = ''
               }).catch(() => {
-                flash(this.$store, 'Problem with contacting Ledger Nano S', 'error')
+                flash('Problem with contacting Ledger Nano S', 'error')
               }).then(() => {
                 this.addForm.loading = false
               })
             } catch (err) {
               this.addForm.loading = false
 
-              flash(this.$store, 'Problem with contacting Ledger Nano S', 'error')
+              flash('Problem with contacting Ledger Nano S', 'error')
             }
           } else {
             let account = {
@@ -347,7 +347,7 @@
           })
         }
 
-        flash(this.$store, 'Account switched', 'success')
+        flash('Account switched', 'success')
 
         this.closeDialog()
 

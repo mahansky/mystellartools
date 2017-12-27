@@ -165,7 +165,7 @@
           .then(() => {
             item.isDeleteLoading = false
 
-            flash(this.$store, 'Data entry deleted', 'success')
+            flash('Data entry deleted', 'success')
           })
       },
 
@@ -178,7 +178,7 @@
               this.isSubmitting = false
 
               if (res) {
-                flash(this.$store, 'Data entry updated', 'success')
+                flash('Data entry updated', 'success')
               }
             })
         }
@@ -209,7 +209,7 @@
             return this.fetchData()
           })
           .catch((err) => {
-            flash(this.$store, err, 'error')
+            flash(err, 'error')
           })
       },
     },
