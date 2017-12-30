@@ -10,18 +10,18 @@
             </v-container>
         </div>
 
-        <v-container class="mt-3">
-            <v-layout>
-                <v-flex xs12>
-                    <v-alert warning value="true">
-                        It's recommended to use this tool in offline mode.
-                        You can download this website (CTRL+S) and run it on a computer without internet access.
-                    </v-alert>
-                </v-flex>
-            </v-layout>
-        </v-container>
+        <!--<v-container class="mt-3">-->
+            <!--<v-layout>-->
+                <!--<v-flex xs12>-->
+                    <!--<v-alert warning value="true">-->
+                        <!--It's recommended to use this tool in offline mode.-->
+                        <!--You can download this website (CTRL+S) and run it on a computer without internet access.-->
+                    <!--</v-alert>-->
+                <!--</v-flex>-->
+            <!--</v-layout>-->
+        <!--</v-container>-->
 
-        <v-container grid-list-lg>
+        <v-container grid-list-lg class="mt-3">
             <v-layout>
                 <v-flex md6>
                     <v-card class="white">
@@ -39,6 +39,12 @@
                                         append-icon="autorenew"
                                         :append-icon-cb="generateNewKeypair"
                                 ></v-text-field>
+                                <v-checkbox
+                                        label="With description"
+                                        v-model="description"
+                                        color="blue"
+                                        hide-details
+                                ></v-checkbox>
                             </v-form>
                         </v-card-text>
                         <v-card-actions>
@@ -99,11 +105,12 @@
         }
       ],
       iframe: '',
+      description: true,
     }),
 
     computed: {
       publicKey () {
-        return Stellar.Keypair.fromSecret(this.key).publicKey()
+        return this.isSecret ? Stellar.Keypair.fromSecret(this.key).publicKey() : this.key
       },
 
       publicKeyImgData () {
@@ -122,59 +129,70 @@
     methods: {
       generate () {
         if (this.$refs.form.validate()) {
+          let rows = [
+            [
+              [
+                {
+                  text: 'PUBLIC KEY',
+                  bold: true,
+                  fontSize: 10,
+                  margin: [0, 3, 0, 15],
+                },
+                {
+                  text: this.publicKey,
+                  fontSize: 18,
+                  margin: [0, 0, 10, 17],
+                },
+                {
+                  text: this.description ? '(used for receiving payments, checking balance)' : ' ',
+                  fontSize: 8,
+                },
+              ],
+              {
+                image: 'publicQR'
+              },
+            ],
+          ]
+
+          if (this.isSecret) {
+            rows.push([
+              [
+                {
+                  text: 'SECRET KEY',
+                  bold: true,
+                  fontSize: 10,
+                  margin: [0, 3, 0, 15]
+                },
+                {
+                  text: this.key,
+                  fontSize: 18,
+                  margin: [0, 0, 10, 17],
+                },
+                {
+                  text: this.description ? '(used for signing transactions, never share with anyone!)' : ' ',
+                  fontSize: 8,
+                },
+              ],
+              {
+                image: 'secretQR'
+              },
+            ])
+          }
+
           const pdfDocGenerator = pdfMake.createPdf({
             content: [
               {
                 table: {
-                  body: [
-                    [
-                      [
-                        {
-                          text: 'Public key',
-                          bold: true,
-                        },
-                        {
-                          text: this.publicKey,
-                        },
-                        ' ',
-                        ' ',
-                        {
-                          text: '(used for receiving payments, checking balance)',
-                          fontSize: 8,
-                        },
-                      ],
-                      {
-                        image: 'publicQR'
-                      },
-                    ],
-                    [
-                      [
-                        {
-                          text: 'Secret key',
-                          bold: true,
-                        },
-                        {
-                          text: this.key,
-                        },
-                        ' ',
-                        ' ',
-                        {
-                          text: '(used for signing transactions, never share with anyone!)',
-                          fontSize: 8,
-                        },
-                      ],
-                      {
-                        image: 'secretQR'
-                      },
-                    ],
-                  ],
+                  widths: [395, 100],
+                  heights: [100, 100],
+                  body: rows,
                 },
               },
             ],
 
             images: {
               publicQR: this.publicKeyImgData,
-              secretQR: this.secretKeyImgData,
+              secretQR: this.isSecret ? this.secretKeyImgData : '',
             },
           })
 
@@ -187,14 +205,6 @@
       generateNewKeypair () {
         this.key = Stellar.Keypair.random().secret()
       },
-    },
-
-    mounted () {
-      this.generateNewKeypair()
-      this.generate()
-
-      console.log(this.publicKeyImgData)
-      console.log(this.secretKeyImgData)
     },
   }
 </script>
