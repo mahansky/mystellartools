@@ -78,7 +78,6 @@
                         <div class="headline mb-3">Plans</div>
                         <p>Here is a list of planned features:</p>
                         <ul>
-                            <li>Paper Wallet generator</li>
                             <li>Stellar Distributed Exchange trading tools</li>
                             <li>Stellar network explorer</li>
                             <li>Multi-sig coordinator</li>
