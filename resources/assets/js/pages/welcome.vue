@@ -114,7 +114,12 @@
                             <li>
                                 <router-link :to="{name: 'help'}">Get started</router-link>
                             </li>
-                            <li class="mt-3"><a href="mailto:contact@mystellar.tools">contact@mystellar.tools</a></li>
+                            <li>
+                                <a href="#" @click.stop="donateDialog = true">Donate</a>
+                            </li>
+                            <li class="mt-3">
+                                <a href="mailto:contact@mystellar.tools">contact@mystellar.tools</a>
+                            </li>
                         </ul>
                     </v-flex>
                     <v-flex lg4 xs12>
@@ -131,6 +136,26 @@
         </footer>
 
         <create></create>
+
+        <v-dialog v-model="donateDialog" lazy absolute width="400">
+            <v-card>
+                <v-card-title>
+                    <div class="headline">Donate</div>
+                </v-card-title>
+                <v-card-text>
+                    <p>
+                        Enjoying MyStellar.Tools? Feel free to send a donation to this address.
+                        Include your name in the memo to be shown on the donators page (wip).
+                        Thank you!
+                    </p>
+                    <code>GD4TEQZTNLLE6QTUZ36BFRW3423SHFFVEICX322U4U7DVRHNU363IGSK</code>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn flat @click.native="donateDialog = false">Close</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </main>
 </template>
 
@@ -154,6 +179,10 @@
       Key,
       Create,
     },
+
+    data: () => ({
+      donateDialog: false,
+    }),
 
     created () {
       let publicKey = utils.getQueryParameter('public_key')
