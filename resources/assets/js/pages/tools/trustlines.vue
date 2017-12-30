@@ -329,12 +329,12 @@
 
         return submitTransaction('updateTrustline', {code, issuer, limit})
           .then(() => {
-            flash(vm.$store, 'Trustline updated', 'success')
+            flash('Trustline updated', 'success')
 
             return vm.fetchData()
           })
           .catch((err) => {
-            flash(vm.$store, err, 'error')
+            flash(err, 'error')
           })
       },
 
@@ -347,7 +347,7 @@
             this.loaded = true
           })
           .catch(() => {
-            flash(this.$store, 'Unable to load data', 'error')
+            flash('Unable to load data', 'error')
           })
       },
 
@@ -378,12 +378,12 @@
           authorize: vm.allowAuthorized,
         })
           .then(() => {
-            flash(vm.$store, 'Trust updated', 'success')
+            flash('Trust updated', 'success')
 
             return vm.fetchData()
           })
           .catch((err) => {
-            flash(vm.$store, err, 'error')
+            flash(err, 'error')
           })
           .then(() => {
             this.isAllowLoading = true

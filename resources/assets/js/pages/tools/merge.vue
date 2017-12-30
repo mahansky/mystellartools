@@ -71,7 +71,7 @@
           if (this.destination in knownAccounts && knownAccounts[this.destination].mergeOpAccepted === false) {
             this.isLoading = false
 
-            flash(this.$store, knownAccounts[this.destination].name + ' does not support this operation', 'error')
+            flash(knownAccounts[this.destination].name + ' does not support this operation', 'error')
           }
 
           submitTransaction('mergeAccounts', {destination: this.destination})
@@ -79,7 +79,7 @@
               utils.logout()
             })
             .catch((err) => {
-              flash(this.$store, err, 'error')
+              flash(err, 'error')
             })
             .then(() => {
               this.isLoading = false

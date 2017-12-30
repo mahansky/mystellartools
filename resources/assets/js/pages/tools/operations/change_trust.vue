@@ -23,7 +23,7 @@
             </tr>
             <tr v-if="operation.limit">
                 <td><b>Asset Limit</b></td>
-                <td><span v-html="amountFormat(operation.limit)"></span></td>
+                <td><amount :amount="operation.limit"></amount></td>
             </tr>
         </table>
     </div>

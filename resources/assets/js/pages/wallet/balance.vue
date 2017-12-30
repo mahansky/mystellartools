@@ -9,7 +9,7 @@
                         <v-card class="white">
                             <v-card-title primary-title>
                                 <div class="text-xs-center" style="width: 100%;">
-                                    <h2 class="text-xs-center blue--text" v-html="amountFormat(native) + ' XLM'"></h2>
+                                    <amount tag="h2" :amount="native" suffix=" XLM" class="text-xs-center blue--text"></amount>
                                     <price :lumens="native"></price>
                                 </div>
                             </v-card-title>
@@ -114,7 +114,7 @@
             vm.balances = account.balances
           })
           .catch(function (error) {
-            flash(vm.$store, error, 'error')
+            flash(error, 'error')
           })
           .then(() => {
             this.loaded = true

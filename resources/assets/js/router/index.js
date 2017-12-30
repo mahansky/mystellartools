@@ -26,7 +26,6 @@ function make (routes) {
   const router = new Router({
     routes,
     scrollBehavior,
-    mode: 'history'
   })
 
   // Register before guard.
@@ -38,7 +37,6 @@ function make (routes) {
   // Register after hook.
   router.afterEach((to, from) => {
     router.app.$nextTick(() => {
-      router.app.$loading.finish()
       router.app.$flash.hide()
     })
   })
@@ -58,11 +56,6 @@ function setLayout (router, to) {
 
   if (component) {
     router.app.$nextTick(() => {
-      // Start the page loading bar.
-      if (component.loading !== false) {
-        router.app.$loading.start()
-      }
-
       // Set application layout.
       router.app.setLayout(component.layout || '')
     })

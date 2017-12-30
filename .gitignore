@@ -5,6 +5,7 @@
 /public/js/app*js*
 /public/js/manifest*js*
 /public/js/vendor*js*
+/public/fonts/*
 /public/stellar.js
 /public/mix-manifest.json
 /storage/*.key

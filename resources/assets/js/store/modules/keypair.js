@@ -1,13 +1,11 @@
 import * as types from '../mutation-types'
 
-// state
 export const state = {
   keypair: null,
   ledger: false,
   bip32Path: '',
 }
 
-// mutations
 export const mutations = {
   [types.STORE_KEYPAIR] (state, {keypair}) {
     state.keypair = keypair
@@ -24,7 +22,6 @@ export const mutations = {
   },
 }
 
-// actions
 export const actions = {
   storeKeypair ({commit}, payload) {
     commit(types.STORE_KEYPAIR, payload)
@@ -39,7 +36,6 @@ export const actions = {
   },
 }
 
-// getters
 export const getters = {
   keypair: state => state.keypair,
   keypairCanSign: state => state.keypair ? state.keypair.canSign() : false,

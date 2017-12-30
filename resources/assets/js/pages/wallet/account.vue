@@ -97,7 +97,7 @@
                                 <table class="fluid">
                                     <tr>
                                         <td><span class="grey--text text--darken-1 caption pr-2">Balance</span></td>
-                                        <td><span v-html="amountFormat(asset.balance)"></span></td>
+                                        <td><amount :amount="asset.balance"></amount></td>
                                     </tr>
                                     <tr>
                                         <td><span class="grey--text text--darken-1 caption pr-2">Type</span></td>
@@ -324,7 +324,7 @@
           return Promise.all(promises)
         })
         .catch(() => {
-          flash(this.$store, 'Unable to load data', 'error')
+          flash('Unable to load data', 'error')
         })
     },
 

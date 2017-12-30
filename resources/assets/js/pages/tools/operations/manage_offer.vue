@@ -9,7 +9,7 @@
             <tr>
                 <td><b>Selling</b></td>
                 <td>
-                    <span v-html="amountFormat(operation.amount)"></span>
+                    <amount :amount="operation.amount"></amount>
                     <span v-if="operation.selling_asset_type === 'native'">XLM</span>
                     <span v-else v-text="operation.selling_asset_code"></span>
                 </td>
@@ -33,15 +33,15 @@
             <tr><td colspan="2">&nbsp;</td></tr>
             <tr>
                 <td><b>Price</b></td>
-                <td><span v-html="amountFormat(operation.price)"></span></td>
+                <td><amount :amount="operation.price"></amount></td>
             </tr>
             <tr>
                 <td><b>Price N</b></td>
-                <td><span v-html="amountFormat(operation.price_r.n)"></span></td>
+                <td><amount :amount="operation.price_r.n"></amount></td>
             </tr>
             <tr>
                 <td><b>Price D</b></td>
-                <td><span v-html="amountFormat(operation.price_r.d)"></span></td>
+                <td><amount :amount="operation.price_r.d"></amount></td>
             </tr>
         </table>
     </div>

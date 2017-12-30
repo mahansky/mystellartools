@@ -24,9 +24,12 @@ if (process.argv.indexOf('--config=stellar.webpack.mix.js') !== -1) {
               loader: 'shebang-loader'
             }
           ],
-        }
-      ]
-    }
+        },
+      ],
+    },
+    node: {
+      fs: 'empty',
+    },
   })
 
   return
@@ -56,6 +59,8 @@ if (mix.inProduction()) {
     'lodash',
     'bignumber.js',
     'vue-analytics',
+    'qrious',
+    'pdfmake',
   ])
 }
 
@@ -63,6 +68,9 @@ mix.webpackConfig({
   resolve: {
     alias: {
       '~': path.join(__dirname, './resources/assets/js')
-    }
-  }
+    },
+  },
+  node: {
+    fs: 'empty',
+  },
 })
