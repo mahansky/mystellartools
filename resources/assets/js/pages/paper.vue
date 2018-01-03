@@ -49,12 +49,13 @@
                         </v-card-text>
                         <v-card-actions>
                             <v-spacer></v-spacer>
+                            <small class="grey--text pr-1">It will take a few seconds</small>
                             <v-btn
                                     info
                                     flat
                                     @click="generate"
                                     :class="{'blue--text': valid, 'red--text': !valid}"
-                            >Generate
+                            >Generate PDF
                             </v-btn>
                         </v-card-actions>
                     </v-card>
@@ -64,17 +65,16 @@
                 </v-flex>
             </v-layout>
         </v-container>
+
+        <canvas style="display: none" ref="canvas" width="2480" height="3508"></canvas>
     </div>
 </template>
 
 <script>
   import { Stellar } from '~/stellar'
-  import pdfMake from 'pdfmake/build/pdfmake'
-  import pdfFonts from 'pdfmake/build/vfs_fonts'
 
+  const jsPDF = require('jspdf')
   const QRious = require('qrious')
-
-  pdfMake.vfs = pdfFonts.pdfMake.vfs
 
   export default {
     metaInfo: () => ({
@@ -114,11 +114,11 @@
       },
 
       publicKeyImgData () {
-        return new QRious({value: this.publicKey}).toDataURL()
+        return new QRious({value: this.publicKey, size: 300}).toDataURL()
       },
 
       secretKeyImgData () {
-        return new QRious({value: this.key}).toDataURL()
+        return new QRious({value: this.key, size: 300}).toDataURL()
       },
 
       isSecret () {
@@ -129,75 +129,70 @@
     methods: {
       generate () {
         if (this.$refs.form.validate()) {
-          let rows = [
-            [
-              [
-                {
-                  text: 'PUBLIC KEY',
-                  bold: true,
-                  fontSize: 10,
-                  margin: [0, 3, 0, 15],
-                },
-                {
-                  text: this.publicKey,
-                  fontSize: 18,
-                  margin: [0, 0, 10, 17],
-                },
-                {
-                  text: this.description ? '(used for receiving payments, checking balance)' : ' ',
-                  fontSize: 8,
-                },
-              ],
-              {
-                image: 'publicQR'
-              },
-            ],
-          ]
+          let publicQR = new Image
+          publicQR.src = this.publicKeyImgData
 
-          if (this.isSecret) {
-            rows.push([
-              [
-                {
-                  text: 'SECRET KEY',
-                  bold: true,
-                  fontSize: 10,
-                  margin: [0, 3, 0, 15]
-                },
-                {
-                  text: this.key,
-                  fontSize: 18,
-                  margin: [0, 0, 10, 17],
-                },
-                {
-                  text: this.description ? '(used for signing transactions, never share with anyone!)' : ' ',
-                  fontSize: 8,
-                },
-              ],
-              {
-                image: 'secretQR'
-              },
-            ])
-          }
+          let secretQR = new Image
+          secretQR.src = this.secretKeyImgData
 
-          const pdfDocGenerator = pdfMake.createPdf({
-            content: [
-              {
-                table: {
-                  widths: [395, 100],
-                  heights: [100, 100],
-                  body: rows,
-                },
-              },
-            ],
+          let ctx = this.$refs.canvas.getContext('2d')
+          ctx.clearRect(0, 0, this.$refs.canvas.width, this.$refs.canvas.height);
 
-            images: {
-              publicQR: this.publicKeyImgData,
-              secretQR: this.isSecret ? this.secretKeyImgData : '',
-            },
-          })
 
-          pdfDocGenerator.getDataUrl((dataUrl) => {
-            this.iframe = dataUrl
+          Promise.all([
+            new Promise((r) => {
+              publicQR.onload = () => {
+                ctx.drawImage(publicQR, 1980, 200, 300, 300)
+                r()
+              }
+            }),
+            new Promise((r) => {
+              secretQR.onload = () => {
+                ctx.drawImage(secretQR, 1980, 600, 300, 300)
+                r()
+              }
+            })
+          ]).then(() => {
+            ctx.fillStyle = '#000'
+
+            // Public key
+
+            ctx.font = '700 26pt Roboto-Bold'
+            ctx.fillText('PUBLIC KEY', 200, 250)
+            ctx.font = '56pt Roboto'
+
+            let full = this.publicKey
+            ctx.fillText(full.slice(0, 30), 200, 350)
+            ctx.fillText(full.slice(30), 200, 420)
+
+            if (this.description) {
+              ctx.font = '20pt Roboto'
+              ctx.fillText('(used for receiving payments, checking balance)', 200, 480)
+            }
+
+            // Secret key
+
+            if (this.isSecret) {
+              ctx.font = '700 26pt Roboto-Bold'
+              ctx.fillText('SECRET KEY', 200, 650)
+              ctx.font = '56pt Roboto'
+
+              let full = this.key
+              ctx.fillText(full.slice(0, 30), 200, 750)
+              ctx.fillText(full.slice(30), 200, 820)
+
+              if (this.description) {
+                ctx.font = '20pt Roboto'
+                ctx.fillText('(used for receiving payments, checking balance)', 200, 880)
+              }
+            }
+
+            let doc = new jsPDF()
+
+            doc.internal.scaleFactor = 1.33
+            doc.addImage(this.$refs.canvas.toDataURL(), 'PNG', 0, 0, 210, 297)
+
+            this.iframe = doc.output('bloburi')
           })
         }
       },
