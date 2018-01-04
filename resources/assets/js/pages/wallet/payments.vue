@@ -148,6 +148,7 @@
               if (payment.type !== 'account_merge') {
                 if (! vm.payments.some((p) => p.id === payment.id)) {
                   vm.payments.unshift(payment)
+                  vm.loadInfo(payment)
                 }
               }
             }
