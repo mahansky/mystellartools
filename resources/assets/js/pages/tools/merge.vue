@@ -72,6 +72,8 @@
             this.isLoading = false
 
             flash(knownAccounts[this.destination].name + ' does not support this operation', 'error')
+
+            return
           }
 
           submitTransaction('mergeAccounts', {destination: this.destination})
