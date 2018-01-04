@@ -44,7 +44,7 @@ export const getters = {
 
 // TODO: Load it using a proper callback
 setTimeout(function () {
-  if (store.getters.contacts === 0) {
+  if (store.getters.contacts.length === 0) {
     for (let acc in knownAccounts) {
       if (knownAccounts.hasOwnProperty(acc)) {
         store.dispatch('storeContact', {
