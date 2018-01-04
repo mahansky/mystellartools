@@ -20,7 +20,7 @@ export function draw(data) {
 
     // Secret key
 
-    if (data.isSecret) {
+    if (data.secretKey) {
       data.ctx.font = '700 26pt Roboto-Bold'
       data.ctx.fillText('SECRET KEY', 200, 650)
       data.ctx.font = '56pt Roboto'

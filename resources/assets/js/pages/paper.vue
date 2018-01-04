@@ -62,7 +62,7 @@
                     </v-card>
                 </v-flex>
                 <v-flex md6>
-                    <iframe :src="iframe" frameborder="0" width="100%" height="300"></iframe>
+                    <iframe :src="iframe" frameborder="0" width="100%" height="350"></iframe>
                 </v-flex>
             </v-layout>
         </v-container>
@@ -185,8 +185,7 @@
               publicQR,
               secretQR,
               publicKey: this.publicKey,
-              secretKey: this.key,
-              isSecret: this.isSecret,
+              secretKey: this.isSecret ? this.key : null,
             }).then(() => {
               let doc = new jsPDF()
 
