@@ -26,6 +26,7 @@ function make (routes) {
   const router = new Router({
     routes,
     scrollBehavior,
+    mode: 'history',
   })
 
   // Register before guard.

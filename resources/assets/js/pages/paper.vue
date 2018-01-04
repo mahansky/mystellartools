@@ -11,14 +11,14 @@
         </div>
 
         <!--<v-container class="mt-3">-->
-            <!--<v-layout>-->
-                <!--<v-flex xs12>-->
-                    <!--<v-alert warning value="true">-->
-                        <!--It's recommended to use this tool in offline mode.-->
-                        <!--You can download this website (CTRL+S) and run it on a computer without internet access.-->
-                    <!--</v-alert>-->
-                <!--</v-flex>-->
-            <!--</v-layout>-->
+        <!--<v-layout>-->
+        <!--<v-flex xs12>-->
+        <!--<v-alert warning value="true">-->
+        <!--It's recommended to use this tool in offline mode.-->
+        <!--You can download this website (CTRL+S) and run it on a computer without internet access.-->
+        <!--</v-alert>-->
+        <!--</v-flex>-->
+        <!--</v-layout>-->
         <!--</v-container>-->
 
         <v-container grid-list-lg class="mt-3">
@@ -39,42 +39,55 @@
                                         append-icon="autorenew"
                                         :append-icon-cb="generateNewKeypair"
                                 ></v-text-field>
-                                <v-checkbox
-                                        label="With description"
-                                        v-model="description"
-                                        color="blue"
-                                        hide-details
-                                ></v-checkbox>
+                                <v-select
+                                        label="Design"
+                                        v-model="design"
+                                        :items="designs"
+                                        :hint="designHint"
+                                        permanent-hint
+                                ></v-select>
                             </v-form>
                         </v-card-text>
                         <v-card-actions>
                             <v-spacer></v-spacer>
+                            <small class="grey--text pr-1">It might take a few seconds</small>
                             <v-btn
                                     info
                                     flat
                                     @click="generate"
                                     :class="{'blue--text': valid, 'red--text': !valid}"
-                            >Generate
+                            >Generate PDF
                             </v-btn>
                         </v-card-actions>
                     </v-card>
                 </v-flex>
                 <v-flex md6>
-                    <iframe :src="iframe" frameborder="0" width="100%" height="300"></iframe>
+                    <iframe :src="iframe" frameborder="0" width="100%" height="350"></iframe>
                 </v-flex>
             </v-layout>
         </v-container>
+
+        <canvas style="display: none" ref="canvas" width="2480" height="3508"></canvas>
     </div>
 </template>
 
 <script>
   import { Stellar } from '~/stellar'
-  import pdfMake from 'pdfmake/build/pdfmake'
-  import pdfFonts from 'pdfmake/build/vfs_fonts'
+  import { mapValues } from 'lodash'
 
+  const jsPDF = require('jspdf')
   const QRious = require('qrious')
 
-  pdfMake.vfs = pdfFonts.pdfMake.vfs
+  const requireContext = require.context('./paper', false, /.*\.js$/)
+
+  const wallets = requireContext.keys()
+    .map(file =>
+      [file.replace(/(^.\/)|(\.js$)/g, ''), requireContext(file)]
+    )
+    .reduce((modules, [name, module]) => {
+      modules[name] = module
+      return modules
+    }, {})
 
   export default {
     metaInfo: () => ({
@@ -105,7 +118,8 @@
         }
       ],
       iframe: '',
-      description: true,
+      design: 'wallet1',
+      designHint: '',
     }),
 
     computed: {
@@ -114,90 +128,72 @@
       },
 
       publicKeyImgData () {
-        return new QRious({value: this.publicKey}).toDataURL()
+        return new QRious({value: this.publicKey, size: 300}).toDataURL()
       },
 
       secretKeyImgData () {
-        return new QRious({value: this.key}).toDataURL()
+        return new QRious({value: this.key, size: 300}).toDataURL()
       },
 
       isSecret () {
         return this.key[0] === 'S'
-      }
+      },
+
+      designs () {
+        let data = []
+
+        for (let wallet in wallets) {
+          if (wallets.hasOwnProperty(wallet)) {
+            data.push(wallets[wallet].info)
+          }
+        }
+
+        return data
+      },
+    },
+
+    watch: {
+      design (name) {
+        this.designHint = wallets[this.design].info.credit
+      },
     },
 
     methods: {
       generate () {
         if (this.$refs.form.validate()) {
-          let rows = [
-            [
-              [
-                {
-                  text: 'PUBLIC KEY',
-                  bold: true,
-                  fontSize: 10,
-                  margin: [0, 3, 0, 15],
-                },
-                {
-                  text: this.publicKey,
-                  fontSize: 18,
-                  margin: [0, 0, 10, 17],
-                },
-                {
-                  text: this.description ? '(used for receiving payments, checking balance)' : ' ',
-                  fontSize: 8,
-                },
-              ],
-              {
-                image: 'publicQR'
-              },
-            ],
-          ]
+          let publicQR = new Image
+          publicQR.src = this.publicKeyImgData
 
-          if (this.isSecret) {
-            rows.push([
-              [
-                {
-                  text: 'SECRET KEY',
-                  bold: true,
-                  fontSize: 10,
-                  margin: [0, 3, 0, 15]
-                },
-                {
-                  text: this.key,
-                  fontSize: 18,
-                  margin: [0, 0, 10, 17],
-                },
-                {
-                  text: this.description ? '(used for signing transactions, never share with anyone!)' : ' ',
-                  fontSize: 8,
-                },
-              ],
-              {
-                image: 'secretQR'
-              },
-            ])
-          }
+          let secretQR = new Image
+          secretQR.src = this.secretKeyImgData
 
-          const pdfDocGenerator = pdfMake.createPdf({
-            content: [
-              {
-                table: {
-                  widths: [395, 100],
-                  heights: [100, 100],
-                  body: rows,
-                },
-              },
-            ],
+          let ctx = this.$refs.canvas.getContext('2d')
+          ctx.clearRect(0, 0, this.$refs.canvas.width, this.$refs.canvas.height)
 
-            images: {
-              publicQR: this.publicKeyImgData,
-              secretQR: this.isSecret ? this.secretKeyImgData : '',
-            },
-          })
+          Promise.all([
+            new Promise((r) => {
+              publicQR.onload = r
+            }),
+            new Promise((r) => {
+              secretQR.onload = r
+            })
+          ]).then(() => {
+            ctx.fillStyle = '#000'
 
-          pdfDocGenerator.getDataUrl((dataUrl) => {
-            this.iframe = dataUrl
+            wallets[this.design].draw({
+              ctx,
+              publicQR,
+              secretQR,
+              publicKey: this.publicKey,
+              secretKey: this.isSecret ? this.key : null,
+            }).then(() => {
+              let doc = new jsPDF()
+
+              doc.internal.scaleFactor = 1.33
+              doc.addImage(this.$refs.canvas.toDataURL(), 'PNG', 0, 0, 210, 297)
+
+              this.iframe = doc.output('bloburi')
+            })
           })
         }
       },
