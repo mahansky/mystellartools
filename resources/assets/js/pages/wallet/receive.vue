@@ -98,6 +98,8 @@
   import { flash } from '../../utils'
   import { forEach } from 'lodash'
 
+  const QRious = require('qrious')
+
   export default {
     metaInfo: () => ({
       title: 'Receive',
@@ -114,8 +116,8 @@
         addressRules: [
           (v) => !!v || 'Stellar address is required',
           (v) => {
-            if (! /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(v)) {
-              if (! /^[\w]+$/.test(v)) {
+            if (!/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(v)) {
+              if (!/^[\w]+$/.test(v)) {
                 return 'Only emails or alphanumeric names are allowed'
               }
             }
@@ -128,19 +130,19 @@
 
     created () {
       this.fetch()
-      this.fetchPublicQRCode()
+      this.generatePublicQRCode()
     },
 
     methods: {
       download (url, name) {
-        let link = document.createElement('a');
+        let link = document.createElement('a')
 
-        link.download = name;
-        link.href = url;
+        link.download = name
+        link.href = url
 
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
       },
 
       fetch () {
@@ -153,34 +155,24 @@
           }
         }).then(response => {
           this.stellarAddresses = response.data.all
-          this.fetchStellarQRCode()
+          this.generateStellarQRCode()
         }).catch(error => {
         }).then(() => {
           this.loaded = true
         })
       },
 
-      fetchPublicQRCode() {
-        axios.get('/api/qrcode', {
-          params: {
-            text: this.$store.getters.keypair.publicKey(),
-          }
-        }).then(response => {
-          this.qrcodePublic = 'data:image/png;base64,' + response.data.qrcode
-        })
+      generatePublicQRCode () {
+        this.qrcodePublic = new QRious({
+          value: this.$store.getters.keypair.publicKey()
+        }).toDataURL()
       },
 
-      fetchStellarQRCode() {
+      generateStellarQRCode () {
         forEach(this.stellarAddresses, (addr) => {
-          axios.get('/api/qrcode', {
-            params: {
-              text: addr,
-            }
-          }).then(response => {
-            this.stellarQRCodes.push({
-              img: 'data:image/png;base64,' + response.data.qrcode,
-              text: addr,
-            })
+          this.stellarQRCodes.push({
+            img: new QRious({value: addr}).toDataURL(),
+            text: addr,
           })
         })
       },
