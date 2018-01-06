@@ -169,7 +169,6 @@ return [
         /*
          * Package Service Providers...
          */
-        SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class,
 
         /*
          * Application Service Providers...

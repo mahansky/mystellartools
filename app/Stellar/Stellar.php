@@ -3,11 +3,12 @@
 namespace App\Stellar;
 
 use GuzzleHttp\Client;
+use ZuluCrypto\StellarSdk\Horizon\ApiClient;
+use ZuluCrypto\StellarSdk\Keypair;
+use ZuluCrypto\StellarSdk\Server;
 
 class Stellar
 {
-    const HORIZON = 'https://mystellar.tools:8000';
-
     /**
      * @var Client
      */
@@ -16,12 +17,18 @@ class Stellar
     /**
      * @var string
      */
-    protected $exec;
+    protected $horizonUrl;
+
+    /**
+     * @var Server
+     */
+    protected $horizon;
 
     public function __construct(Client $http)
     {
         $this->http = $http;
-        $this->exec = config('stellar.node_path') . ' ' . config('stellar.stellar_path');
+        $this->horizonUrl = config('stellar.horizon_url');
+        $this->horizon = new Server(new ApiClient($this->horizonUrl));
     }
 
     /**
@@ -31,12 +38,12 @@ class Stellar
      */
     public function generateKeypair()
     {
-        $data = shell_exec(implode(' ', [
-            $this->exec,
-            'generate',
-        ]));
+        $keypair = Keypair::newFromRandom();
 
-        return json_decode($data);
+        return (object) [
+            'public_key' => $keypair->getPublicKey(),
+            'secret_key' => $keypair->getSecret(),
+        ];
     }
 
     /**
@@ -48,9 +55,9 @@ class Stellar
     public function accountDetails($publicKey)
     {
         return $this->getJSON(implode('', [
-            self::HORIZON,
-            '/accounts/',
-            $publicKey,
+            $this->horizonUrl,
+            '/accounts',
+            "/{$publicKey}",
         ]));
     }
 
@@ -78,12 +85,12 @@ class Stellar
     public function payments($publicKey, $order = 'asc', $limit = 10)
     {
         return $this->getJSON(implode('', [
-            self::HORIZON,
+            $this->horizonUrl,
             '/accounts',
             "/{$publicKey}",
             '/payments',
             "?order={$order}",
-            "&limit={$limit}"
+            "&limit={$limit}",
         ]))['_embedded']['records'];
     }
 
@@ -97,10 +104,7 @@ class Stellar
      */
     public function addSignerToAccount($signer, $secretKey, $weight = 1)
     {
-        return $this->submit($secretKey, 'addSigner', [
-            'signer' => $signer,
-            'weight' => $weight,
-        ]);
+        // TODO
     }
 
     /**
@@ -110,34 +114,7 @@ class Stellar
      */
     public function mergeAccounts($secretKey, $destination)
     {
-        return $this->submit($secretKey, 'mergeAccounts', [
-            'destination' => $destination,
-        ]);
-    }
-
-    /**
-     * Submits transaction using node process and returns the output
-     *
-     * @param $secretKey
-     * @param $action
-     * @param $data
-     * @return mixed
-     */
-    public function submit($secretKey, $action, $data)
-    {
-        $command = implode(' ', [
-            $this->exec,
-            escapeshellarg(json_encode([
-                'action' => $action,
-                'secret' => $secretKey,
-                'data'   => $data,
-            ])),
-            '2>&1',
-        ]);
-
-        $response = trim(shell_exec($command));
-
-        return json_decode($response, true);
+        // TODO
     }
 
     /**

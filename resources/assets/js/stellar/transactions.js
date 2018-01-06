@@ -68,15 +68,6 @@ export const transactions = {
     }), memo)
   },
 
-  addSigner: (keypair, {signer, weight}) => {
-    return _submitTx(keypair, Operation.setOptions({
-      signer: {
-        ed25519PublicKey: signer,
-        weight: weight,
-      },
-    }))
-  },
-
   manageData: (keypair, {name, value}) => {
     return _submitTx(keypair, Operation.manageData({
       name,
