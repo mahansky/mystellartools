@@ -164,14 +164,16 @@
 
       generatePublicQRCode () {
         this.qrcodePublic = new QRious({
-          value: this.$store.getters.keypair.publicKey()
+          value: this.$store.getters.keypair.publicKey(),
+          padding: 15,
+          size: 200,
         }).toDataURL()
       },
 
       generateStellarQRCode () {
         forEach(this.stellarAddresses, (addr) => {
           this.stellarQRCodes.push({
-            img: new QRious({value: addr}).toDataURL(),
+            img: new QRious({value: addr, padding: 15, size: 200}).toDataURL(),
             text: addr,
           })
         })
