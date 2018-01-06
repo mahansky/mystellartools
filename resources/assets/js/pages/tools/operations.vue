@@ -5,7 +5,7 @@
             <v-layout row>
                 <v-flex xs12>
                     <v-expansion-panel expand v-if="operations.length > 0">
-                        <v-expansion-panel-content v-for="operation in operations" :key="operation.id">
+                        <v-expansion-panel-content v-for="operation in operations" :key="operation.id" v-model="operation.open">
                             <div slot="header">
                                 <v-layout row>
                                     <v-flex lg4>
@@ -18,15 +18,7 @@
                             </div>
                             <v-card>
                                 <v-card-text class="grey lighten-4">
-                                    <keep-alive>
-                                        <component :is="operation.type" :operation="operation"></component>
-                                    </keep-alive>
-
-                                    <div class="mt-3">
-                                        <a :href="operation._links.self.href" target="_blank" rel="noreferrer nofollow">
-                                            <small>#{{ operation.id }}</small>
-                                        </a>
-                                    </div>
+                                    <operation :operation="operation" v-if="operation.open"></operation>
                                 </v-card-text>
                             </v-card>
                         </v-expansion-panel-content>
@@ -54,23 +46,12 @@
 </template>
 
 <script>
-  import { Stellar, StellarServer } from '../../stellar'
-  import axios from 'axios'
-
-  import account_merge from './operations/account_merge.vue'
-  import allow_trust from './operations/allow_trust.vue'
-  import change_trust from './operations/change_trust.vue'
-  import create_account from './operations/create_account.vue'
-  import create_passive_offer from './operations/create_passive_offer.vue'
-  import inflation from './operations/inflation.vue'
-  import manage_data from './operations/manage_data.vue'
-  import manage_offer from './operations/manage_offer.vue'
-  import path_payment from './operations/path_payment.vue'
-  import payment from './operations/payment.vue'
-  import set_options from './operations/set_options.vue'
+  import { Stellar, StellarServer, HorizonURL } from '~/stellar'
+  import { flash } from '~/utils'
   import { first, last, orderBy } from 'lodash'
-  import { flash } from '../../utils'
-  import { HorizonURL } from '../../stellar/index'
+  import axios from 'axios'
+  import Vue from 'vue'
+  import Operation from './operations/operation'
 
   export default {
     metaInfo: () => ({
@@ -78,17 +59,7 @@
     }),
 
     components: {
-      account_merge,
-      allow_trust,
-      change_trust,
-      create_account,
-      create_passive_offer,
-      inflation,
-      manage_data,
-      manage_offer,
-      path_payment,
-      payment,
-      set_options,
+      Operation,
     },
 
     data () {
@@ -117,10 +88,6 @@
       operations () {
         return orderBy(this.rawOperations, ['id'], ['desc'])
       }
-    },
-
-    created () {
-      this.fetch()
     },
 
     methods: {
@@ -154,7 +121,11 @@
       },
 
       processResponse (operations) {
-        this.rawOperations = operations._embedded.records
+        this.rawOperations = operations._embedded.records.map((op) => {
+          op.open = false
+
+          return op
+        })
 
         this.parseNextAndPrevId(this.operations)
 
@@ -204,6 +175,10 @@
         this.pressedNext = true
         this.fetch(true)
       }
-    }
+    },
+
+    created () {
+      this.fetch()
+    },
   }
 </script>
