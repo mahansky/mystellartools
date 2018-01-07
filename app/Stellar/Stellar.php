@@ -6,6 +6,10 @@ use GuzzleHttp\Client;
 use ZuluCrypto\StellarSdk\Horizon\ApiClient;
 use ZuluCrypto\StellarSdk\Keypair;
 use ZuluCrypto\StellarSdk\Server;
+use ZuluCrypto\StellarSdk\XdrModel\Operation\AccountMergeOp;
+use ZuluCrypto\StellarSdk\XdrModel\Operation\SetOptionsOp;
+use ZuluCrypto\StellarSdk\XdrModel\Signer;
+use ZuluCrypto\StellarSdk\XdrModel\SignerKey;
 
 class Stellar
 {
@@ -28,7 +32,7 @@ class Stellar
     {
         $this->http = $http;
         $this->horizonUrl = config('stellar.horizon_url');
-        $this->horizon = new Server(new ApiClient($this->horizonUrl));
+        $this->horizon = new Server(new ApiClient($this->horizonUrl, ApiClient::NETWORK_PASSPHRASE_PUBLIC));
     }
 
     /**
@@ -104,7 +108,17 @@ class Stellar
      */
     public function addSignerToAccount($signer, $secretKey, $weight = 1)
     {
-        // TODO
+        $keypair = Keypair::newFromSeed($secretKey);
+
+        $signer = new Signer($signer, $weight); // FIXME
+
+        $setOptions = new SetOptionsOp();
+        $setOptions->updateSigner($signer);
+
+        return $this->horizon->buildTransaction($keypair)
+            ->addOperation($setOptions)
+            ->submit($secretKey)
+            ->getRawData();
     }
 
     /**
@@ -114,7 +128,10 @@ class Stellar
      */
     public function mergeAccounts($secretKey, $destination)
     {
-        // TODO
+        return $this->horizon->buildTransaction(Keypair::newFromSeed($secretKey))
+            ->addMergeOperation($destination)
+            ->submit($secretKey)
+            ->getRawData();
     }
 
     /**
