@@ -24,13 +24,17 @@
                     <v-card-actions>
                         <v-spacer></v-spacer>
                         <v-btn flat class="grey--text" @click.stop="info = false">Close</v-btn>
-                        <v-btn flat :data-clipboard-text="value" ref="copybtn">Copy</v-btn>
+                        <v-btn flat class="blue--text" :data-clipboard-text="value" ref="copybtn">Copy</v-btn>
                         <!--<v-btn primary flat>Explore</v-btn>-->
                     </v-card-actions>
                 </v-card>
             </v-menu>
             <span v-text="value.slice(50)"></span>
-            <small class="contact-name blue blue--text" v-text="contact" v-if="contact"></small>
+            <small
+                    class="contact-name blue blue--text"
+                    v-text="contact"
+                    v-if="!hideContactName && contact"
+            ></small>
         </div>
     </div>
 </template>
@@ -41,7 +45,15 @@
   import { find } from 'lodash'
 
   export default {
-    props: ['value'],
+    props: {
+      value: {
+        type: String,
+      },
+      hideContactName: {
+        type: Boolean,
+        default: false,
+      },
+    },
 
     data: () => ({
       info: false,
@@ -54,6 +66,10 @@
 
         if (contact) {
           return contact.name
+        }
+
+        if (this.value === this.$store.getters.keypair.publicKey()) {
+          return 'This account'
         }
 
         if (this.value in knownAccounts) {

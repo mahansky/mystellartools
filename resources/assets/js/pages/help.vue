@@ -37,6 +37,19 @@
                     </div>
 
                     <div class="textblock">
+                        <div class="headline">Public keys</div>
+                        <p>
+                            Public keys are shown mostly in the form of first 6 characters, triple dot, last 6 characters.
+                            You can click the triple dot to show a popup containing the full version of public key
+                            as well as button to copy it.
+                        </p>
+                        <p>
+                            Blue text in blue border next to the public key is a name of your contact associated with
+                            this public key or one of the known accounts (exchanges, anchors).
+                        </p>
+                    </div>
+
+                    <div class="textblock">
                         <div class="headline">Data stored in browser</div>
                         <p>
                             If you don't exit the app using top right button "Exit", all the data such as

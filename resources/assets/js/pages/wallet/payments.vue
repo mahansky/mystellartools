@@ -30,8 +30,8 @@
                                     <amount :amount="props.item.amount" v-if="props.item.from !== props.item.to"></amount>
                                     <span v-else>0</span>
                                 </span>
-                                <span v-if="props.item.asset_code" v-text="props.item.asset_code"></span>
-                                <span v-else v-text="'XLM'"></span>
+                                <span v-if="props.item.asset_code" v-text="props.item.asset_code" v-tooltip:top="{ html: props.item.asset_issuer }"></span>
+                                <span v-else v-text="'XLM'" v-tooltip:top="{ html: 'Native' }"></span>
                             </td>
                             <template v-if="props.item.datetime">
                                 <td>
@@ -135,10 +135,15 @@
     methods: {
       startListening () {
         let vm = this
+        let cursor = 'now'
+
+        if (this.payments.length > 0) {
+          cursor = this.payments[0].paging_token
+        }
 
         vm.eventSource = StellarServer.payments()
           .forAccount(this.$store.getters.keypair.publicKey())
-          .cursor('now')
+          .cursor(cursor)
           .stream({
             onmessage: (payment) => {
               if (payment.type !== 'account_merge') {
