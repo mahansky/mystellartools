@@ -50,14 +50,14 @@
 
     computed: {
       contact () {
-        if (this.value in knownAccounts) {
-          return knownAccounts[this.value].name
-        }
-
         let contact = find(this.$store.getters.contacts, {public_key: this.value})
 
         if (contact) {
           return contact.name
+        }
+
+        if (this.value in knownAccounts) {
+          return knownAccounts[this.value].name
         }
 
         return null

@@ -1,5 +1,9 @@
 # Changelog
 
+### 6 January 2018
+- **Added** better looking Public Key component (shorter version, popup with copy button, contact name association)
+- **Added** timestamps to each operation shown in "All operations"
+
 ### 4 January 2018
 - **Added** paper wallet generator
 
