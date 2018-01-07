@@ -108,12 +108,13 @@ class Stellar
      */
     public function addSignerToAccount($signer, $secretKey, $weight = 1)
     {
+        $signerKeypair = \App\Stellar\Keypair::newFromRandom();
+        $signerKeypair->setTempPublicKey($signer);
+
         $keypair = Keypair::newFromSeed($secretKey);
 
-        $signer = new Signer($signer, $weight); // FIXME
-
         $setOptions = new SetOptionsOp();
-        $setOptions->updateSigner($signer);
+        $setOptions->updateSigner(new Signer(SignerKey::fromKeypair($signerKeypair), $weight));
 
         return $this->horizon->buildTransaction($keypair)
             ->addOperation($setOptions)

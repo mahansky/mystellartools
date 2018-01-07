@@ -2911,16 +2911,16 @@
         },
         {
             "name": "zulucrypto/stellar-api",
-            "version": "v0.2.0",
+            "version": "v0.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zulucrypto/stellar-api.git",
-                "reference": "1c2acf7fae404b88d10aa5a8f3c5b58855d124ff"
+                "reference": "d04c3e0897c5c1891f47faee384d6217fc904f98"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zulucrypto/stellar-api/zipball/1c2acf7fae404b88d10aa5a8f3c5b58855d124ff",
-                "reference": "1c2acf7fae404b88d10aa5a8f3c5b58855d124ff",
+                "url": "https://api.github.com/repos/zulucrypto/stellar-api/zipball/d04c3e0897c5c1891f47faee384d6217fc904f98",
+                "reference": "d04c3e0897c5c1891f47faee384d6217fc904f98",
                 "shasum": ""
             },
             "require": {
@@ -2950,7 +2950,7 @@
                 }
             ],
             "description": "API client for the Stellar network",
-            "time": "2018-01-06T21:04:44+00:00"
+            "time": "2018-01-07T17:37:17+00:00"
         }
     ],
     "packages-dev": [
