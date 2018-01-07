@@ -74,3 +74,23 @@
 .break-all {
   word-break: break-all;
 }
+
+.public-key {
+  display: flex;
+  flex-direction: row;
+
+  i {
+    position: relative;
+    top: -1px;
+  }
+
+  .contact-name {
+    font-size: 80%;
+    border: 1px solid;
+    height: 50%;
+    background-color: transparent !important;
+    margin-left: 10px;
+    margin-top: 1px;
+    padding: 0 5px;
+  }
+}

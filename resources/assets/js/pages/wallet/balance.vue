@@ -37,7 +37,6 @@
                 </v-flex>
             </v-layout>
         </v-container>
-        <small style="display: none;" v-text="publicKey"></small>
     </main>
 </template>
 

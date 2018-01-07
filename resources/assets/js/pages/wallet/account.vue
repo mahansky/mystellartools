@@ -12,7 +12,7 @@
                         <v-card-text>
                             <div class="datablock">
                                 <div class="name">Account ID</div>
-                                <span v-text="account.id"></span>
+                                <public-key :value="account.id"></public-key>
                             </div>
 
                             <div class="datablock">
@@ -27,7 +27,7 @@
 
                             <div class="datablock" v-if="account.inflation_destination">
                                 <div class="name">Inflation destination</div>
-                                <span v-text="account.inflation_destination"></span>
+                                <public-key :value="account.inflation_destination"></public-key>
                             </div>
 
                             <div class="datablock" v-if="account.home_domain">
@@ -111,7 +111,7 @@
                                     </tr>
                                     <tr v-if="asset.asset_issuer">
                                         <td><span class="grey--text text--darken-1 caption pr-2">Issuer</span></td>
-                                        <td><span v-text="asset.asset_issuer"></span></td>
+                                        <td><pubic-key :value="asset.asset_issuer"></pubic-key></td>
                                     </tr>
                                     <tr v-if="asset.asset_limit">
                                         <td><span class="grey--text text--darken-1 caption pr-2">Limit</span></td>
@@ -130,7 +130,7 @@
                                 <table class="fluid">
                                     <tr>
                                         <td><span class="grey--text text--darken-1 caption pr-2">Public key</span></td>
-                                        <td><span v-text="signer.public_key"></span></td>
+                                        <td><public-key :value="signer.public_key"></public-key></td>
                                     </tr>
                                     <tr>
                                         <td><span class="grey--text text--darken-1 caption pr-2">Type</span></td>

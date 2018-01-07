@@ -57,7 +57,7 @@
                             <v-card-media :src="qrcodePublic" height="200px" contain></v-card-media>
                             <v-card-title>
                                 <div>
-                                    <span class="break-all" v-text="$store.getters.keypair.publicKey()"></span>
+                                    <public-key class="break-all" :value="$store.getters.keypair.publicKey()"></public-key>
                                 </div>
                             </v-card-title>
                             <v-card-actions class="white">

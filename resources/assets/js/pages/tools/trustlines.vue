@@ -61,7 +61,7 @@
                                             </tr>
                                             <tr>
                                                 <td><b>Issuer</b></td>
-                                                <td v-text="currency.issuer"></td>
+                                                <td><public-key :value="currency.issuer"></public-key></td>
                                             </tr>
                                             <tr v-if="currency.name">
                                                 <td><b>Name</b></td>
@@ -197,7 +197,7 @@
                     >
                         <template slot="items" slot-scope="props">
                             <td v-text="props.item.asset_code"></td>
-                            <td v-text="props.item.asset_issuer"></td>
+                            <td><public-key :value="props.item.asset_issuer"></public-key></td>
                             <td v-text="props.item.limit"></td>
                             <td class="text-xs-right">
                                 <span class="table-row-detail">

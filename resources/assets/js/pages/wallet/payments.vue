@@ -12,17 +12,13 @@
                     >
                         <template slot="items" slot-scope="props">
                             <td>
-                                <template v-if="props.item.name">
-                                    {{ props.item.name }}
-                                    <small class="grey--text">{{ props.item.from }}</small>
-                                </template>
-                                <template v-else>
+                                <template>
                                     <template v-if="props.item.type === 'payment'">
-                                        <span v-if="isIncoming(props.item)" v-text="props.item.from"></span>
-                                        <span v-if="!isIncoming(props.item)" v-text="props.item.to"></span>
+                                        <public-key v-if="isIncoming(props.item)" :value="props.item.from"></public-key>
+                                        <public-key v-if="!isIncoming(props.item)" :value="props.item.to"></public-key>
                                     </template>
                                     <template v-if="props.item.type === 'create_account'">
-                                        <span v-text="props.item.account"></span>
+                                        <public-key :value="props.item.account"></public-key>
                                     </template>
                                 </template>
                             </td>

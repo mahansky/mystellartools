@@ -16,7 +16,7 @@
             </tr>
             <tr v-if="operation.selling_asset_issuer">
                 <td><b>Asset Issuer</b></td>
-                <td><span v-text="operation.selling_asset_issuer"></span></td>
+                <td><public-key :value="operation.selling_asset_issuer"></public-key></td>
             </tr>
             <tr><td colspan="2">&nbsp;</td></tr>
             <tr>
@@ -28,7 +28,7 @@
             </tr>
             <tr v-if="operation.buying_asset_issuer">
                 <td><b>Asset Issuer</b></td>
-                <td><span v-text="operation.buying_asset_issuer"></span></td>
+                <td><public-key :value="operation.buying_asset_issuer"></public-key></td>
             </tr>
             <tr><td colspan="2">&nbsp;</td></tr>
             <tr>

@@ -25,7 +25,6 @@
   import change_trust from './change_trust'
   import create_account from './create_account'
   import create_passive_offer from './create_passive_offer'
-  import inflation from './inflation'
   import manage_data from './manage_data'
   import manage_offer from './manage_offer'
   import path_payment from './path_payment'
@@ -41,7 +40,6 @@
       change_trust,
       create_account,
       create_passive_offer,
-      inflation,
       manage_data,
       manage_offer,
       path_payment,

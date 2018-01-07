@@ -3,7 +3,7 @@
         <table class="first-padding">
             <tr>
                 <td><b>Into</b></td>
-                <td><span v-text="operation.into"></span></td>
+                <td><public-key :value="operation.into"></public-key></td>
             </tr>
         </table>
     </div>

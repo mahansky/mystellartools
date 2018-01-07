@@ -108,7 +108,7 @@
                             <p>
                                 <b>Recipient</b>
                                 <br>
-                                <span v-text="recipient"></span>
+                                <public-key :value="recipient"></public-key>
                             </p>
 
                             <b>Amount</b>
