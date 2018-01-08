@@ -38,11 +38,10 @@
 </template>
 
 <script>
-  import { Stellar } from '../stellar'
+  import { Stellar } from '~/stellar'
   import { mapGetters } from 'vuex'
-  import * as utils from '../utils'
+  import { flash, getQueryParameter } from '~/utils'
   import axios from 'axios'
-  import { flash } from '../utils'
 
   export default {
     metaInfo: () => ({
@@ -62,7 +61,7 @@
     },
 
     created () {
-      let token = utils.getQueryParameter('token')
+      let token = getQueryParameter('token')
 
       if (!token) {
         this.$router.push({name: 'welcome'})
@@ -76,7 +75,7 @@
         this.secret = response.data.secret
 
         flash('Success!', 'success')
-      }).catch(err => {
+      }).catch(() => {
         this.$router.push({name: 'welcome'})
       })
     },

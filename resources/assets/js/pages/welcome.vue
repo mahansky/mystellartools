@@ -159,7 +159,7 @@
 </template>
 
 <script>
-  import * as utils from '../utils'
+  import * as utils from '~/utils'
   import { Stellar } from '~/stellar'
 
   import Ledger from './welcome/ledger'

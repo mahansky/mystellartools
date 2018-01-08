@@ -83,12 +83,11 @@
 </template>
 
 <script>
-  import { TransactionBuilder, Operation } from 'stellar-sdk'
-  import { StellarServer } from '../../stellar'
-  import { flash } from '../../utils'
-  import { submitTransaction } from '../../stellar/internal'
+  import { StellarServer } from '~/stellar'
+  import { flash } from '~/utils'
+  import { submitTransaction } from '~/stellar/internal'
+  import { filter, forEach } from 'lodash'
   import Vue from 'vue'
-  import { forEach } from 'lodash'
 
   export default {
     metaInfo: () => ({
@@ -132,7 +131,7 @@
       items () {
         let array = []
 
-        _.forEach(this.dataset, function (value, key) {
+        forEach(this.dataset, function (value, key) {
           array.push({
             key,
             value,
@@ -151,7 +150,7 @@
 
       edit (key) {
         this.key = key
-        this.value = window.atob(_.filter(this.items, function (i) {
+        this.value = window.atob(filter(this.items, function (i) {
           return i.key === key
         })[0].value)
 

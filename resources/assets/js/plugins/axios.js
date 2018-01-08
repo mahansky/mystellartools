@@ -1,6 +1,6 @@
 import axios from 'axios'
 import store from '~/store'
-import { flash } from '../utils'
+import { flash } from '~/utils'
 
 axios.interceptors.response.use(response => response, error => {
   const {status} = error.response

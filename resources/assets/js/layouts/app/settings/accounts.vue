@@ -140,7 +140,7 @@
   import { contains, filter, includes, map } from 'lodash'
   import Vue from 'vue'
   import StellarLedger from 'stellar-ledger-api'
-  import { ruleBip32Path } from '../../../stellar/index'
+  import { ruleBip32Path } from '~/stellar/index'
 
   export default {
     data () {

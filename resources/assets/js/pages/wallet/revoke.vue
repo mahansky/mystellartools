@@ -42,11 +42,10 @@
 </template>
 
 <script>
-  import { StellarServer } from '../../stellar'
-  import { FederationServer } from 'stellar-sdk'
+  import { StellarServer, Stellar } from '~/stellar'
   import { forEach } from 'lodash'
-  import { flash } from '../../utils'
-  import { submitTransaction } from '../../stellar/internal'
+  import { flash } from '~/utils'
+  import { submitTransaction } from '~/stellar/internal'
   import axios from 'axios'
 
   export default {
@@ -65,7 +64,7 @@
 
         let publicKey
 
-        FederationServer.resolve(this.email + '*mystellar.tools')
+        Stellar.FederationServer.resolve(this.email + '*mystellar.tools')
           .then(({account_id}) => {
             publicKey = account_id
 

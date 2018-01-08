@@ -41,10 +41,10 @@
 </template>
 
 <script>
-  import { Stellar, StellarServer } from '../../stellar'
+  import { Stellar, StellarServer } from '~/stellar'
+  import { flash } from '~/utils'
   import Price from './balance/price'
   import Token from './balance/token'
-  import { flash } from '../../utils'
 
   export default {
     metaInfo: () => ({

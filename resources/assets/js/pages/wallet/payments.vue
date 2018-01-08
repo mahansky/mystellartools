@@ -71,10 +71,11 @@
 </template>
 
 <script>
-  import { StellarServer } from '../../stellar'
+  import { StellarServer } from '~/stellar'
+  import { flash } from '~/utils'
+  import { filter, forEach } from 'lodash'
   import moment from 'moment'
   import Vue from 'vue'
-  import { flash } from '../../utils'
 
   export default {
     metaInfo: () => ({
@@ -107,7 +108,7 @@
         .then(payments => {
           vm.loaded = true
 
-          _.forEach(payments.records, function (payment) {
+          forEach(payments.records, function (payment) {
             if (payment.type === 'create_account') {
               payment.from = payment.funder
               payment.amount = payment.starting_balance
@@ -115,7 +116,7 @@
             }
           })
 
-          vm.payments = _.filter(payments.records, function (payment) {
+          vm.payments = filter(payments.records, function (payment) {
             return payment.type !== 'account_merge'
           })
 

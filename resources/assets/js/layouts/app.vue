@@ -190,10 +190,9 @@
 <script>
   import Settings from './app/settings.vue'
   import axios from 'axios'
-  import { flash } from '../utils'
-  import * as utils from '../utils'
+  import { flash, logout } from '~/utils'
+  import { Stellar } from '~/stellar'
   import { find } from 'lodash'
-  import { Keypair } from 'stellar-sdk'
 
   const CryptoJS = require('crypto-js')
 
@@ -241,7 +240,7 @@
 
     methods: {
       logout () {
-        utils.logout()
+        logout()
       },
 
       openDialog () {
@@ -259,7 +258,7 @@
           let secret = CryptoJS.AES.decrypt(account.secret_key, this.passwordForm.password).toString(CryptoJS.enc.Utf8);
 
           this.$store.dispatch('storeKeypair', {
-            keypair: Keypair.fromSecret(secret)
+            keypair: Stellar.Keypair.fromSecret(secret)
           })
 
           this.passwordDialog = false

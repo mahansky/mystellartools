@@ -41,7 +41,7 @@
 
 <script>
   import Clipboard from 'clipboard'
-  import { knownAccounts } from '~/stellar/known_accounts'
+  import knownAccounts from '~/stellar/known_accounts'
   import { find } from 'lodash'
 
   export default {

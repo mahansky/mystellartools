@@ -4,7 +4,7 @@ import router from './router'
 
 export const events = new Vue()
 
-export function flash (message, type) {
+export function flash (message, type = 'error') {
   store.dispatch('storeFlash', {
     message,
     type,

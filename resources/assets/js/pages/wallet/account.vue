@@ -256,9 +256,9 @@
 </template>
 
 <script>
-  import { Stellar, StellarServer } from '../../stellar'
+  import { Stellar, StellarServer } from '~/stellar'
+  import { flash } from '~/utils'
   import axios from 'axios'
-  import { flash } from '../../utils'
 
   export default {
     metaInfo: () => ({
@@ -292,13 +292,9 @@
                   },
                 }).then(response => {
                   this.homeDomainStellarAddress = response.data.stellar_address
-                }).catch(() => {
-                  this.homeDomainStellarAddress = ''
-                }).then(() => {
-                  this.homeDomainStellarAddressLoading = false
                 })
               })
-              .catch(err => {
+              .catch(() => {
                 this.homeDomainStellarAddress = ''
               })
               .then(() => {

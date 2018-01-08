@@ -80,10 +80,9 @@
 
 <script>
   import axios from 'axios'
-  import { flash } from '../../../utils'
   import Vue from 'vue'
-  import { ruleAccountIsValid } from '../../../stellar/index'
-  import { Memo } from 'stellar-sdk'
+  import { flash } from '~/utils'
+  import { ruleAccountIsValid, Stellar } from '~/stellar/index'
   import { map } from 'lodash'
 
   export default {
@@ -112,19 +111,19 @@
               switch (this.memoType) {
                 case 'MEMO_TEXT':
                   memoError = 'MEMO_TEXT must contain a maximum of 28 characters'
-                  Memo.text(v)
+                  Stellar.Memo.text(v)
                   break
                 case 'MEMO_ID':
                   memoError = 'MEMO_ID must be a valid 64 bit unsigned integer'
-                  Memo.id(v)
+                  Stellar.Memo.id(v)
                   break
                 case 'MEMO_HASH':
                   memoError = 'MEMO_HASH must be a 32 byte hash represented in hexadecimal (A-Z0-9)'
-                  Memo.hash(v)
+                  Stellar.Memo.hash(v)
                   break
                 case 'MEMO_RETURN':
                   memoError = 'MEMO_RETURN must be a 32 byte hash represented in hexadecimal (A-Z0-9)'
-                  Memo.returnHash(v)
+                  Stellar.Memo.returnHash(v)
                   break
               }
             } catch (error) {
