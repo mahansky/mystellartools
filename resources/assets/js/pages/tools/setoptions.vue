@@ -191,10 +191,9 @@
 </template>
 
 <script>
-  import { ruleAccountIsValid, Stellar, StellarServer } from '../../stellar'
-  import { TransactionBuilder, Operation, Keypair, StrKey } from 'stellar-sdk'
-  import { flash } from '../../utils'
-  import { submitTransaction } from '../../stellar/internal'
+  import { ruleAccountIsValid, resolveAccountId, Stellar, StellarServer } from '~/stellar'
+  import { flash } from '~/utils'
+  import { submitTransaction } from '~/stellar/internal'
   import isString from 'lodash'
 
   const xdr = require('stellar-base').xdr
@@ -252,7 +251,7 @@
           return ((v) >= 0 && (v) <= 255)
             || 'Expected an integer between 0 and 255 (inclusive)'
         }],
-        accountRules: [(v) => !!v ? ruleAccountIsValid(v, false) : true],
+        accountRules: [(v) => !!v ? ruleAccountIsValid(v) : true],
         domainRules: [(v) => !!v ? (/^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/.test(v) || 'Invalid domain') : true],
         signerRules: [(v) => {
           let temp
@@ -260,7 +259,7 @@
           try {
             switch (this.signerType) {
               case 'ed25519':
-                if (!StrKey.isValidEd25519PublicKey(v)) {
+                if (!Stellar.StrKey.isValidEd25519PublicKey(v)) {
                   throw 'error'
                 }
 
@@ -300,7 +299,7 @@
     watch: {
       signerType (value) {
         if (value === 'ed25519') {
-          this.signerLabel = 'Signer\'s public key'
+          this.signerLabel = 'Signer\'s public key or federation address'
         }
 
         if (value === 'txhash') {
@@ -318,56 +317,66 @@
         if (this.$refs.form.validate()) {
           this.isLoading = true
 
-          let attributes = {}
+          let promises = []
+          let signerPublicKey, inflationPublicKey
 
-          if (this.masterWeight)
-            attributes.masterWeight = this.masterWeight
-
-          if (this.lowTreshold)
-            attributes.lowTreshold = this.lowTreshold
-
-          if (this.medTreshold)
-            attributes.medTreshold = this.medTreshold
-
-          if (this.highTreshold)
-            attributes.highTreshold = this.highTreshold
-
-          if (this.inflationDest)
-            attributes.inflationDest = this.inflationDest
-
-          if (this.homeDomain)
-            attributes.homeDomain = this.homeDomain
-
-          attributes.clearFlags = this.calcFlags(this.clearFlags)
-          attributes.setFlags = this.calcFlags(this.setFlags)
-
-          if (this.signerType) {
-            let signerType
-
-            if (this.signerType === 'ed25519') {
-              signerType = 'ed25519PublicKey'
-            } else if (this.signerType === 'txhash') {
-              signerType = 'preAuthTx'
-            } else if (this.signerType === 'sha256') {
-              signerType = 'sha256Hash'
-            }
-
-            attributes.signer[signerType] = this.signer
-            attributes.signer.weight = this.signerWeight
+          if (this.signerType === 'ed25519') {
+            promises.push(resolveAccountId(this.signer).then(({account_id}) => {
+              signerPublicKey = account_id
+            }))
           }
 
-          submitTransaction('setOptions', attributes)
-            .then(() => {
-              this.$router.push({name: 'account'})
+          if (this.inflationDest) {
+            promises.push(resolveAccountId(this.inflationDest).then(({account_id}) => {
+              inflationPublicKey = account_id
+            }))
+          }
 
-              flash('Options updated', 'success')
-            })
-            .catch((err) => {
-              flash(err, 'error')
-            })
-            .then(() => {
-              this.isLoading = false
-            })
+          Promise.all(promises).then(() => {
+            let attributes = {}
+
+            if (this.masterWeight)
+              attributes.masterWeight = this.masterWeight
+
+            if (this.lowTreshold)
+              attributes.lowTreshold = this.lowTreshold
+
+            if (this.medTreshold)
+              attributes.medTreshold = this.medTreshold
+
+            if (this.highTreshold)
+              attributes.highTreshold = this.highTreshold
+
+            if (this.inflationDest)
+              attributes.inflationDest = inflationPublicKey
+
+            if (this.homeDomain)
+              attributes.homeDomain = this.homeDomain
+
+            attributes.clearFlags = this.calcFlags(this.clearFlags)
+            attributes.setFlags = this.calcFlags(this.setFlags)
+
+            if (this.signerType) {
+              if (this.signerType === 'ed25519') {
+                attributes.signer['ed25519PublicKey'] = signerPublicKey
+              } else if (this.signerType === 'txhash') {
+                attributes.signer['preAuthTx'] = this.signer
+              } else if (this.signerType === 'sha256') {
+                attributes.signer['sha256Hash'] = this.signer
+              }
+
+              attributes.signer.weight = this.signerWeight
+            }
+
+            submitTransaction('setOptions', attributes)
+              .then(() => {
+                flash('Options updated', 'success')
+              })
+          })
+          .catch(flash)
+          .then(() => {
+            this.isLoading = false
+          })
         }
       },
 

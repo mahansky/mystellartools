@@ -1,5 +1,8 @@
 # Changelog
 
+### 8 January 2018
+- **Added** option to enter federated address into every input that requires public key
+
 ### 6 January 2018
 - **Added** better looking Public Key component (shorter version, popup with copy button, contact name association)
 - **Added** timestamps to each operation shown in "All operations"

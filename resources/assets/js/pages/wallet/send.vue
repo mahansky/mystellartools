@@ -91,7 +91,7 @@
                         <v-card-actions>
                             <v-btn flat class="grey--text" @click="memo = !memo">Memo</v-btn>
                             <v-spacer></v-spacer>
-                            <v-btn flat :class="{'blue--text': valid, 'red--text': !valid}" @click="clickVerify">
+                            <v-btn flat :class="{'blue--text': valid, 'red--text': !valid}" @click="verify">
                                 Verify
                                 <v-icon>chevron_right</v-icon>
                             </v-btn>
@@ -157,7 +157,7 @@
                                     info
                                     v-if="!isVerifying"
                                     :loading="isSending"
-                                    @click="clickedSend"
+                                    @click="send"
                             >
                                 Send
                                 <v-icon>done</v-icon>
@@ -231,13 +231,12 @@
 </template>
 
 <script>
-  import { ruleAccountIsValid, Stellar, StellarServer } from '../../stellar'
-  import { Asset, Keypair, Memo, Operation, TransactionBuilder, StrKey, FederationServer } from 'stellar-sdk'
-  import BigNumber from 'bignumber.js'
-  import { flash } from '../../utils'
+  import { resolveAccountId, ruleAccountIsValid, Stellar, StellarServer } from '~/stellar'
+  import { flash } from '~/utils'
   import { forEach } from 'lodash'
-  import { submitTransaction } from '../../stellar/internal'
-  import { knownAccounts } from '../../stellar/known_accounts'
+  import { submitTransaction } from '~/stellar/internal'
+  import knownAccounts from '~/stellar/known_accounts'
+  import BigNumber from 'bignumber.js'
 
   export default {
     metaInfo: () => ({
@@ -257,23 +256,10 @@
 
         resolvedRecipient: '',
         recipient: '',
-        recipientRules: [(v) => {
-          let ok = StrKey.isValidEd25519PublicKey(v)
-
-          if (!ok) {
-            let regex = new RegExp('^.+\\*mystellar\\.tools$')
-            ok = regex.test(v)
-          }
-
-          if (!ok) {
-            ok = !!v
-          }
-
-          return ok ? true : 'Invalid account'
-        }],
+        recipientRules: [ruleAccountIsValid],
 
         amount: '',
-        amountRules: [(v) => Operation.isValidAmount(v) || 'Amount must be greater than zero.'],
+        amountRules: [(v) => Stellar.Operation.isValidAmount(v) || 'Amount must be greater than zero.'],
 
         resolvedMemo: null,
         memoType: '',
@@ -286,19 +272,19 @@
             switch (this.memoType) {
               case 'MEMO_TEXT':
                 memoError = 'MEMO_TEXT must contain a maximum of 28 characters'
-                this.resolvedMemo = Memo.text(v)
+                this.resolvedMemo = Stellar.Memo.text(v)
                 break
               case 'MEMO_ID':
                 memoError = 'MEMO_ID must be a valid 64 bit unsigned integer'
-                this.resolvedMemo = Memo.id(v)
+                this.resolvedMemo = Stellar.Memo.id(v)
                 break
               case 'MEMO_HASH':
                 memoError = 'MEMO_HASH must be a 32 byte hash represented in hexadecimal (A-Z0-9)'
-                this.resolvedMemo = Memo.hash(v)
+                this.resolvedMemo = Stellar.Memo.hash(v)
                 break
               case 'MEMO_RETURN':
                 memoError = 'MEMO_RETURN must be a 32 byte hash represented in hexadecimal (A-Z0-9)'
-                this.resolvedMemo = Memo.returnHash(v)
+                this.resolvedMemo = Stellar.Memo.returnHash(v)
                 break
             }
           } catch (error) {
@@ -314,7 +300,7 @@
         assetSelector: false,
         asset: 'XLM',
         assetTypes: ['XLM'],
-        assetRules: [(v) => (!!v && v.length > 0 && v.length <= 12) || 'Asset code is required, max 12 characters'],
+        assetRules: [(v) => (!!v && v.length > 0 && v.length <= 12) || 'Asset code must have from 1 to 12 characters'],
 
         contactsSelector: false,
         contactsSearch: '',
@@ -348,100 +334,79 @@
     },
 
     methods: {
-      clickVerify () {
+      verify () {
         if (this.$refs.form.validate()) {
           this.clickedVerify = true
           this.isVerifying = true
           this.isSending = false
 
-          this.verifyPayment()
-        }
-      },
+          let vm = this
 
-      verifyPayment () {
-        let vm = this
+          resolveAccountId(this.recipient)
+            .then(({account_id}) => {
+              this.resolvedRecipient = account_id
 
-        this.resolveAccountIdFromRecipient(this.recipient)
-          .then(({account_id}) => {
-            this.resolvedRecipient = account_id
+              if (this.memoValue === '' && this.resolvedRecipient in knownAccounts && knownAccounts[this.resolvedRecipient].requiredMemoType) {
+                this.memo = true
+                this.memoType = knownAccounts[this.resolvedRecipient].requiredMemoType
+                this.memoValue = ''
 
-            if (this.memoValue === '' && this.resolvedRecipient in knownAccounts && knownAccounts[this.resolvedRecipient].requiredMemoType) {
-              this.memo = true
-              this.memoType = knownAccounts[this.resolvedRecipient].requiredMemoType
-              this.memoValue = ''
+                throw new Error(knownAccounts[this.resolvedRecipient].name + ' requires MEMO to be set!')
+              }
 
-              throw new Error(knownAccounts[this.resolvedRecipient].name + ' requires MEMO to be set!')
-            }
+              return StellarServer.loadAccount(this.$store.getters.keypair.publicKey())
+                .then(account => {
+                  vm.loadedAccount = account
 
-            return StellarServer.loadAccount(this.$store.getters.keypair.publicKey())
-              .then(account => {
-                vm.loadedAccount = account
+                  let selectedAsset = this.asset
+                  let minimumNativeBalance = 20 + (account.subentry_count) * 10
+                  let balance = _(account.balances).find(balance => {
+                    if (selectedAsset === 'XLM') {
+                      return balance.asset_type === 'native'
+                    }
 
-                let selectedAsset = this.asset
-                let minimumNativeBalance = 20 + (account.subentry_count) * 10
-                let balance = _(account.balances).find(balance => {
+                    return balance.asset_code === selectedAsset
+                  }).balance
+
+                  this.balance = balance
+
                   if (selectedAsset === 'XLM') {
-                    return balance.asset_type === 'native'
+                    let maxSend = new BigNumber(balance).minus(minimumNativeBalance)
+
+                    if (maxSend.lt(new BigNumber(this.amount))) {
+                      throw new Error('Insufficient balance')
+                    }
                   }
+                })
+                .then(() => {
+                  if (this.asset === 'XLM') {
+                    if (new BigNumber(this.amount).gte(20)) {
+                      return
+                    }
 
-                  return balance.asset_code === selectedAsset
-                }).balance
-
-                this.balance = balance
-
-                if (selectedAsset === 'XLM') {
-                  let maxSend = new BigNumber(balance).minus(minimumNativeBalance)
-
-                  if (maxSend.lt(new BigNumber(this.amount))) {
-                    throw new Error('Insufficient balance')
+                    return StellarServer.accounts()
+                      .accountId(this.resolvedRecipient)
+                      .call()
+                      .catch(err => {
+                        if (err.name === 'NotFoundError') {
+                          throw new Error('Account does not exist. You need to send at least 20 XLM.')
+                        }
+                      })
                   }
-                }
-              })
-              .then(() => {
-                if (this.asset === 'XLM') {
-                  if (new BigNumber(this.amount).gte(20)) {
-                    return
-                  }
+                })
+                .then(() => {
+                  vm.isVerifying = false
+                })
+            })
+            .catch((err) => {
+              this.clickedVerify = false
 
-                  return StellarServer.accounts()
-                    .accountId(this.resolvedRecipient)
-                    .call()
-                    .catch(err => {
-                      if (err.name === 'NotFoundError') {
-                        throw new Error('Account does not exist. You need to send at least 20 XLM.')
-                      }
-                    })
-                }
-              })
-              .then(() => {
-                vm.isVerifying = false
-              })
-              .catch(err => {
-                this.clickedVerify = false
-
-                flash(err, 'error')
-              })
-          })
-          .catch((err) => {
-            this.clickedVerify = false
-
-            flash(err, 'error')
-          })
+              flash(err, 'error')
+            })
+        }
       },
 
-      resolveAccountIdFromRecipient (recipient) {
-        if (StrKey.isValidEd25519PublicKey(recipient)) {
-          return Promise.resolve({account_id: recipient})
-        }
-
-        if (recipient.indexOf('*') === -1) {
-          recipient = recipient + '*mystellar.tools'
-        }
-
-        return FederationServer.resolve(recipient)
-      },
-
-      clickedSend () {
+      send () {
         this.isSending = true
 
         let code, issuer
@@ -481,11 +446,9 @@
             throw err
           })
           .then(() => {
-            flash('Success!', 'success')
+            flash('Payment successfully submitted to the network!', 'success')
           })
-          .catch(err => {
-            flash(err, 'error')
-          })
+          .catch(flash)
           .then(() => {
             this.isSending = false
             this.clickedVerify = false
@@ -542,9 +505,7 @@
 
           this.loaded = true
         })
-        .catch(err => {
-          flash(err, 'error')
-        })
+        .catch(flash)
     },
   }
 </script>

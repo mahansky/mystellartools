@@ -42,12 +42,10 @@
 </template>
 
 <script>
-  import { ruleAccountIsValid, Stellar, StellarServer } from '../../stellar'
-  import { TransactionBuilder, Operation, Keypair } from 'stellar-sdk'
-  import { flash } from '../../utils'
-  import { submitTransaction } from '../../stellar/internal'
-  import * as utils from '../../utils'
-  import { knownAccounts } from '../../stellar/known_accounts'
+  import { ruleAccountIsValid, resolveAccountId, Stellar, StellarServer } from '~/stellar'
+  import { flash, logout } from '~/utils'
+  import { submitTransaction } from '~/stellar/internal'
+  import knownAccounts from '~/stellar/known_accounts'
 
   export default {
     metaInfo: () => ({
@@ -58,7 +56,7 @@
       return {
         valid: false,
         destination: '',
-        destinationRules: [(v) => ruleAccountIsValid(v)],
+        destinationRules: [ruleAccountIsValid],
         isLoading: false,
       }
     },
@@ -68,24 +66,21 @@
         if (this.$refs.form.validate()) {
           this.isLoading = true
 
-          if (this.destination in knownAccounts && knownAccounts[this.destination].mergeOpAccepted === false) {
+          resolveAccountId(this.destination).then(({account_id}) => {
+            if (account_id in knownAccounts && knownAccounts[account_id].mergeOpAccepted === false) {
+              throw new Error(knownAccounts[account_id].name + ' does not support this operation', 'error')
+            }
+
+            submitTransaction('mergeAccounts', {destination: account_id})
+              .then(() => {
+                logout()
+              })
+          })
+          .catch(err => {
             this.isLoading = false
 
-            flash(knownAccounts[this.destination].name + ' does not support this operation', 'error')
-
-            return
-          }
-
-          submitTransaction('mergeAccounts', {destination: this.destination})
-            .then(() => {
-              utils.logout()
-            })
-            .catch((err) => {
-              flash(err, 'error')
-            })
-            .then(() => {
-              this.isLoading = false
-            })
+            flash(err, 'error')
+          })
         }
       }
     }
