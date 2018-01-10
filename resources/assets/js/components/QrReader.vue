@@ -51,7 +51,7 @@
 
         this.$nextTick(() => {
           if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-            navigator.mediaDevices.getUserMedia({video: true})
+            navigator.mediaDevices.getUserMedia({video: {facingMode: 'environment'}})
               .then(mediaStream => {
                 this.$refs.video.srcObject = mediaStream
 

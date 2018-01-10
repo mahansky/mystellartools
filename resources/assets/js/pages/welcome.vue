@@ -159,7 +159,7 @@
 </template>
 
 <script>
-  import * as utils from '~/utils'
+  import { getQueryParameter } from '~/utils'
   import { Stellar } from '~/stellar'
 
   import Ledger from './welcome/ledger'
@@ -184,7 +184,7 @@
     }),
 
     created () {
-      let publicKey = utils.getQueryParameter('public_key')
+      let publicKey = getQueryParameter('public_key')
 
       if (publicKey) {
         try {
