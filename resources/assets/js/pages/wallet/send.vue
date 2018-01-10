@@ -12,13 +12,21 @@
                         </v-toolbar>
                         <v-card-text>
                             <v-form v-model="valid" ref="form">
-                                <v-text-field
-                                        label="Recipient"
-                                        :rules="recipientRules"
-                                        v-model="recipient"
-                                        append-icon="supervisor_account"
-                                        :append-icon-cb="openContacts"
-                                ></v-text-field>
+                                <div style="display:flex">
+                                    <v-text-field
+                                            label="Recipient"
+                                            :rules="recipientRules"
+                                            v-model="recipient"
+                                            append-icon="supervisor_account"
+                                            :append-icon-cb="openContacts"
+                                    ></v-text-field>
+                                    <v-text-field
+                                            label=""
+                                            append-icon="aspect_ratio"
+                                            :append-icon-cb="openQrReader"
+                                            style="flex: 0 0 36px"
+                                    ></v-text-field>
+                                </div>
 
                                 <v-layout row>
                                     <v-flex xs8>
@@ -227,19 +235,26 @@
                 </v-data-table>
             </v-card>
         </v-dialog>
+
+        <qr-reader></qr-reader>
     </main>
 </template>
 
 <script>
-  import { ruleAccountIsValid, Stellar, StellarServer } from '../../stellar'
+  import { ruleAccountIsValid, Stellar, StellarServer } from '~/stellar'
   import { Asset, Keypair, Memo, Operation, TransactionBuilder, StrKey, FederationServer } from 'stellar-sdk'
-  import BigNumber from 'bignumber.js'
-  import { flash } from '../../utils'
+  import { flash, events } from '~/utils'
   import { forEach } from 'lodash'
-  import { submitTransaction } from '../../stellar/internal'
-  import { knownAccounts } from '../../stellar/known_accounts'
+  import { submitTransaction } from '~/stellar/internal'
+  import { knownAccounts } from '~/stellar/known_accounts'
+  import BigNumber from 'bignumber.js'
+  import QrReader from '~/components/QrReader'
 
   export default {
+    components: {
+      QrReader,
+    },
+
     metaInfo: () => ({
       title: 'Send',
     }),
@@ -257,20 +272,7 @@
 
         resolvedRecipient: '',
         recipient: '',
-        recipientRules: [(v) => {
-          let ok = StrKey.isValidEd25519PublicKey(v)
-
-          if (!ok) {
-            let regex = new RegExp('^.+\\*mystellar\\.tools$')
-            ok = regex.test(v)
-          }
-
-          if (!ok) {
-            ok = !!v
-          }
-
-          return ok ? true : 'Invalid account'
-        }],
+        recipientRules: [ruleAccountIsValid],
 
         amount: '',
         amountRules: [(v) => Operation.isValidAmount(v) || 'Amount must be greater than zero.'],
@@ -527,9 +529,17 @@
           this.memoValue = ''
         }
       },
+
+      openQrReader () {
+        events.$emit('qr-reader:open')
+      },
     },
 
     created () {
+      events.$on('qr-reader:read', (data) => {
+        this.recipient = data
+      })
+
       StellarServer.loadAccount(this.$store.getters.keypair.publicKey())
         .then((account) => {
           this.availableAssets = ['XLM']
