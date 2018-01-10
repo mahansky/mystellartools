@@ -50,39 +50,22 @@
         this.qrDialog = true
 
         this.$nextTick(() => {
-          window.navigator.getUserMedia =
-            window.navigator.getUserMedia ||
-            window.navigator.webkitGetUserMedia ||
-            window.navigator.mozGetUserMedia
+          if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({video: true})
+              .then(mediaStream => {
+                this.$refs.video.srcObject = mediaStream
 
-          if (window.navigator.getUserMedia) {
-            window.navigator.getUserMedia(
-              {video: true},
-              this.successCallback,
-              this.errorCallback,
-            )
+                this.mediaStream = mediaStream
 
-            window.requestAnimationFrame(this.tick)
+                window.requestAnimationFrame(this.tick)
+              })
+              .catch(err => {
+                this.qrError = err.message
+              })
           } else {
-            this.qrError = 'Your browser does not support this feature or you have to give it the permissions to access your camera.'
+            this.qrError = 'Your browser does not support this feature'
           }
         })
-      },
-
-      successCallback (stream) {
-        this.mediaStream = stream
-
-        if (window.URL) {
-          this.$refs.video.src = window.URL.createObjectURL(stream)
-        } else if (this.$refs.video.mozSrcObject !== undefined) {
-          this.$refs.video.mozSrcObject = stream
-        } else {
-          this.$refs.video.src = stream
-        }
-      },
-
-      errorCallback () {
-        this.qrError = 'Uknown Error'
       },
 
       tick () {
