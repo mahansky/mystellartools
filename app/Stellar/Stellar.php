@@ -6,7 +6,7 @@ use GuzzleHttp\Client;
 
 class Stellar
 {
-    const HORIZON = 'https://mystellar.tools:8000';
+    const HORIZON = 'https://horizon.stellar.org';
 
     /**
      * @var Client
