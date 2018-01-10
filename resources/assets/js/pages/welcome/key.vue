@@ -4,7 +4,8 @@
                 label="Stellar public/private key or federation address"
                 v-model="key"
                 :rules="keyRules"
-                autofocus
+                append-icon="aspect_ratio"
+                :append-icon-cb="openQrReader"
         ></v-text-field>
 
         <v-layout class="text-xs-center">
@@ -14,19 +15,27 @@
                         @click="enter"
                         :class="{ 'blue': valid, '': !valid }"
                         :loading="loading"
-                >enter</v-btn>
+                >enter
+                </v-btn>
                 or
                 <a href="#" @click.prevent.stop="createAccount">create new Stellar account</a>
             </v-flex>
         </v-layout>
+
+        <qr-reader></qr-reader>
     </v-form>
 </template>
 
 <script>
   import { events, flash } from '~/utils'
   import { Stellar, resolveAccountId } from '~/stellar'
+  import QrReader from '~/components/QrReader'
 
   export default {
+    components: {
+      QrReader,
+    },
+
     data: () => ({
       loading: false,
       valid: false,
@@ -39,7 +48,6 @@
           try {
             if (secret) {
               Stellar.Keypair.fromSecret(v)
-
             } else {
               Stellar.Keypair.fromPublicKey(v)
             }
@@ -79,11 +87,24 @@
               this.loading = false
             })
         }
+
+        this.$store.dispatch('storeKeypair', {keypair})
+        this.$router.push('balance')
       },
 
       createAccount () {
         events.$emit('welcome.key:create-account')
       },
+
+      openQrReader () {
+        events.$emit('qr-reader:open')
+      },
+    },
+
+    created () {
+      events.$on('qr-reader:read', (data) => {
+        this.key = data
+      })
     },
   }
 </script>

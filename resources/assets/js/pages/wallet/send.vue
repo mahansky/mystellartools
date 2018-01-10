@@ -12,13 +12,21 @@
                         </v-toolbar>
                         <v-card-text>
                             <v-form v-model="valid" ref="form">
-                                <v-text-field
-                                        label="Recipient"
-                                        :rules="recipientRules"
-                                        v-model="recipient"
-                                        append-icon="supervisor_account"
-                                        :append-icon-cb="openContacts"
-                                ></v-text-field>
+                                <div style="display:flex">
+                                    <v-text-field
+                                            label="Recipient"
+                                            :rules="recipientRules"
+                                            v-model="recipient"
+                                            append-icon="supervisor_account"
+                                            :append-icon-cb="openContacts"
+                                    ></v-text-field>
+                                    <v-text-field
+                                            label=""
+                                            append-icon="aspect_ratio"
+                                            :append-icon-cb="openQrReader"
+                                            style="flex: 0 0 36px"
+                                    ></v-text-field>
+                                </div>
 
                                 <v-layout row>
                                     <v-flex xs8>
@@ -227,18 +235,25 @@
                 </v-data-table>
             </v-card>
         </v-dialog>
+
+        <qr-reader></qr-reader>
     </main>
 </template>
 
 <script>
   import { resolveAccountId, ruleAccountIsValid, Stellar, StellarServer } from '~/stellar'
-  import { flash } from '~/utils'
+  import { flash, events } from '~/utils'
   import { forEach } from 'lodash'
   import { submitTransaction } from '~/stellar/internal'
   import knownAccounts from '~/stellar/known_accounts'
   import BigNumber from 'bignumber.js'
+  import QrReader from '~/components/QrReader'
 
   export default {
+    components: {
+      QrReader,
+    },
+
     metaInfo: () => ({
       title: 'Send',
     }),
@@ -490,9 +505,17 @@
           this.memoValue = ''
         }
       },
+
+      openQrReader () {
+        events.$emit('qr-reader:open')
+      },
     },
 
     created () {
+      events.$on('qr-reader:read', (data) => {
+        this.recipient = data
+      })
+
       StellarServer.loadAccount(this.$store.getters.keypair.publicKey())
         .then((account) => {
           this.availableAssets = ['XLM']
