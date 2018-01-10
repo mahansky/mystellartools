@@ -62,7 +62,7 @@
           this.loading = true
 
           new Promise((r) => {
-            if (this.key[0] === 'S') {
+            if (Stellar.StrKey.isValidEd25519SecretSeed(this.key)) {
               r(Stellar.Keypair.fromSecret(this.key))
             } else {
               resolveAccountId(this.key).then(({account_id}) => {

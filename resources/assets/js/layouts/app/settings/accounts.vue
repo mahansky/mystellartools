@@ -134,13 +134,13 @@
 </template>
 
 <script>
-  import { Stellar } from '~/stellar'
-  import axios from 'axios'
+  import { Stellar, resolveAccountId } from '~/stellar'
   import { flash } from '~/utils'
   import { contains, filter, includes, map } from 'lodash'
-  import Vue from 'vue'
-  import StellarLedger from 'stellar-ledger-api'
   import { ruleBip32Path } from '~/stellar/index'
+  import Vue from 'vue'
+  import axios from 'axios'
+  import StellarLedger from 'stellar-ledger-api'
 
   export default {
     data () {
@@ -261,21 +261,25 @@
           }
         } else {
           if (this.$refs.viewFormRef.validate()) {
-            if (this.viewForm.key.startsWith('G')) {
-              this.$store.dispatch('storeKeypair', {
-                keypair: Stellar.Keypair.fromPublicKey(this.viewForm.key)
+            new Promise((r) => {
+              if (Stellar.StrKey.isValidEd25519SecretSeed(this.viewForm.key)) {
+                r(Stellar.Keypair.fromSecret(this.viewForm.key))
+              } else {
+                resolveAccountId(this.viewForm.key).then(({account_id}) => {
+                  r(Stellar.Keypair.fromPublicKey(account_id))
+                })
+              }
+            })
+              .then(keypair => {
+                this.$store.dispatch('storeKeypair', {keypair})
+
+                this.viewForm.key = ''
+
+                this.closeDialog()
+
+                this.$router.push({name: 'balance'})
               })
-            } else {
-              this.$store.dispatch('storeKeypair', {
-                keypair: Stellar.Keypair.fromSecret(this.viewForm.key)
-              })
-            }
-
-            this.viewForm.key = ''
-
-            this.closeDialog()
-
-            this.$router.push({name: 'balance'})
+              .catch(flash)
           }
         }
       },
