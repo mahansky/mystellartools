@@ -33,7 +33,7 @@
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn flat @click.native="dialog = false">Close</v-btn>
+              <v-btn flat @click.native="closeQrDialog">Close</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -107,27 +107,31 @@ export default {
     openQrDialog() {
       this.qrDialog = true
 
-      window.navigator.getUserMedia =
-        window.navigator.getUserMedia ||
-        window.navigator.webkitGetUserMedia ||
-        window.navigator.mozGetUserMedia
+      this.$nextTick(() => {
+        window.navigator.getUserMedia =
+          window.navigator.getUserMedia ||
+          window.navigator.webkitGetUserMedia ||
+          window.navigator.mozGetUserMedia
 
-      if (window.navigator.getUserMedia) {
-        window.navigator.getUserMedia(
-          { video: true },
-          this.successCallback,
-          this.errorCallback,
-        )
-        
-        window.requestAnimationFrame(this.tick)
-      } else {
-        this.qrError = 'Your browser does not support this feature or you have to give it the permissions to access your camera.'
-      }
+        if (window.navigator.getUserMedia) {
+          window.navigator.getUserMedia(
+            { video: true },
+            this.successCallback,
+            this.errorCallback,
+          )
+
+          window.requestAnimationFrame(this.tick)
+        } else {
+          this.qrError = 'Your browser does not support this feature or you have to give it the permissions to access your camera.'
+        }
+      })
     },
 
     successCallback(stream) {
-      if (window.webkitURL) {
-        this.$refs.video.src = window.webkitURL.createObjectURL(stream)
+      this.mediaStream = stream
+
+      if (window.URL) {
+        this.$refs.video.src = window.URL.createObjectURL(stream)
       } else if (this.$refs.video.mozSrcObject !== undefined) {
         this.$refs.video.mozSrcObject = stream
       } else {
@@ -143,9 +147,9 @@ export default {
       let decoded = null
 
       if (this.$refs.video.readyState === this.$refs.video.HAVE_ENOUGH_DATA) {
-        this.context.drawImage(this.$refs.video, 0, 0, this.width, this.height)
+        this.ctx.drawImage(this.$refs.video, 0, 0, this.qrWidth, this.qrHeight)
 
-        let imageData = this.context.getImageData(0, 0, this.width, this.height)
+        let imageData = this.ctx.getImageData(0, 0, this.qrWidth, this.qrHeight)
         
         decoded = jsQR.decodeQRFromImage(
           imageData.data,
@@ -155,14 +159,20 @@ export default {
         
         if (decoded) {
           this.key = decoded
-          this.qrDialog = false
+          this.closeQrDialog()
         }
       }
 
       if (!decoded) {
         window.requestAnimationFrame(this.tick)
       }
-    }
+    },
+
+    closeQrDialog () {
+      this.qrDialog = false
+      this.mediaStream.getVideoTracks()[0].stop()
+      this.mediaStream.getAudioTracks()[0].stop()
+    },
   },
 }
 </script>
