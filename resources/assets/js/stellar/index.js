@@ -4,7 +4,7 @@ export const Stellar = require('stellar-sdk')
 
 Stellar.Network.usePublicNetwork()
 
-export const HorizonURL = 'https://mystellar.tools:8000'
+export const HorizonURL = 'https://horizon.stellar.org'
 export const StellarServer = new Stellar.Server(HorizonURL)
 
 export const ruleAccountIsValid = (input, allowFederation = true) => {
