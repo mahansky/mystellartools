@@ -3,11 +3,11 @@
         <table class="first-padding">
             <tr>
                 <td><b>From</b></td>
-                <td><span v-text="operation.from"></span></td>
+                <td><public-key :value="operation.from"></public-key></td>
             </tr>
             <tr>
                 <td><b>To</b></td>
-                <td><span v-text="operation.to"></span></td>
+                <td><public-key :value="operation.to"></public-key></td>
             </tr>
             <tr>
                 <td><b>Amount</b></td>
@@ -19,7 +19,7 @@
             </tr>
             <tr v-if="operation.asset_issuer">
                 <td><b>Asset Issuer</b></td>
-                <td><span v-text="operation.asset_issuer"></span></td>
+                <td><public-key :value="operation.asset_issuer"></public-key></td>
             </tr>
         </table>
     </div>

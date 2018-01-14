@@ -134,13 +134,13 @@
 </template>
 
 <script>
-  import { Stellar } from '~/stellar'
-  import axios from 'axios'
+  import { Stellar, resolveAccountId } from '~/stellar'
   import { flash } from '~/utils'
   import { contains, filter, includes, map } from 'lodash'
+  import { ruleBip32Path } from '~/stellar/index'
   import Vue from 'vue'
+  import axios from 'axios'
   import StellarLedger from 'stellar-ledger-api'
-  import { ruleBip32Path } from '../../../stellar/index'
 
   export default {
     data () {
@@ -153,6 +153,10 @@
           key: '',
           rules: [(v) => {
             if (this.viewForm.ledger) {
+              return true
+            }
+
+            if (new RegExp('^.+\\*.+$').test(v)) {
               return true
             }
 
@@ -186,6 +190,10 @@
           keypair: null,
           keyRules: [(v) => {
             if (this.addForm.ledger) {
+              return true
+            }
+
+            if (new RegExp('^.+\\*.+$').test(v)) {
               return true
             }
 
@@ -261,21 +269,25 @@
           }
         } else {
           if (this.$refs.viewFormRef.validate()) {
-            if (this.viewForm.key.startsWith('G')) {
-              this.$store.dispatch('storeKeypair', {
-                keypair: Stellar.Keypair.fromPublicKey(this.viewForm.key)
+            new Promise((r) => {
+              if (Stellar.StrKey.isValidEd25519SecretSeed(this.viewForm.key)) {
+                r(Stellar.Keypair.fromSecret(this.viewForm.key))
+              } else {
+                resolveAccountId(this.viewForm.key).then(({account_id}) => {
+                  r(Stellar.Keypair.fromPublicKey(account_id))
+                })
+              }
+            })
+              .then(keypair => {
+                this.$store.dispatch('storeKeypair', {keypair})
+
+                this.viewForm.key = ''
+
+                this.closeDialog()
+
+                this.$router.push({name: 'balance'})
               })
-            } else {
-              this.$store.dispatch('storeKeypair', {
-                keypair: Stellar.Keypair.fromSecret(this.viewForm.key)
-              })
-            }
-
-            this.viewForm.key = ''
-
-            this.closeDialog()
-
-            this.$router.push({name: 'balance'})
+              .catch(flash)
           }
         }
       },
@@ -307,23 +319,38 @@
               flash('Problem with contacting Ledger Nano S', 'error')
             }
           } else {
-            let account = {
-              name: this.addForm.name,
-              public_key: this.addForm.keypair.publicKey(),
-            }
+            new Promise((r) => {
+              if (this.addForm.key.indexOf('*') !== -1) {
+                resolveAccountId(this.addForm.key).then(({account_id}) => {
+                  r(Stellar.Keypair.fromPublicKey(account_id))
+                })
+              } else {
+                r(this.addForm.keypair)
+              }
+            })
+              .then(keypair => {
+                let account = {
+                  name: this.addForm.name,
+                  public_key: keypair.publicKey(),
+                }
 
-            if (this.addForm.keypair.canSign()) {
-              account.secret_key = this.addForm.keypair.secret()
-              account.password = this.addForm.password
-            }
+                if (keypair.canSign()) {
+                  account.secret_key = keypair.secret()
+                  account.password = this.addForm.password
+                }
 
-            this.$store.dispatch('storeAccount', account)
+                this.$store.dispatch('storeAccount', account)
 
-            this.addForm.name = ''
-            this.addForm.key = ''
-            this.addForm.password = ''
+                flash('Account added', 'success')
+              })
+              .catch(flash)
+              .then(() => {
+                this.addForm.name = ''
+                this.addForm.key = ''
+                this.addForm.password = ''
 
-            this.addForm.loading = false
+                this.addForm.loading = false
+              })
           }
         }
       },

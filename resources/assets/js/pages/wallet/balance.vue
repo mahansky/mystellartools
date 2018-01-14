@@ -32,20 +32,19 @@
                     <v-alert info value="true">
                         This account doesn't exist on the Stellar network.
                         <br>
-                        If you want to create it, send 20 XLM to its address.
+                        If you want to create it, send 1 XLM to its address.
                     </v-alert>
                 </v-flex>
             </v-layout>
         </v-container>
-        <small style="display: none;" v-text="publicKey"></small>
     </main>
 </template>
 
 <script>
-  import { Stellar, StellarServer } from '../../stellar'
+  import { Stellar, StellarServer } from '~/stellar'
+  import { flash } from '~/utils'
   import Price from './balance/price'
   import Token from './balance/token'
-  import { flash } from '../../utils'
 
   export default {
     metaInfo: () => ({

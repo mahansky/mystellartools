@@ -65,6 +65,7 @@
 <script>
   import StellarLedger from 'stellar-ledger-api'
   import { Stellar, ruleBip32Path } from '~/stellar'
+  import { isMobile } from '~/utils'
 
   export default {
     data: () => ({
@@ -122,7 +123,9 @@
     },
 
     created () {
-      this.connectLedger()
+      if (!isMobile()) {
+        this.connectLedger()
+      }
     },
   }
 </script>

@@ -1,4 +1,4 @@
-export const knownAccounts = {
+export default {
   "GA5XIGA5C7QTPTWXQHY6MCJRMTRZDOSHR6EFIBNDQTCQHG262N4GGKTM": {
     "name": "Kraken",
     "requiredMemoType": "MEMO_ID",

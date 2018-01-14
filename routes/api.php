@@ -6,8 +6,6 @@
 | --------------------------------------------------------------------------
 */
 
-Route::get('qrcode', 'QRCodeController')->name('qrcode');
-
 Route::get('federation', 'FederationController@show')->name('federation');
 Route::post('federation', 'FederationController@store')->name('federation.store');
 

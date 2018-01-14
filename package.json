@@ -2,13 +2,10 @@
     "private": true,
     "scripts": {
         "dev": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
-        "dev-stellar": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=stellar.webpack.mix.js",
         "watch": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --watch --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
-        "watch-stellar": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --watch --progress --hide-modules --config=stellar.webpack.mix.js",
         "watch-poll": "npm run watch -- --watch-poll",
         "hot": "cross-env NODE_ENV=development node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot --config=node_modules/laravel-mix/setup/webpack.config.js",
         "prod": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
-        "prod-stellar": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --progress --hide-modules --config=stellar.webpack.mix.js",
         "lint": "eslint resources/assets/js"
     },
     "devDependencies": {
@@ -21,11 +18,12 @@
         "laravel-mix": "^1.0"
     },
     "dependencies": {
-        "aws-sdk": "^2.171.0",
         "axios": "^0.16.2",
         "bignumber.js": "^4.1.0",
+        "clipboard": "^1.7.1",
         "crypto-js": "3.1.8",
         "jspdf": "^1.3.5",
+        "jsqr": "^0.2.2",
         "lodash": "^4.17.4",
         "moment": "^2.18.1",
         "qrious": "^4.0.2",

@@ -2,8 +2,6 @@
 
 return [
 
-    'node_path' => env('NODE_PATH'),
-
-    'stellar_path' => env('STELLAR_PATH'),
+    'horizon_url' => env('MIX_HORIZON_URL'),
 
 ];

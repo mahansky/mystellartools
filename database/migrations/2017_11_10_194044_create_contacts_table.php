@@ -18,12 +18,7 @@ class CreateContactsTable extends Migration
             $table->unsignedInteger('user_id');
             $table->string('name');
             $table->string('public_key');
-            $table->enum('memo_type', [
-                \App\Stellar\Constants::MEMO_ID,
-                \App\Stellar\Constants::MEMO_TEXT,
-                \App\Stellar\Constants::MEMO_HASH,
-                \App\Stellar\Constants::MEMO_RETURN,
-            ])->nullable();
+            $table->enum('memo_type', ['id', 'text', 'hash', 'return'])->nullable();
             $table->string('memo')->nullable();
             $table->timestamps();
 

@@ -61,7 +61,7 @@
                                             </tr>
                                             <tr>
                                                 <td><b>Issuer</b></td>
-                                                <td v-text="currency.issuer"></td>
+                                                <td><public-key :value="currency.issuer"></public-key></td>
                                             </tr>
                                             <tr v-if="currency.name">
                                                 <td><b>Name</b></td>
@@ -197,7 +197,7 @@
                     >
                         <template slot="items" slot-scope="props">
                             <td v-text="props.item.asset_code"></td>
-                            <td v-text="props.item.asset_issuer"></td>
+                            <td><public-key :value="props.item.asset_issuer"></public-key></td>
                             <td v-text="props.item.limit"></td>
                             <td class="text-xs-right">
                                 <span class="table-row-detail">
@@ -214,11 +214,11 @@
 </template>
 
 <script>
-  import { Stellar, StellarServer, ruleAccountIsValid } from '../../stellar'
-  import { Asset, TransactionBuilder, Operation } from 'stellar-sdk'
+  import { Stellar, StellarServer, ruleAccountIsValid, resolveAccountId } from '~/stellar'
+  import { flash } from '~/utils'
+  import { submitTransaction } from '~/stellar/internal'
+  import { filter } from 'lodash'
   import axios from 'axios'
-  import { flash } from '../../utils'
-  import { submitTransaction } from '../../stellar/internal'
 
   export default {
     metaInfo: () => ({
@@ -242,7 +242,7 @@
         allowAssetCode: '',
         allowAssetCodeRules: [(v) => (v.length > 0 && v.length <= 12) || 'Maximum is 12 characters'],
         allowTrustor: '',
-        allowTrustorRules: [(v) => ruleAccountIsValid(v, false)],
+        allowTrustorRules: [ruleAccountIsValid],
         allowAuthorized: false,
 
         trustlineFormShown: false,
@@ -250,7 +250,7 @@
         assetCode: '',
         assetCodeRules: [(v) => (v.length > 0 && v.length <= 12) || 'Maximum is 12 characters'],
         assetIssuer: '',
-        assetIssuerRules: [(v) => ruleAccountIsValid(v, false)],
+        assetIssuerRules: [ruleAccountIsValid],
         assetLimit: '',
         assetLimitRules: [(v) => v >= 0 || 'Must be equal or greater than 0'],
         isTrustlineLoading: false,
@@ -266,7 +266,7 @@
 
     computed: {
       trustlines () {
-        return _.filter(this.balances, function (asset) {
+        return filter(this.balances, function (asset) {
           return asset.asset_type !== 'native'
         })
       }
@@ -310,17 +310,23 @@
         if (this.$refs.trustlineForm.validate()) {
           this.isTrustlineLoading = true
 
-          if (!this.assetLimit && this.assetLimit !== 0) {
-            this.submitTx(this.assetCode, this.assetIssuer)
-              .then(() => {
-                this.isTrustlineLoading = false
-              })
-          } else {
-            this.submitTx(this.assetCode, this.assetIssuer, this.assetLimit)
-              .then(() => {
-                this.isTrustlineLoading = false
-              })
-          }
+          resolveAccountId(this.assetIssuer).then(({account_id}) => {
+            if (!this.assetLimit && this.assetLimit !== 0) {
+              this.submitTx(this.assetCode, account_id)
+                .then(() => {
+                  this.isTrustlineLoading = false
+                })
+            } else {
+              this.submitTx(this.assetCode, account_id, this.assetLimit)
+                .then(() => {
+                  this.isTrustlineLoading = false
+                })
+            }
+          }).catch(err => {
+            this.isTrustlineLoading = false
+
+            flash(err, 'error')
+          })
         }
       },
 
@@ -333,9 +339,7 @@
 
             return vm.fetchData()
           })
-          .catch((err) => {
-            flash(err, 'error')
-          })
+          .catch(flash)
       },
 
       fetchData () {
@@ -372,22 +376,22 @@
 
         let vm = this
 
-        submitTransaction('allowTrustline', {
-          trustor: vm.allowTrustor,
-          assetCode: vm.allowAssetCode,
-          authorize: vm.allowAuthorized,
-        })
+        resolveAccountId(this.allowTrustor).then(({account_id}) => {
+          submitTransaction('allowTrustline', {
+            trustor: account_id,
+            assetCode: vm.allowAssetCode,
+            authorize: vm.allowAuthorized,
+          })
           .then(() => {
             flash('Trust updated', 'success')
 
             return vm.fetchData()
           })
-          .catch((err) => {
-            flash(err, 'error')
-          })
-          .then(() => {
-            this.isAllowLoading = true
-          })
+        })
+        .catch(flash)
+        .then(() => {
+          this.isAllowLoading = false
+        })
       }
     },
 

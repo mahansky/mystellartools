@@ -1,5 +1,12 @@
 # Changelog
 
+### 15 January 2018
+- **Added** QR code reader
+- **Added** option to enter federation address into inputs where public key is required
+- **Added** better looking Public Key component (shorter version, popup with copy button, contact name association)
+- **Added** timestamps to each operation shown in "All operations"
+- **Changed** the base reserve to reflect changes on the Stellar network (10 -> 0.5 XLM)
+
 ### 4 January 2018
 - **Added** paper wallet generator
 

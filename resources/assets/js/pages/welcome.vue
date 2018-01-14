@@ -147,6 +147,8 @@
                         Include your name in the memo to be shown on the donators page (wip).
                         Thank you!
                     </p>
+                    <code>donate*mystellar.tools</code>
+                    <br><br>
                     <code>GD4TEQZTNLLE6QTUZ36BFRW3423SHFFVEICX322U4U7DVRHNU363IGSK</code>
                 </v-card-text>
                 <v-card-actions>
@@ -159,7 +161,7 @@
 </template>
 
 <script>
-  import * as utils from '../utils'
+  import { getQueryParameter } from '~/utils'
   import { Stellar } from '~/stellar'
 
   import Ledger from './welcome/ledger'
@@ -184,15 +186,15 @@
     }),
 
     created () {
-      let publicKey = utils.getQueryParameter('public_key')
+      let publicKey = getQueryParameter('public_key')
 
       if (publicKey) {
-        try {
+        if (Stellar.StrKey.isValidEd25519PublicKey(publicKey)) {
           let keypair = Stellar.Keypair.fromPublicKey(publicKey)
 
           this.$store.dispatch('storeKeypair', {keypair})
           this.$router.push('balance')
-        } catch (e) {}
+        }
       }
     },
   }

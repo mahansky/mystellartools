@@ -1,5 +1,5 @@
 import * as types from '../mutation-types'
-import { knownAccounts } from '../../stellar/known_accounts'
+import knownAccounts from '~/stellar/known_accounts'
 import store from '../index'
 
 export const state = {

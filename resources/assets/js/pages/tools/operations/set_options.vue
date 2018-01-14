@@ -3,7 +3,7 @@
         <table class="first-padding">
             <tr v-if="operation.signer_key">
                 <td><b>SIGNER_KEY</b></td>
-                <td><span v-text="operation.signer_key"></span></td>
+                <td><public-key :value="operation.signer_key"></public-key></td>
             </tr>
             <tr v-if="operation.signer_weight">
                 <td><b>SIGNER_WEIGHT</b></td>
@@ -39,7 +39,7 @@
             </tr>
             <tr v-if="operation.inflation_dest">
                 <td><b>INFLATION_DEST</b></td>
-                <td><span v-text="operation.inflation_dest"></span></td>
+                <td><public-key :value="operation.inflation_dest"></public-key></td>
             </tr>
         </table>
     </div>

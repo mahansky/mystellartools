@@ -12,17 +12,13 @@
                     >
                         <template slot="items" slot-scope="props">
                             <td>
-                                <template v-if="props.item.name">
-                                    {{ props.item.name }}
-                                    <small class="grey--text">{{ props.item.from }}</small>
-                                </template>
-                                <template v-else>
+                                <template>
                                     <template v-if="props.item.type === 'payment'">
-                                        <span v-if="isIncoming(props.item)" v-text="props.item.from"></span>
-                                        <span v-if="!isIncoming(props.item)" v-text="props.item.to"></span>
+                                        <public-key v-if="isIncoming(props.item)" :value="props.item.from"></public-key>
+                                        <public-key v-if="!isIncoming(props.item)" :value="props.item.to"></public-key>
                                     </template>
                                     <template v-if="props.item.type === 'create_account'">
-                                        <span v-text="props.item.account"></span>
+                                        <public-key :value="props.item.account"></public-key>
                                     </template>
                                 </template>
                             </td>
@@ -34,8 +30,8 @@
                                     <amount :amount="props.item.amount" v-if="props.item.from !== props.item.to"></amount>
                                     <span v-else>0</span>
                                 </span>
-                                <span v-if="props.item.asset_code" v-text="props.item.asset_code"></span>
-                                <span v-else v-text="'XLM'"></span>
+                                <span v-if="props.item.asset_code" v-text="props.item.asset_code" v-tooltip:top="{ html: props.item.asset_issuer }"></span>
+                                <span v-else v-text="'XLM'" v-tooltip:top="{ html: 'Native' }"></span>
                             </td>
                             <template v-if="props.item.datetime">
                                 <td>
@@ -75,10 +71,11 @@
 </template>
 
 <script>
-  import { StellarServer } from '../../stellar'
+  import { StellarServer } from '~/stellar'
+  import { flash } from '~/utils'
+  import { filter, forEach } from 'lodash'
   import moment from 'moment'
   import Vue from 'vue'
-  import { flash } from '../../utils'
 
   export default {
     metaInfo: () => ({
@@ -111,7 +108,7 @@
         .then(payments => {
           vm.loaded = true
 
-          _.forEach(payments.records, function (payment) {
+          forEach(payments.records, function (payment) {
             if (payment.type === 'create_account') {
               payment.from = payment.funder
               payment.amount = payment.starting_balance
@@ -119,7 +116,7 @@
             }
           })
 
-          vm.payments = _.filter(payments.records, function (payment) {
+          vm.payments = filter(payments.records, function (payment) {
             return payment.type !== 'account_merge'
           })
 
@@ -139,10 +136,15 @@
     methods: {
       startListening () {
         let vm = this
+        let cursor = 'now'
+
+        if (this.payments.length > 0) {
+          cursor = this.payments[0].paging_token
+        }
 
         vm.eventSource = StellarServer.payments()
           .forAccount(this.$store.getters.keypair.publicKey())
-          .cursor('now')
+          .cursor(cursor)
           .stream({
             onmessage: (payment) => {
               if (payment.type !== 'account_merge') {

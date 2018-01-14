@@ -3,7 +3,7 @@
         <table class="first-padding">
             <tr>
                 <td><b>Account</b></td>
-                <td><span v-text="operation.account"></span></td>
+                <td><public-key :value="operation.account"></public-key></td>
             </tr>
             <tr>
                 <td><b>Starting balance</b></td>

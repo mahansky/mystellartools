@@ -3,11 +3,11 @@
         <table class="first-padding">
             <tr>
                 <td><b>Trustee Account</b></td>
-                <td><span v-text="operation.trustee"></span></td>
+                <td><public-key :value="operation.trustee"></public-key></td>
             </tr>
             <tr>
                 <td><b>Trustor Account</b></td>
-                <td><span v-text="operation.trustor"></span></td>
+                <td><public-key :value="operation.trustor"></public-key></td>
             </tr>
             <tr><td colspan="2">&nbsp;</td></tr>
             <tr>
@@ -19,7 +19,7 @@
             </tr>
             <tr v-if="operation.asset_issuer">
                 <td><b>Asset Issuer</b></td>
-                <td><span v-text="operation.asset_issuer"></span></td>
+                <td><public-key :value="operation.asset_issuer"></public-key></td>
             </tr>
             <tr v-if="operation.limit">
                 <td><b>Asset Limit</b></td>

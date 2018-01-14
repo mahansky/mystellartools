@@ -49,18 +49,21 @@ class CheckRevokes extends Command
     public function handle()
     {
         Revoke::get()->each(function ($revoke) {
+            // Was the account created using MyStellar.Tools?
             $email = Email::where('public_key', $revoke->public_key)->first();
 
             if ( ! $email) {
                 return;
             }
 
+            // Does it exist on the network?
             $account = $this->stellar->accountDetails($revoke->public_key);
 
             if ( ! $account) {
                 return;
             }
 
+            // Find signer other than the original
             $signer = collect($account['signers'])->first(function ($signer) use ($account) {
                 return $signer['public_key'] !== $account['account_id'];
             });
@@ -69,6 +72,7 @@ class CheckRevokes extends Command
                 return;
             }
 
+            // Look at the latest payment to see if this operation was initiated by account creator
             $payment = collect($this->stellar->payments($revoke->public_key, 'desc'))
                 ->first(function ($payment) use ($signer) {
                     return $payment['type'] === 'payment'
@@ -81,7 +85,7 @@ class CheckRevokes extends Command
 
             $response = $this->stellar->mergeAccounts($email->secret_key, $signer['public_key']);
 
-            if ($response['tx_success']) {
+            if (isset($response['hash'])) {
                 $revoke->delete();
                 $email->delete();
 

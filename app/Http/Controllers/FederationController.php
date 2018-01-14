@@ -44,6 +44,7 @@ class FederationController extends Controller
 
             // If it doesn't exist and it is an email
             if ( ! $address && filter_var($name, FILTER_VALIDATE_EMAIL)) {
+                // Create it
                 $keypair = $stellar->generateKeypair();
 
                 $address = Address::create([
