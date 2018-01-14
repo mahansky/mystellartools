@@ -87,9 +87,6 @@
               this.loading = false
             })
         }
-
-        this.$store.dispatch('storeKeypair', {keypair})
-        this.$router.push('balance')
       },
 
       createAccount () {

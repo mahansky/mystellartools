@@ -20,7 +20,7 @@
                 <v-text-field
                         v-model="newStellarAddress"
                         :rules="addressRules"
-                        label="Stellar address"
+                        label="Stellar address (name or email)"
                         suffix="*mystellar.tools"
                 ></v-text-field>
             </v-form>
@@ -47,7 +47,7 @@
       addressRules: [
         (v) => !!v || 'Stellar address is required',
         (v) => {
-          if (!/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(v)) {
+          if (!/^[\w.]+@[\w.]+$/.test(v)) {
             if (!/^[\w]+$/.test(v)) {
               return 'Only emails or alphanumeric names are allowed'
             }

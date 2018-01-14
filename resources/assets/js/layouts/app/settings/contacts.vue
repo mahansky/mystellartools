@@ -67,9 +67,11 @@
                             <v-spacer></v-spacer>
                             <v-btn
                                     flat
+                                    :loading="contactForm.loading"
                                     :class="{'blue--text': contactForm.valid, 'red--text': !contactForm.valid}"
                                     @click.stop="save"
-                            >Save</v-btn>
+                            >Save
+                            </v-btn>
                         </v-layout>
                     </v-form>
                 </v-card-text>
@@ -82,7 +84,7 @@
   import axios from 'axios'
   import Vue from 'vue'
   import { flash } from '~/utils'
-  import { ruleAccountIsValid, Stellar } from '~/stellar/index'
+  import { ruleAccountIsValid, resolveAccountId, Stellar } from '~/stellar/index'
   import { map } from 'lodash'
 
   export default {
@@ -97,10 +99,11 @@
         ],
         contactForm: {
           valid: false,
+          loading: false,
           name: '',
           nameRules: [(v) => !!v || 'Name is required'],
           publicKey: '',
-          publicKeyRules: [(v) => ruleAccountIsValid(v, false)],
+          publicKeyRules: [(v) => ruleAccountIsValid(v)],
           memoType: '',
           memoValue: '',
           memoPlaceholder: '',
@@ -166,17 +169,28 @@
 
       save () {
         if (this.$refs.contactFormRef.validate()) {
-          let contact = {
-            name: this.contactForm.name,
-            public_key: this.contactForm.publicKey,
-          }
+          this.contactForm.loading = true
 
-          if (this.contactForm.memoType) {
-            contact.memo_type = this.contactForm.memoType
-            contact.memo = this.contactForm.memoValue
-          }
+          resolveAccountId(this.contactForm.publicKey)
+            .then(({account_id}) => {
+              let contact = {
+                name: this.contactForm.name,
+                public_key: account_id,
+              }
 
-          this.$store.dispatch('storeContact', contact)
+              if (this.contactForm.memoType) {
+                contact.memo_type = this.contactForm.memoType
+                contact.memo = this.contactForm.memoValue
+              }
+
+              this.$store.dispatch('storeContact', contact)
+
+              flash('Contact added', 'success')
+            })
+            .catch(flash)
+            .then(() => {
+              this.contactForm.loading = false
+            })
         }
       },
     },

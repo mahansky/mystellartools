@@ -256,7 +256,7 @@
 </template>
 
 <script>
-  import { Stellar, StellarServer } from '~/stellar'
+  import { Stellar, StellarServer, BASE_RESERVE } from '~/stellar'
   import { flash } from '~/utils'
   import axios from 'axios'
 
@@ -336,7 +336,7 @@
 
     computed: {
       minimalBalance () {
-        return (2 + this.account.subentry_count) * 10
+        return (2 + this.account.subentry_count) * BASE_RESERVE
       },
     },
   }

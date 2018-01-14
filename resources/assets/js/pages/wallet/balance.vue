@@ -32,7 +32,7 @@
                     <v-alert info value="true">
                         This account doesn't exist on the Stellar network.
                         <br>
-                        If you want to create it, send 20 XLM to its address.
+                        If you want to create it, send 1 XLM to its address.
                     </v-alert>
                 </v-flex>
             </v-layout>

@@ -3,6 +3,8 @@
 export const Stellar = require('stellar-sdk')
 export const HorizonURL = process.env.MIX_HORIZON_URL
 export const StellarServer = new Stellar.Server(HorizonURL)
+export const BASE_RESERVE = 0.5
+export const STARTING_BALANCE = 2 * BASE_RESERVE
 
 Stellar.Network.usePublicNetwork()
 
@@ -22,13 +24,15 @@ export function resolveAccountId (recipient) {
   return Stellar.FederationServer.resolve(recipient)
 }
 
-export function ruleAccountIsValid (input, allowFederation = true) {
+export function ruleAccountIsValid (input, allowFederation = true, allowEmail = false) {
   let ok = false
 
-  if (allowFederation) {
-    let regex = new RegExp('^.+\\*.+$')
+  if (allowEmail) {
+    ok = new RegExp('^[\\w.]+@[\\w.]+$').test(input)
+  }
 
-    ok = regex.test(input)
+  if (!ok && allowFederation) {
+    ok = new RegExp('^.+\\*.+$').test(input)
   }
 
   if (!ok) {

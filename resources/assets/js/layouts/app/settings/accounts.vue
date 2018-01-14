@@ -156,6 +156,10 @@
               return true
             }
 
+            if (new RegExp('^.+\\*.+$').test(v)) {
+              return true
+            }
+
             if (this.viewForm.key.startsWith('G')) {
               try {
                 Stellar.Keypair.fromPublicKey(v)
@@ -186,6 +190,10 @@
           keypair: null,
           keyRules: [(v) => {
             if (this.addForm.ledger) {
+              return true
+            }
+
+            if (new RegExp('^.+\\*.+$').test(v)) {
               return true
             }
 
@@ -311,23 +319,38 @@
               flash('Problem with contacting Ledger Nano S', 'error')
             }
           } else {
-            let account = {
-              name: this.addForm.name,
-              public_key: this.addForm.keypair.publicKey(),
-            }
+            new Promise((r) => {
+              if (this.addForm.key.indexOf('*') !== -1) {
+                resolveAccountId(this.addForm.key).then(({account_id}) => {
+                  r(Stellar.Keypair.fromPublicKey(account_id))
+                })
+              } else {
+                r(this.addForm.keypair)
+              }
+            })
+              .then(keypair => {
+                let account = {
+                  name: this.addForm.name,
+                  public_key: keypair.publicKey(),
+                }
 
-            if (this.addForm.keypair.canSign()) {
-              account.secret_key = this.addForm.keypair.secret()
-              account.password = this.addForm.password
-            }
+                if (keypair.canSign()) {
+                  account.secret_key = keypair.secret()
+                  account.password = this.addForm.password
+                }
 
-            this.$store.dispatch('storeAccount', account)
+                this.$store.dispatch('storeAccount', account)
 
-            this.addForm.name = ''
-            this.addForm.key = ''
-            this.addForm.password = ''
+                flash('Account added', 'success')
+              })
+              .catch(flash)
+              .then(() => {
+                this.addForm.name = ''
+                this.addForm.key = ''
+                this.addForm.password = ''
 
-            this.addForm.loading = false
+                this.addForm.loading = false
+              })
           }
         }
       },

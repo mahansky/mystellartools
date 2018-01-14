@@ -147,6 +147,8 @@
                         Include your name in the memo to be shown on the donators page (wip).
                         Thank you!
                     </p>
+                    <code>donate*mystellar.tools</code>
+                    <br><br>
                     <code>GD4TEQZTNLLE6QTUZ36BFRW3423SHFFVEICX322U4U7DVRHNU363IGSK</code>
                 </v-card-text>
                 <v-card-actions>
@@ -187,12 +189,12 @@
       let publicKey = getQueryParameter('public_key')
 
       if (publicKey) {
-        try {
+        if (Stellar.StrKey.isValidEd25519PublicKey(publicKey)) {
           let keypair = Stellar.Keypair.fromPublicKey(publicKey)
 
           this.$store.dispatch('storeKeypair', {keypair})
           this.$router.push('balance')
-        } catch (e) {}
+        }
       }
     },
   }

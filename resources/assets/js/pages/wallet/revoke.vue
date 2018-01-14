@@ -42,7 +42,7 @@
 </template>
 
 <script>
-  import { StellarServer, Stellar } from '~/stellar'
+  import { resolveAccountId, StellarServer, Stellar } from '~/stellar'
   import { forEach } from 'lodash'
   import { flash } from '~/utils'
   import { submitTransaction } from '~/stellar/internal'
@@ -54,56 +54,58 @@
         valid: false,
         checkLoading: false,
         email: '',
-        emailRules: [],
+        emailRules: [v => {
+          return new RegExp('^[\\w.]+@[\\w.]+$').test(v) || 'Invalid email address'
+        }],
       }
     },
 
     methods: {
       check () {
-        this.checkLoading = true
+        if (this.$refs.form.validate()) {
+          this.checkLoading = true
 
-        let publicKey
+          let publicKey
 
-        Stellar.FederationServer.resolve(this.email + '*mystellar.tools')
-          .then(({account_id}) => {
-            publicKey = account_id
+          resolveAccountId(this.email)
+            .then(({account_id}) => {
+              publicKey = account_id
 
-            return StellarServer.loadAccount(account_id)
-          })
-          .then(account => {
-            let isSigner = false
+              return StellarServer.loadAccount(account_id)
+            })
+            .then(account => {
+              let isSigner = false
 
-            forEach(account.signers, (signer) => {
-              if (signer.public_key === this.$store.getters.keypair.publicKey()) {
-                isSigner = true
+              forEach(account.signers, (signer) => {
+                if (signer.public_key === this.$store.getters.keypair.publicKey()) {
+                  isSigner = true
+                }
+              })
+
+              if (!isSigner) {
+                throw new Error('You are not a signer of requested account')
               }
             })
-
-            if (! isSigner) {
-              throw new Error('You are not a signer of requested account')
-            }
-          })
-          .then(() => {
-            return submitTransaction('payment', {
-              destination: publicKey,
-              code: 'XLM',
-              amount: '0.00001',
+            .then(() => {
+              return submitTransaction('payment', {
+                destination: publicKey,
+                code: 'XLM',
+                amount: '0.00001',
+              })
             })
-          })
-          .then(() => {
-            return axios.post('/api/revoke', {
-              public_key: publicKey,
+            .then(() => {
+              return axios.post('/api/revoke', {
+                public_key: publicKey,
+              })
             })
-          })
-          .then((response) => {
-            flash(response.data, 'success')
-          })
-          .catch(err => {
-            flash(err, 'error')
-          })
-          .then(() => {
-            this.checkLoading = false
-          })
+            .then((response) => {
+              flash(response.data, 'success')
+            })
+            .catch(flash)
+            .then(() => {
+              this.checkLoading = false
+            })
+        }
       },
     },
   }

@@ -116,7 +116,12 @@
                             <p>
                                 <b>Recipient</b>
                                 <br>
-                                <public-key :value="recipient"></public-key>
+                                <public-key v-if="isPublicKey(recipient)" :value="resolvedRecipient"></public-key>
+                                <span v-else>
+                                    <span v-text="recipient"></span>
+                                    <br>
+                                    <span v-text="resolvedRecipient"></span>
+                                </span>
                             </p>
 
                             <b>Amount</b>
@@ -184,7 +189,7 @@
                     <p>
                         If you enter an email, that hasn't received any assets in the past,
                         recipient will get a message with information on how to access his new assets.
-                        If he doesn't claim them, you can <router-link :to="{name: 'revoke'}">revert the process</router-link>.
+                        If he doesn't claim them, you can <router-link :to="{name: 'revoke'}">revoke the payment</router-link>.
                     </p>
                     <b>Asset</b>
                     <p>
@@ -241,7 +246,7 @@
 </template>
 
 <script>
-  import { resolveAccountId, ruleAccountIsValid, Stellar, StellarServer } from '~/stellar'
+  import { resolveAccountId, ruleAccountIsValid, Stellar, StellarServer, BASE_RESERVE, STARTING_BALANCE } from '~/stellar'
   import { flash, events } from '~/utils'
   import { forEach } from 'lodash'
   import { submitTransaction } from '~/stellar/internal'
@@ -271,7 +276,7 @@
 
         resolvedRecipient: '',
         recipient: '',
-        recipientRules: [ruleAccountIsValid],
+        recipientRules: [v => ruleAccountIsValid(v, true, true)],
 
         amount: '',
         amountRules: [(v) => Stellar.Operation.isValidAmount(v) || 'Amount must be greater than zero.'],
@@ -374,7 +379,7 @@
                   vm.loadedAccount = account
 
                   let selectedAsset = this.asset
-                  let minimumNativeBalance = 20 + (account.subentry_count) * 10
+                  let minimumNativeBalance = STARTING_BALANCE + (account.subentry_count) * BASE_RESERVE
                   let balance = _(account.balances).find(balance => {
                     if (selectedAsset === 'XLM') {
                       return balance.asset_type === 'native'
@@ -395,7 +400,7 @@
                 })
                 .then(() => {
                   if (this.asset === 'XLM') {
-                    if (new BigNumber(this.amount).gte(20)) {
+                    if (new BigNumber(this.amount).gte(STARTING_BALANCE)) {
                       return
                     }
 
@@ -404,10 +409,20 @@
                       .call()
                       .catch(err => {
                         if (err.name === 'NotFoundError') {
-                          throw new Error('Account does not exist. You need to send at least 20 XLM.')
+                          throw new Error('Account does not exist. You need to send at least ' + STARTING_BALANCE + ' XLM.')
                         }
                       })
                   }
+                })
+                .then(() => {
+                    return StellarServer.loadAccount(this.resolvedRecipient)
+                      .catch(() => {
+                        if (this.recipient.indexOf('@') !== -1) {
+                          if (new BigNumber(this.amount).lt(STARTING_BALANCE + (BASE_RESERVE * 2))) {
+                            throw new Error('It\'s required to send at least ' + (STARTING_BALANCE + (BASE_RESERVE * 2)) + ' XLM when you are making a payment to new email.')
+                          }
+                        }
+                      })
                 })
                 .then(() => {
                   vm.isVerifying = false
@@ -508,6 +523,10 @@
 
       openQrReader () {
         events.$emit('qr-reader:open')
+      },
+
+      isPublicKey (key) {
+        return Stellar.StrKey.isValidEd25519PublicKey(key)
       },
     },
 

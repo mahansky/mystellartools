@@ -56,7 +56,12 @@ class StellarEmailCheck extends Command
                 $creator = $this->stellar->accountCreator($email->public_key);
 
                 // Set him as signer
-                $this->stellar->addSignerToAccount($creator, $email->secret_key);
+                $response = $this->stellar->addSignerToAccount($creator, $email->secret_key);
+
+                if ( ! isset($response['hash'])) {
+                    // TODO: Do something about it
+                    return;
+                }
 
                 // Generate token
                 $email->update([

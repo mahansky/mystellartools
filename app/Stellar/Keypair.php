@@ -2,9 +2,9 @@
 
 namespace App\Stellar;
 
-// Temporary class
 use ZuluCrypto\StellarSdk\AddressableKey;
 
+// Temporary class
 class Keypair extends \ZuluCrypto\StellarSdk\Keypair
 {
     protected $tempPublicKey;
@@ -26,6 +26,6 @@ class Keypair extends \ZuluCrypto\StellarSdk\Keypair
 
     public function getPublicKeyBytes()
     {
-        return $this->tempPublicKey;
+        return AddressableKey::getRawBytesFromBase32AccountId($this->tempPublicKey);
     }
 }
