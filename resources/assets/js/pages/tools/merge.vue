@@ -71,7 +71,7 @@
               throw new Error(knownAccounts[account_id].name + ' does not support this operation', 'error')
             }
 
-            submitTransaction('mergeAccounts', {destination: account_id})
+            return submitTransaction('mergeAccounts', {destination: account_id})
               .then(() => {
                 logout()
               })

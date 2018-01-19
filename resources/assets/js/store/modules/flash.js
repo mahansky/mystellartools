@@ -11,18 +11,12 @@ export const mutations = {
 
     // TODO: Replace this tryhard code
 
-    if (payload.message.message) {
-      state.message = payload.message.message
+    if (payload.message.data && payload.message.data.detail) {
+      state.message = payload.message.data.detail
 
-      if (payload.message.message.detail) {
-        state.message = payload.message.message.detail
-
-        if (payload.message.message.extras) {
-          if (payload.message.message.extras.result_codes) {
-            if (payload.message.message.extras.result_codes.operations) {
-              state.message += ' [' + payload.message.message.extras.result_codes.operations.join('; ') + ']'
-            }
-          }
+      if (payload.message.data.extras) {
+        if (payload.message.data.extras.result_codes) {
+          state.message += ' :: EXTRAS.RESULT_CODES: ' + JSON.stringify(payload.message.data.extras.result_codes)
         }
       }
 
