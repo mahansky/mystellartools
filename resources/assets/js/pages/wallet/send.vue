@@ -133,12 +133,16 @@
                                         <span v-text="asset"></span>
                                     </td>
                                 </tr>
-                                <tr>
+                                <tr v-if="this.assetIssuer !== this.$store.getters.keypair.publicKey()">
                                     <td><span>New balance</span></td>
                                     <td>
                                         <amount :amount="newBigNumber(balance).minus(amount).toFixed(7)"></amount>
                                         <span v-text="asset"></span>
                                     </td>
+                                </tr>
+                                <tr v-else>
+                                    <td></td>
+                                    <td>Issuing new assets!</td>
                                 </tr>
                             </table>
                             <p class="grey--text">
@@ -248,7 +252,7 @@
 <script>
   import { resolveAccountId, ruleAccountIsValid, Stellar, StellarServer, BASE_RESERVE, STARTING_BALANCE } from '~/stellar'
   import { flash, events } from '~/utils'
-  import { forEach } from 'lodash'
+  import { forEach, find } from 'lodash'
   import { submitTransaction } from '~/stellar/internal'
   import knownAccounts from '~/stellar/known_accounts'
   import BigNumber from 'bignumber.js'
@@ -317,6 +321,8 @@
         selectedAvailableAsset: '',
         newAsset: '',
         availableAssets: [],
+        assetIssuer: '',
+        availableAssetsData: [],
         assetSelector: false,
         asset: 'XLM',
         assetTypes: ['XLM'],
@@ -377,6 +383,10 @@
               return StellarServer.loadAccount(this.$store.getters.keypair.publicKey())
                 .then(account => {
                   vm.loadedAccount = account
+
+                  if (this.assetIssuer === this.$store.getters.keypair.publicKey()) {
+                    return
+                  }
 
                   let selectedAsset = this.asset
                   let minimumNativeBalance = STARTING_BALANCE + (account.subentry_count) * BASE_RESERVE
@@ -446,7 +456,7 @@
           issuer = null
         } else {
           code = this.asset
-          issuer = this.$store.getters.keypair.publicKey()
+          issuer = this.assetIssuer
         }
 
         StellarServer.accounts()
@@ -488,8 +498,15 @@
       setAsset () {
         if (this.newAsset) {
           this.asset = this.newAsset
+          this.assetIssuer = this.$store.getters.keypair.publicKey()
         } else {
           this.asset = this.selectedAvailableAsset
+
+          if (this.asset !== 'XLM') {
+            this.assetIssuer = find(this.availableAssetsData, (asset) => {
+              return asset.code === this.selectedAvailableAsset
+            }).issuer
+          }
         }
 
         this.assetTypes = [this.asset]
@@ -542,6 +559,10 @@
           forEach(account.balances, (balance) => {
             if (balance.asset_type !== 'native') {
               this.availableAssets.push(balance.asset_code)
+              this.availableAssetsData.push({
+                code: balance.asset_code,
+                issuer: balance.asset_issuer,
+              })
             }
           })
 
