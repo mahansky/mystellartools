@@ -6270,9 +6270,9 @@ stellar-base@^0.7.6:
   optionalDependencies:
     ed25519 "0.0.4"
 
-stellar-ledger-api@^1.1.1:
-  version "1.1.4"
-  resolved "https://registry.yarnpkg.com/stellar-ledger-api/-/stellar-ledger-api-1.1.4.tgz#211151b3c782622125857b5c321c18dd34a620bf"
+stellar-ledger-api@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/stellar-ledger-api/-/stellar-ledger-api-2.0.2.tgz#a1c7caadae3f3145d2e042ecd52e02d4b3c2d32b"
   dependencies:
     base32.js "^0.1.0"
     crc "^3.5.0"
