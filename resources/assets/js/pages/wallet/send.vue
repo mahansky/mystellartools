@@ -149,12 +149,15 @@
                                 Every transaction costs extra <amount amount="0.0000100"></amount> XLM
                             </p>
 
-                            <v-layout row wrap v-if="memo">
+                            <v-layout row wrap>
                                 <v-flex xs12>
                                     <b>Memo</b>
                                     <br>
-                                    <span v-text="memoType"></span>:
-                                    <span v-text="memoValue"></span>
+                                    <template v-if="memo">
+                                        <span v-text="memoType"></span>:
+                                        <span v-text="memoValue"></span>
+                                    </template>
+                                    <i v-else>None</i>
                                 </v-flex>
                             </v-layout>
                         </v-card-text>
@@ -286,9 +289,9 @@
         amountRules: [(v) => Stellar.Operation.isValidAmount(v) || 'Amount must be greater than zero.'],
 
         resolvedMemo: null,
-        memoType: '',
+        memoType: 'MEMO_TEXT',
         memoValue: '',
-        memoPlaceholder: 'Memo',
+        memoPlaceholder: 'Up to 28 characters',
         memoValueRules: [(v) => {
           let memoError = ''
 
