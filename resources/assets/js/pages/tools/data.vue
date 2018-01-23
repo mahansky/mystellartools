@@ -52,7 +52,7 @@
             <v-layout row wrap>
                 <v-btn info loading flat v-if="!loaded"></v-btn>
                 <v-flex xs12 v-if="loaded && items.length > 0">
-                    <div class="subheader">DataEntries</div>
+                    <div class="subheader">Data entries</div>
 
                     <v-data-table
                             :headers="headers"
@@ -62,9 +62,10 @@
                     >
                         <template slot="items" slot-scope="props">
                             <td v-text="props.item.key"></td>
-                            <td>
+                            <td class="break-all">
                                 <span v-text="decode(props.item.value)"></span>
-                                <span class="grey--text ml-3" v-text="props.item.value"></span>
+                                <br>
+                                <span class="grey--text" v-text="props.item.value"></span>
                             </td>
                             <td class="text-xs-right">
                                 <span class="table-row-detail">
@@ -118,29 +119,13 @@
             sortable: false,
           }
         ],
-        dataset: {},
+        items: [],
         valid: false,
         key: '',
         keyRules: [(v) => (v.length > 0 && v.length <= 64) || 'Maximum length is 64 characters'],
         value: '',
         valueRules: [(v) => new Buffer(v).length <= 64 || 'Maximum size is 64 bytes'],
       }
-    },
-
-    computed: {
-      items () {
-        let array = []
-
-        forEach(this.dataset, function (value, key) {
-          array.push({
-            key,
-            value,
-            isDeleteLoading: false,
-          })
-        })
-
-        return array
-      },
     },
 
     methods: {
@@ -162,8 +147,6 @@
 
         this.submitTx(item.key, null)
           .then(() => {
-            item.isDeleteLoading = false
-
             flash('Data entry deleted', 'success')
           })
       },
@@ -173,12 +156,10 @@
           this.isSubmitting = true
 
           this.submitTx(this.key, this.value)
-            .then((res) => {
+            .then(() => {
               this.isSubmitting = false
 
-              if (res) {
-                flash('Data entry updated', 'success')
-              }
+              flash('Data entry updated', 'success')
             })
         }
       },
@@ -192,12 +173,19 @@
           .accountId(vm.$store.getters.keypair.publicKey())
           .call()
           .then(account => {
-            vm.dataset = account.data_attr
             vm.loaded = true
 
-            forEach(vm.dataset, (data) => {
-              Vue.set(data, 'isDeleteLoading', false)
+            let array = []
+
+            forEach(account.data_attr, function (value, key) {
+              array.push({
+                key,
+                value,
+                isDeleteLoading: false,
+              })
             })
+
+            vm.items = array
           })
           .catch(e => {})
       },
@@ -207,9 +195,7 @@
           .then(() => {
             return this.fetchData()
           })
-          .catch((err) => {
-            flash(err, 'error')
-          })
+          .catch(flash)
       },
     },
 

@@ -47,11 +47,18 @@ export const mutations = {
   },
 }
 
+let timeout
+
 export const actions = {
   storeFlash ({commit}, payload) {
     commit(types.STORE_FLASH, payload)
 
-    setTimeout(() => {
+    if (timeout) {
+      clearTimeout(timeout)
+    }
+
+    timeout = setTimeout(() => {
+      timeout = null
       commit(types.REMOVE_FLASH)
     }, 10000)
   },

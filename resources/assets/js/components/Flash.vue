@@ -4,6 +4,7 @@
                 v-if="hasMessage"
                 :error="type === 'error'"
                 :success="type === 'success'"
+                :info="type === 'info'"
                 v-model="visible"
                 class="error-popup"
                 dismissible
