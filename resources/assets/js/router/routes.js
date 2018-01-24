@@ -11,6 +11,7 @@ export default ({ keypairGuard, keypairCanSignGuard }) => [
     { path: '/receive', name: 'receive', component: require('~/pages/wallet/receive.vue') },
     { path: '/account', name: 'account', component: require('~/pages/wallet/account.vue') },
     { path: '/operations', name: 'operations', component: require('~/pages/tools/operations.vue') },
+    { path: '/transactions', name: 'transactions', component: require('~/pages/tools/transactions.vue') },
   ]),
 
   ...keypairCanSignGuard([

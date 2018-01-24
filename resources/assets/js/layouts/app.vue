@@ -119,6 +119,14 @@
                         <v-list-tile-title>Merge accounts</v-list-tile-title>
                     </v-list-tile-content>
                 </v-list-tile>
+                <v-list-tile :to="{name: 'transactions'}">
+                    <v-list-tile-action>
+                        <v-icon>reply_all</v-icon>
+                    </v-list-tile-action>
+                    <v-list-tile-content>
+                        <v-list-tile-title>Submit transaction</v-list-tile-title>
+                    </v-list-tile-content>
+                </v-list-tile>
             </v-list>
         </v-navigation-drawer>
 
