@@ -1,6 +1,6 @@
 import { StellarServer } from './index'
 import { Asset, Operation, StrKey, TransactionBuilder, Keypair } from 'stellar-sdk'
-import { flash } from '~/utils'
+import { flash, events } from '~/utils'
 import store from '~/store'
 import StellarLedger from 'stellar-ledger-api'
 
@@ -18,6 +18,15 @@ function _submitTx (keypair, operation, memo) {
       }
 
       transaction = transaction.build()
+
+      if (!store.getters.keypairLedger && !store.getters.keypairCanSign) {
+        events.$emit('transactions:manual-signing', {
+          envelope: transaction.toEnvelope().toXDR('base64'),
+          hash: transaction.hash().toString('hex'),
+        })
+
+        throw new Error('No secret key entered. Can not sign the transaction.')
+      }
 
       if (store.getters.keypairLedger) {
         flash('Sign the transaction using your Ledger', 'info')

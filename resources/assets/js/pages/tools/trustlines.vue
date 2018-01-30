@@ -304,6 +304,7 @@
         this.$forceUpdate()
 
         this.submitTx(currency.code, currency.issuer)
+          .catch(flash)
           .then(() => {
             currency.loading = false
 
@@ -317,20 +318,14 @@
 
           resolveAccountId(this.assetIssuer).then(({account_id}) => {
             if (!this.assetLimit && this.assetLimit !== 0) {
-              this.submitTx(this.assetCode, account_id)
-                .then(() => {
-                  this.isTrustlineLoading = false
-                })
+              return this.submitTx(this.assetCode, account_id)
             } else {
-              this.submitTx(this.assetCode, account_id, this.assetLimit)
-                .then(() => {
-                  this.isTrustlineLoading = false
-                })
+              return this.submitTx(this.assetCode, account_id, this.assetLimit)
             }
-          }).catch(err => {
+          })
+          .catch(flash)
+          .then(() => {
             this.isTrustlineLoading = false
-
-            flash(err, 'error')
           })
         }
       },
@@ -344,7 +339,6 @@
 
             return vm.fetchData()
           })
-          .catch(flash)
       },
 
       fetchData () {
@@ -390,6 +384,10 @@
         asset.isDeleteLoading = true
 
         this.submitTx (asset.asset_code, asset.asset_issuer, '0')
+          .catch(flash)
+          .then(() => {
+            asset.isDeleteLoading = true
+          })
       },
 
       allow () {
@@ -398,7 +396,7 @@
         let vm = this
 
         resolveAccountId(this.allowTrustor).then(({account_id}) => {
-          submitTransaction('allowTrustline', {
+          return submitTransaction('allowTrustline', {
             trustor: account_id,
             assetCode: vm.allowAssetCode,
             authorize: vm.allowAuthorized,

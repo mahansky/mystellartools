@@ -17,22 +17,7 @@
                         <div class="headline">Stellar, Lumens, XLM, Basic concepts</div>
                         <p>
                             Check out the
-                            <a href="https://www.stellar.org/how-it-works/stellar-basics/" target="_blank" rel="noreferrer nofollow">official website</a>
-                            or our
-                            <router-link :to="{name: 'stellar101'}">guide</router-link>.
-                        </p>
-                    </div>
-
-                    <div class="textblock">
-                        <div class="headline">Some items in menu are disabled</div>
-                        <p>
-                            Your account is "locked".  To unlock it, you have to have it's Secret key.
-                            Click on the lock icon in the blue toolbar and enter it to the "Switch" form.
-                        </p>
-                        <p>
-                            If you are logged in and viewing your account secured with password,
-                            you have to unlock it by clicking the lock icon again and entering password
-                            in the dialog.
+                            <a href="https://www.stellar.org/how-it-works/stellar-basics/" target="_blank" rel="noreferrer nofollow">official website</a>.
                         </p>
                     </div>
 
