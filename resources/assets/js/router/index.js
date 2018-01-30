@@ -9,7 +9,7 @@ Vue.use(Meta)
 Vue.use(Router)
 
 const router = make(
-  routes({keypairGuard, keypairCanSignGuard})
+  routes({keypairGuard})
 )
 
 sync(store, router)
@@ -70,16 +70,6 @@ function keypairGuard (routes) {
     }
 
     return next()
-  })
-}
-
-function keypairCanSignGuard (routes) {
-  return beforeEnter(routes, (to, from, next) => {
-    if (store.getters.keypairCanSign || store.getters.keypairLedger) {
-      return next()
-    }
-
-    return next({name: 'balance'})
   })
 }
 

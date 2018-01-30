@@ -1,6 +1,7 @@
 import { StellarServer } from './index'
 import { Asset, Operation, StrKey, TransactionBuilder, Keypair } from 'stellar-sdk'
-import store from '../store'
+import { flash, events } from '~/utils'
+import store from '~/store'
 import StellarLedger from 'stellar-ledger-api'
 
 const xdr = require('stellar-base').xdr
@@ -18,7 +19,18 @@ function _submitTx (keypair, operation, memo) {
 
       transaction = transaction.build()
 
+      if (!store.getters.keypairLedger && !store.getters.keypairCanSign) {
+        events.$emit('transactions:manual-signing', {
+          envelope: transaction.toEnvelope().toXDR('base64'),
+          hash: transaction.hash().toString('hex'),
+        })
+
+        throw new Error('No secret key entered. Can not sign the transaction.')
+      }
+
       if (store.getters.keypairLedger) {
+        flash('Sign the transaction using your Ledger', 'info')
+
         return new StellarLedger.Api(new StellarLedger.comm(120)).signTx_async(store.getters.keypairBip32Path, transaction).then(result => {
           let signature = result['signature']
           let keyPair = Keypair.fromPublicKey(keypair.publicKey())

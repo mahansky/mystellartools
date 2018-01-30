@@ -52,7 +52,7 @@
                         <v-list-tile-title>Payments</v-list-tile-title>
                     </v-list-tile-content>
                 </v-list-tile>
-                <v-list-tile :to="{name: 'send'}" :disabled="!unlocked">
+                <v-list-tile :to="{name: 'send'}">
                     <v-list-tile-action>
                         <v-icon>call_made</v-icon>
                     </v-list-tile-action>
@@ -87,7 +87,7 @@
                         <v-list-tile-title>All operations</v-list-tile-title>
                     </v-list-tile-content>
                 </v-list-tile>
-                <v-list-tile :to="{name: 'trustlines'}" :disabled="!unlocked">
+                <v-list-tile :to="{name: 'trustlines'}">
                     <v-list-tile-action>
                         <v-icon>settings_ethernet</v-icon>
                     </v-list-tile-action>
@@ -95,7 +95,7 @@
                         <v-list-tile-title>Manage trustlines</v-list-tile-title>
                     </v-list-tile-content>
                 </v-list-tile>
-                <v-list-tile :to="{name: 'setoptions'}" :disabled="!unlocked">
+                <v-list-tile :to="{name: 'setoptions'}">
                     <v-list-tile-action>
                         <v-icon>settings</v-icon>
                     </v-list-tile-action>
@@ -103,7 +103,7 @@
                         <v-list-tile-title>Set options</v-list-tile-title>
                     </v-list-tile-content>
                 </v-list-tile>
-                <v-list-tile :to="{name: 'data'}" :disabled="!unlocked">
+                <v-list-tile :to="{name: 'data'}">
                     <v-list-tile-action>
                         <v-icon>dns</v-icon>
                     </v-list-tile-action>
@@ -111,12 +111,20 @@
                         <v-list-tile-title>Manage data</v-list-tile-title>
                     </v-list-tile-content>
                 </v-list-tile>
-                <v-list-tile :to="{name: 'merge'}" :disabled="!unlocked">
+                <v-list-tile :to="{name: 'merge'}">
                     <v-list-tile-action>
                         <v-icon>merge_type</v-icon>
                     </v-list-tile-action>
                     <v-list-tile-content>
                         <v-list-tile-title>Merge accounts</v-list-tile-title>
+                    </v-list-tile-content>
+                </v-list-tile>
+                <v-list-tile :to="{name: 'transactions'}">
+                    <v-list-tile-action>
+                        <v-icon>reply_all</v-icon>
+                    </v-list-tile-action>
+                    <v-list-tile-content>
+                        <v-list-tile-title>Submit transaction</v-list-tile-title>
                     </v-list-tile-content>
                 </v-list-tile>
             </v-list>
@@ -184,11 +192,14 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
+
+        <envelope></envelope>
     </v-app>
 </template>
 
 <script>
   import Settings from './app/settings.vue'
+  import Envelope from './app/envelope.vue'
   import axios from 'axios'
   import { flash, logout } from '~/utils'
   import { Stellar } from '~/stellar'
@@ -201,6 +212,7 @@
 
     components: {
       Settings,
+      Envelope,
     },
 
     data () {

@@ -75,6 +75,10 @@
   word-break: break-all;
 }
 
+.pre-wrap {
+  white-space: pre-wrap;
+}
+
 .public-key {
   display: flex;
   flex-direction: row;
@@ -92,5 +96,19 @@
     margin-left: 10px;
     margin-top: 1px;
     padding: 0 5px;
+  }
+}
+
+.syntax-highlight {
+  .key {
+    color: #d32f2f;
+  }
+
+  .number {
+    color: #01579b;
+  }
+
+  .string {
+    color: #388e3c;
   }
 }

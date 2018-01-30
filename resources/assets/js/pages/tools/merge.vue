@@ -34,7 +34,21 @@
                 <v-flex lg6>
                     <b>Account Merge</b>
                     <p>
-                        Transfers the native balance (the amount of XLM an account holds) to destination account and removes the source account from the ledger.</p>
+                        Transfers the native balance (the amount of XLM an account holds)
+                        to destination account and removes the source account from the ledger.
+                    </p>
+                    <p>
+                        Account can not have any subentries. You can check the count of your
+                        subentries on the <router-link :to="{name: 'account'}">Account</router-link> page.
+                    </p>
+                    <p>
+                        Following are considered a subentry:
+                    </p>
+                    <ul>
+                        <li>Trustline</li>
+                        <li>Offer</li>
+                        <li>Data</li>
+                    </ul>
                 </v-flex>
             </v-layout>
         </v-container>
@@ -56,7 +70,13 @@
       return {
         valid: false,
         destination: '',
-        destinationRules: [ruleAccountIsValid],
+        destinationRules: [ruleAccountIsValid, v => {
+          if (v === this.$store.getters.keypair.publicKey()) {
+            return 'Must be different from current account'
+          }
+
+          return true
+        }],
         isLoading: false,
       }
     },
