@@ -6,7 +6,7 @@
                     <v-card class="white">
                         <v-toolbar card color="white" dense>
                             <v-toolbar-title class="body-2 grey--text text--darken-2">
-                                Create trustline with anchor
+                                Create a trustline
                             </v-toolbar-title>
                         </v-toolbar>
                         <v-card-text>
@@ -202,7 +202,9 @@
                             <td class="text-xs-right">
                                 <span class="table-row-detail">
                                     <a href="#" @click.prevent="edit(props.item)" class="mr-3">Edit</a>
-                                    <a href="#" @click.prevent="remove(props.item)" class="red--text">Delete</a>
+
+                                    <v-btn loading flat danger v-if="props.item.isDeleteLoading"></v-btn>
+                                    <a v-if="!props.item.isDeleteLoading" href="#" @click.prevent="remove(props.item)" class="red--text">Delete</a>
                                 </span>
                             </td>
                         </template>
@@ -217,8 +219,10 @@
   import { Stellar, StellarServer, ruleAccountIsValid, resolveAccountId } from '~/stellar'
   import { flash } from '~/utils'
   import { submitTransaction } from '~/stellar/internal'
-  import { filter } from 'lodash'
+  import { filter, forEach } from 'lodash'
+  import BigNumber from 'bignumber.js'
   import axios from 'axios'
+  import Vue from 'vue'
 
   export default {
     metaInfo: () => ({
@@ -276,6 +280,7 @@
       search () {
         if (this.$refs.anchorForm.validate()) {
           this.isSearching = true
+          this.showAnchorResults = false
 
           Stellar.StellarTomlResolver.resolve(this.anchorDomain)
             .then(toml => {
@@ -299,6 +304,7 @@
         this.$forceUpdate()
 
         this.submitTx(currency.code, currency.issuer)
+          .catch(flash)
           .then(() => {
             currency.loading = false
 
@@ -312,20 +318,14 @@
 
           resolveAccountId(this.assetIssuer).then(({account_id}) => {
             if (!this.assetLimit && this.assetLimit !== 0) {
-              this.submitTx(this.assetCode, account_id)
-                .then(() => {
-                  this.isTrustlineLoading = false
-                })
+              return this.submitTx(this.assetCode, account_id)
             } else {
-              this.submitTx(this.assetCode, account_id, this.assetLimit)
-                .then(() => {
-                  this.isTrustlineLoading = false
-                })
+              return this.submitTx(this.assetCode, account_id, this.assetLimit)
             }
-          }).catch(err => {
+          })
+          .catch(flash)
+          .then(() => {
             this.isTrustlineLoading = false
-
-            flash(err, 'error')
           })
         }
       },
@@ -339,7 +339,6 @@
 
             return vm.fetchData()
           })
-          .catch(flash)
       },
 
       fetchData () {
@@ -349,6 +348,10 @@
           .then(account => {
             this.balances = account.balances
             this.loaded = true
+
+            forEach(this.balances, (balance) => {
+              Vue.set(balance, 'isDeleteLoading', false)
+            })
           })
           .catch(() => {
             flash('Unable to load data', 'error')
@@ -368,7 +371,23 @@
       },
 
       remove (asset) {
+        if (new BigNumber(asset.balance).gt(0)) {
+          flash(
+            `To delete the trustline, you need to have 0 ${asset.asset_code}.
+             Your current balance: ${asset.balance}`,
+            'error'
+          )
+
+          return
+        }
+
+        asset.isDeleteLoading = true
+
         this.submitTx (asset.asset_code, asset.asset_issuer, '0')
+          .catch(flash)
+          .then(() => {
+            asset.isDeleteLoading = true
+          })
       },
 
       allow () {
@@ -377,7 +396,7 @@
         let vm = this
 
         resolveAccountId(this.allowTrustor).then(({account_id}) => {
-          submitTransaction('allowTrustline', {
+          return submitTransaction('allowTrustline', {
             trustor: account_id,
             assetCode: vm.allowAssetCode,
             authorize: vm.allowAuthorized,

@@ -3,16 +3,27 @@
         <div class="pattern">
             <v-container class="rocket">
                 <v-layout row wrap>
-                    <v-flex xs12 md6 offset-md3>
-                        <key></key>
-                    </v-flex>
-                    <v-flex xs12 md6 offset-md3>
-                        <div class="mt-5 mb-4 pb-4">
-                            <div class="text-xs-center">
-                                <ledger></ledger>
-                            </div>
+                    <v-flex xs12 md6 offset-md3 v-if="hasKeypair">
+                        <div class="my-5 py-5 text-xs-center">
+                            You are already signed in.
+                            <br>
+                            <v-btn dark @click="$router.push({name: 'balance'})">Enter</v-btn>
+                            or
+                            <a href="#" @click="logout">logout</a>.
                         </div>
                     </v-flex>
+                    <template v-else>
+                        <v-flex xs12 md6 offset-md3>
+                            <key></key>
+                        </v-flex>
+                        <v-flex xs12 md6 offset-md3>
+                            <div class="mt-5 mb-4 pb-4">
+                                <div class="text-xs-center">
+                                    <ledger></ledger>
+                                </div>
+                            </div>
+                        </v-flex>
+                    </template>
                 </v-layout>
             </v-container>
         </div>
@@ -161,7 +172,7 @@
 </template>
 
 <script>
-  import { getQueryParameter } from '~/utils'
+  import { getQueryParameter, logout } from '~/utils'
   import { Stellar } from '~/stellar'
 
   import Ledger from './welcome/ledger'
@@ -183,7 +194,20 @@
 
     data: () => ({
       donateDialog: false,
+      differentAccount: false,
     }),
+
+    computed: {
+      hasKeypair () {
+        return !!this.$store.getters.keypair
+      }
+    },
+
+    methods: {
+      logout () {
+        logout()
+      },
+    },
 
     created () {
       let publicKey = getQueryParameter('public_key')
