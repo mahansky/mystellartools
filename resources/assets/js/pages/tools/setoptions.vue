@@ -11,7 +11,7 @@
                         </v-toolbar>
                         <v-card-text>
                             <v-form v-model="valid" ref="form">
-                                <b>Tresholds</b>
+                                <b>Thresholds</b>
                                 <v-text-field
                                         label="Master weight"
                                         hint="0 - 255"
@@ -19,21 +19,21 @@
                                         :rules="weightRules"
                                 ></v-text-field>
                                 <v-text-field
-                                        label="Low treshold"
+                                        label="Low threshold"
                                         hint="0 - 255"
-                                        v-model="lowTreshold"
+                                        v-model="lowThreshold"
                                         :rules="weightRules"
                                 ></v-text-field>
                                 <v-text-field
-                                        label="Medium treshold"
+                                        label="Medium threshold"
                                         hint="0 - 255"
-                                        v-model="medTreshold"
+                                        v-model="medThreshold"
                                         :rules="weightRules"
                                 ></v-text-field>
                                 <v-text-field
-                                        label="High treshold"
+                                        label="High threshold"
                                         hint="0 - 255"
-                                        v-model="highTreshold"
+                                        v-model="highThreshold"
                                         :rules="weightRules"
                                 ></v-text-field>
 
@@ -148,7 +148,7 @@
                     </v-card>
                 </v-flex>
                 <v-flex lg6>
-                    <b>Tresholds</b>
+                    <b>Thresholds</b>
                     <p>
                         Operations have varying levels of access.
                         This field specifies thresholds for low-, medium-, and high-access levels, as well as the weight of the master key.
@@ -209,9 +209,9 @@
         valid: false,
 
         masterWeight: '',
-        lowTreshold: '',
-        medTreshold: '',
-        highTreshold: '',
+        lowThreshold: '',
+        medThreshold: '',
+        highThreshold: '',
 
         setFlags: {
           required: false,
@@ -338,14 +338,14 @@
             if (this.masterWeight)
               attributes.masterWeight = this.masterWeight
 
-            if (this.lowTreshold)
-              attributes.lowTreshold = this.lowTreshold
+            if (this.lowThreshold)
+              attributes.lowThreshold = this.lowThreshold
 
-            if (this.medTreshold)
-              attributes.medTreshold = this.medTreshold
+            if (this.medThreshold)
+              attributes.medThreshold = this.medThreshold
 
-            if (this.highTreshold)
-              attributes.highTreshold = this.highTreshold
+            if (this.highThreshold)
+              attributes.highThreshold = this.highThreshold
 
             if (this.inflationDest)
               attributes.inflationDest = inflationPublicKey
@@ -357,12 +357,14 @@
             attributes.setFlags = this.calcFlags(this.setFlags)
 
             if (this.signerType) {
+              attributes.signer = {}
+              
               if (this.signerType === 'ed25519') {
-                attributes.signer['ed25519PublicKey'] = signerPublicKey
+                attributes.signer.ed25519PublicKey = signerPublicKey
               } else if (this.signerType === 'txhash') {
-                attributes.signer['preAuthTx'] = this.signer
+                attributes.signer.preAuthTx = this.signer
               } else if (this.signerType === 'sha256') {
-                attributes.signer['sha256Hash'] = this.signer
+                attributes.signer.sha256Hash = this.signer
               }
 
               attributes.signer.weight = this.signerWeight
