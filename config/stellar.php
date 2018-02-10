@@ -2,6 +2,6 @@
 
 return [
 
-    'horizon_url' => env('MIX_HORIZON_URL'),
+    'horizon_url' => env('HORIZON_URL'),
 
 ];
