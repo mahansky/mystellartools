@@ -368,7 +368,7 @@
               attributes.signer.weight = this.signerWeight
             }
 
-            submitTransaction('setOptions', attributes)
+            return submitTransaction('setOptions', attributes)
               .then(() => {
                 flash('Options updated', 'success')
               })

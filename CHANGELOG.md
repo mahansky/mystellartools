@@ -1,5 +1,9 @@
 # Changelog
 
+### 30 January 2018
+- **Added** support for manual transaction signing and submitting
+- **Changed** the looks of application after entering with public key (everything is accessible now)
+
 ### 15 January 2018
 - **Added** QR code reader
 - **Added** option to enter federation address into inputs where public key is required

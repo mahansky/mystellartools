@@ -42,7 +42,7 @@
                         subentries on the <router-link :to="{name: 'account'}">Account</router-link> page.
                     </p>
                     <p>
-                        Following are considered an subentry:
+                        Following are considered a subentry:
                     </p>
                     <ul>
                         <li>Trustline</li>
@@ -70,7 +70,13 @@
       return {
         valid: false,
         destination: '',
-        destinationRules: [ruleAccountIsValid],
+        destinationRules: [ruleAccountIsValid, v => {
+          if (v === this.$store.getters.keypair.publicKey()) {
+            return 'Must be different from current account'
+          }
+
+          return true
+        }],
         isLoading: false,
       }
     },

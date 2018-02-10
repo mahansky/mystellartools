@@ -149,6 +149,10 @@
           .then(() => {
             flash('Data entry deleted', 'success')
           })
+          .catch(flash)
+          .then(() => {
+            item.isDeleteLoading = false
+          })
       },
 
       save () {
@@ -157,9 +161,11 @@
 
           this.submitTx(this.key, this.value)
             .then(() => {
-              this.isSubmitting = false
-
               flash('Data entry updated', 'success')
+            })
+            .catch(flash)
+            .then(() => {
+              this.isSubmitting = false
             })
         }
       },
@@ -195,7 +201,6 @@
           .then(() => {
             return this.fetchData()
           })
-          .catch(flash)
       },
     },
 

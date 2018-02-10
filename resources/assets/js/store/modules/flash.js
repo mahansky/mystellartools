@@ -9,9 +9,13 @@ export const mutations = {
   [types.STORE_FLASH] (state, payload) {
     state.message = payload.message
 
+    if (payload.message instanceof Error) {
+      state.message = payload.message.message
+    }
+
     // TODO: Replace this tryhard code
 
-    if (payload.message.data && payload.message.data.detail) {
+    if (payload.message && payload.message.data && payload.message.data.detail) {
       state.message = payload.message.data.detail
 
       if (payload.message.data.extras) {
