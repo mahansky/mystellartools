@@ -1,7 +1,7 @@
 // STELLAR SDK, HORIZON
 
 export const Stellar = require('stellar-sdk')
-export const HorizonURL = process.env.MIX_HORIZON_URL
+export const HorizonURL = window.config.horizon_url
 export const StellarServer = new Stellar.Server(HorizonURL)
 export const BASE_RESERVE = 0.5
 export const STARTING_BALANCE = 2 * BASE_RESERVE

@@ -3,6 +3,7 @@ import * as types from '../mutation-types'
 export const state = {
   keypair: null,
   ledger: false,
+  ledgerAppVersion: '',
   bip32Path: '',
 }
 
@@ -16,9 +17,10 @@ export const mutations = {
     state.ledger = false
   },
 
-  [types.ACCESS_WITH_LEDGER] (state, {bip32Path}) {
+  [types.ACCESS_WITH_LEDGER] (state, {bip32Path, version}) {
     state.ledger = true
     state.bip32Path = bip32Path
+    state.ledgerAppVersion = version
   },
 }
 
@@ -40,5 +42,6 @@ export const getters = {
   keypair: state => state.keypair,
   keypairCanSign: state => state.keypair ? state.keypair.canSign() : false,
   keypairLedger: state => state.ledger,
+  keypairLedgerAppVersion: state => state.ledgerAppVersion,
   keypairBip32Path: state => state.bip32Path,
 }

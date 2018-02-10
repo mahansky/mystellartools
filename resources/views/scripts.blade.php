@@ -1,3 +1,7 @@
+<script>
+    window.config = @json(config('stellar'))
+</script>
+
 @if (app()->isLocal())
     <script src="{{ mix('js/app.js') }}"></script>
 @else
