@@ -136,11 +136,30 @@
             <v-spacer></v-spacer>
             <div class="selected-account hidden-md-and-down">
                 <span class="key ml-3" v-text="activeAccount"></span>
-                <v-btn v-if="unlocked" dark icon v-tooltip:bottom="{ html: 'Unlocked' }">
+                <v-btn
+                        v-if="unlocked"
+                        dark icon
+                        v-tooltip:bottom="{ html: 'Unlocked' }"
+                       :class="{ 'mr-0': canVerifyPublicKey }"
+                >
                     <v-icon>lock_open</v-icon>
                 </v-btn>
-                <v-btn v-else dark icon v-tooltip:bottom="{ html: 'Click to unlock' }" @click.stop="clickedLock">
+                <v-btn
+                        v-else
+                        dark icon
+                        v-tooltip:bottom="{ html: 'Click to unlock' }"
+                        @click.stop="clickedLock">
                     <v-icon>https</v-icon>
+                </v-btn>
+                <v-btn
+                        v-if="canVerifyPublicKey"
+                        @click="verifyPublicKey"
+                        :loading="isVerifyingPublicKey"
+                        v-tooltip:bottom="{ html: 'Verify public key on Ledger' }"
+                        class="ml-0"
+                        dark icon
+                >
+                    <v-icon>desktop_windows</v-icon>
                 </v-btn>
             </div>
             <v-btn icon @click.stop="openDialog" v-tooltip:bottom="{ html: 'Settings' }" class="hidden-md-and-down">
@@ -196,6 +215,7 @@
 </template>
 
 <script>
+  import StellarLedger from 'stellar-ledger-api'
   import Settings from './app/settings.vue'
   import axios from 'axios'
   import { flash, logout } from '~/utils'
@@ -221,6 +241,7 @@
           pw: true,
           password: '',
         },
+        isVerifyingPublicKey: false,
       }
     },
 
@@ -235,6 +256,11 @@
 
       keypair () {
         return this.$store.getters.keypair
+      },
+
+      canVerifyPublicKey () {
+        return this.$store.getters.keypairLedger
+          && this.$store.getters.keypairLedgerAppVersion.split('.')[0] > 1
       },
     },
 
@@ -293,7 +319,17 @@
 
       closeDialog () {
         this.dialog = false
-      }
+      },
+
+      verifyPublicKey () {
+        this.isVerifyingPublicKey = true
+
+        new StellarLedger.Api(new StellarLedger.comm(60))
+          .getPublicKey_async(this.$store.getters.keypairBip32Path, false, true)
+          .then(() => { flash('Check your Ledger', 'info') })
+          .catch(flash)
+          .then(() => { this.isVerifyingPublicKey = false })
+      },
     },
 
     created () {

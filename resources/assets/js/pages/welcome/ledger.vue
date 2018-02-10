@@ -76,6 +76,7 @@
       error: 'Failed to connect',
       bip32Path: "44'/148'/0'",
       bip32PathRules: [(v) => ruleBip32Path(v)],
+      ledgerAppVersion: '',
     }),
 
     methods: {
@@ -83,12 +84,14 @@
         this.isConnected = false
         this.error = 'Failed to connect'
 
-        new StellarLedger.Api(new StellarLedger.comm(20))
-          .connect(() => {
+        new StellarLedger.Api(new StellarLedger.comm(Number.MAX_VALUE)).getAppConfiguration_async()
+          .then(result => {
             this.isConnected = true
             this.error = ''
-          }, () => {
-            setTimeout(this.connectLedger, 2000)
+            this.ledgerAppVersion = result.version
+          })
+          .catch(err => {
+            this.error = 'Problem with connecting to Ledger: ' + err
           })
       },
 
@@ -106,7 +109,8 @@
             })
 
             this.$store.dispatch('accessWithLedger', {
-              bip32Path: this.bip32Path
+              bip32Path: this.bip32Path,
+              version: this.ledgerAppVersion,
             })
 
             this.$router.push({name: 'balance'})
