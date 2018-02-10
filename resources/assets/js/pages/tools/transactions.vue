@@ -42,10 +42,13 @@
                             <v-btn
                                     small
                                     flat
+                                    icon
                                     :success="resultOk"
                                     :error="!resultOk"
-                                    v-text="resultOk ? 'OK' : 'FAIL'"
-                            ></v-btn>
+                            >
+                                <v-icon v-if="resultOk">check</v-icon>
+                                <v-icon v-else>close</v-icon>
+                            </v-btn>
                         </v-toolbar>
                         <v-card-text>
                             <pre class="break-all pre-wrap syntax-highlight" v-html="result"></pre>
