@@ -8,11 +8,11 @@
             </v-toolbar>
             <v-card-text>
               <p>
-                  <b>You have opened the application without your secret key, 
+                  <b>You are using the application without your secret key, 
                   so we can not sign your transaction and submit it to the network.</b>
                   <br>
-                  The following details represent your transaction.
-                  You can use them to sign the transaction on your own.
+                  You can sign it on your own using the following details with 
+                  <router-link :to="{name: 'txsigner'}">Transaction Signer</router-link>.
               </p>
 
               <v-text-field
@@ -21,7 +21,7 @@
                       readonly
               ></v-text-field>
               <v-text-field
-                      label="Transaction envelope (XDR)"
+                      label="Transaction envelope XDR"
                       v-model="envelope"
                       readonly
                       multi-line

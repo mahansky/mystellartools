@@ -1,6 +1,7 @@
 export default ({ keypairGuard }) => [
   { path: '/', name: 'welcome', component: require('~/pages/welcome.vue') },
   { path: '/claim', name: 'claim', component: require('~/pages/claim.vue') },
+  { path: '/transaction-signer', name: 'txsigner', component: require('~/pages/txsigner.vue') },
   { path: '/paper-wallet', name: 'paper', component: require('~/pages/paper.vue') },
   { path: '/help', name: 'help', component: require('~/pages/help.vue') },
 
