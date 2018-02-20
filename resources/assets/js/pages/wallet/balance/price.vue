@@ -6,6 +6,7 @@
                     class="mr-1 ml-1 pointer"
                     v-for="currency in currencies"
                     v-text="currency"
+                    :key="currency"
                     :class="{'blue--text': selected.toUpperCase() === currency}"
                     @click="change(currency)">
             </small>
