@@ -191,7 +191,7 @@
 </template>
 
 <script>
-  import { ruleAccountIsValid, resolveAccountId, Stellar, StellarServer } from '~/stellar'
+  import { ruleAccountIsValid, resolveAccountId, Stellar } from '~/stellar'
   import { flash } from '~/utils'
   import { submitTransaction } from '~/stellar/internal'
   import isString from 'lodash'

@@ -9,6 +9,7 @@
                 <v-tabs-bar class="blue">
                     <v-tabs-item href="#accounts">Accounts</v-tabs-item>
                     <v-tabs-item href="#contacts">Contacts</v-tabs-item>
+                    <v-tabs-item href="#options">Transactions</v-tabs-item>
                     <v-tabs-slider class="white"></v-tabs-slider>
                 </v-tabs-bar>
             </v-toolbar>
@@ -18,6 +19,9 @@
                 </v-tabs-content>
                 <v-tabs-content id="contacts" key="contacts" lazy>
                     <contacts></contacts>
+                </v-tabs-content>
+                <v-tabs-content id="options" key="options" lazy>
+                    <transactions></transactions>
                 </v-tabs-content>
             </v-tabs-items>
         </v-tabs>
@@ -29,11 +33,13 @@
 <script>
   import Accounts from './settings/accounts.vue'
   import Contacts from './settings/contacts.vue'
+  import Transactions from './settings/transactions.vue'
 
   export default {
     components: {
       Accounts,
       Contacts,
+      Transactions,
     },
 
     data () {

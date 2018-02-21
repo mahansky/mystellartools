@@ -48,7 +48,7 @@
     },
 
     created () {
-      StellarServer.transactions()
+      StellarServer().transactions()
         .transaction(this.operation._links.transaction.href.split('/').pop())
         .call()
         .then((tx) => {

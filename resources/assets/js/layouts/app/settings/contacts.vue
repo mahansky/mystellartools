@@ -88,7 +88,7 @@
   import { map } from 'lodash'
 
   export default {
-    data () {
+    data: (vm) => {
       return {
         loaded: false,
         headers: [
@@ -111,7 +111,7 @@
             let memoError = ''
 
             try {
-              switch (this.memoType) {
+              switch (vm.contactForm.memoType) {
                 case 'MEMO_TEXT':
                   memoError = 'MEMO_TEXT must contain a maximum of 28 characters'
                   Stellar.Memo.text(v)

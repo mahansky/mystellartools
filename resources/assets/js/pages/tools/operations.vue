@@ -46,7 +46,7 @@
 </template>
 
 <script>
-  import { Stellar, StellarServer, HorizonURL } from '~/stellar'
+  import { Stellar, HorizonURL } from '~/stellar'
   import { flash } from '~/utils'
   import { first, last, orderBy } from 'lodash'
   import axios from 'axios'
@@ -108,7 +108,7 @@
           }
         }
 
-        axios.get(HorizonURL + '/accounts/' + vm.$store.getters.keypair.publicKey() + '/operations', {
+        axios.get(HorizonURL() + '/accounts/' + vm.$store.getters.keypair.publicKey() + '/operations', {
           params: this.parameters
         })
           .then(response => {
