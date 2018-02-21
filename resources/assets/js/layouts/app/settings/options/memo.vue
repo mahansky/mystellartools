@@ -25,42 +25,40 @@
 import { Stellar } from '~/stellar'
 
 export default {
-  data: (vm) => {
-    return {
-      enabled: false,
-      memoType: '',
-      memoValue: '',
-      memoPlaceholder: '',
-      memoValueRules: [(v) => {
-        let memoError = ''
+  data: (vm) => ({
+    enabled: false,
+    memoType: 'MEMO_TEXT',
+    memoValue: '',
+    memoPlaceholder: '',
+    memoValueRules: [(v) => {
+      let memoError = ''
 
-        try {
-          switch (vm.memoType) {
-            case 'MEMO_TEXT':
-              memoError = 'MEMO_TEXT must contain a maximum of 28 characters'
-              Stellar.Memo.text(v)
-              break
-            case 'MEMO_ID':
-              memoError = 'MEMO_ID must be a valid 64 bit unsigned integer'
-              Stellar.Memo.id(v)
-              break
-            case 'MEMO_HASH':
-              memoError = 'MEMO_HASH must be a 32 byte hash represented in hexadecimal (A-Z0-9)'
-              Stellar.Memo.hash(v)
-              break
-            case 'MEMO_RETURN':
-              memoError = 'MEMO_RETURN must be a 32 byte hash represented in hexadecimal (A-Z0-9)'
-              Stellar.Memo.returnHash(v)
-              break
-          }
-        } catch (error) {
-          return memoError
+      try {
+        switch (vm.memoType) {
+          case 'MEMO_TEXT':
+            memoError = 'MEMO_TEXT must contain a maximum of 28 characters'
+            Stellar.Memo.text(v)
+            break
+          case 'MEMO_ID':
+            memoError = 'MEMO_ID must be a valid 64 bit unsigned integer'
+            Stellar.Memo.id(v)
+            break
+          case 'MEMO_HASH':
+            memoError = 'MEMO_HASH must be a 32 byte hash represented in hexadecimal (A-Z0-9)'
+            Stellar.Memo.hash(v)
+            break
+          case 'MEMO_RETURN':
+            memoError = 'MEMO_RETURN must be a 32 byte hash represented in hexadecimal (A-Z0-9)'
+            Stellar.Memo.returnHash(v)
+            break
         }
+      } catch (error) {
+        return memoError
+      }
 
-        return true
-      }],
-    }
-  },
+      return true
+    }],
+  }),
 
   watch: {
     memoType (type) {
@@ -76,6 +74,35 @@ export default {
           this.memoPlaceholder = 'Enter 64 character encoded string'
           break
       }
+
+      this.save()
+    },
+
+    memoValue () {
+      this.save()
+    },
+  },
+
+  methods: {
+    save () {
+      if (this.enabled && this.memoType && this.memoValue) {
+        this.$store.commit('STORE_TRANSACTIONS_MEMO', {
+          type: this.memoType,
+          value: this.memoValue,
+        })
+      } else {
+        this.$store.commit('REMOVE_TRANSACTIONS_MEMO')
+      }
+    },
+  },
+
+  created () {
+    const memo = this.$store.getters.transactionsMemo
+
+    if (memo) {
+      this.enabled = true
+      this.memoType = memo.type
+      this.memoValue = memo.value
     }
   },
 }
