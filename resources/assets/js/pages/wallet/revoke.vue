@@ -71,7 +71,7 @@
             .then(({account_id}) => {
               publicKey = account_id
 
-              return StellarServer.loadAccount(account_id)
+              return StellarServer().loadAccount(account_id)
             })
             .then(account => {
               let isSigner = false

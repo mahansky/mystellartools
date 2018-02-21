@@ -383,7 +383,7 @@
                 throw new Error(knownAccounts[this.resolvedRecipient].name + ' requires MEMO to be set!')
               }
 
-              return StellarServer.loadAccount(this.$store.getters.keypair.publicKey())
+              return StellarServer().loadAccount(this.$store.getters.keypair.publicKey())
                 .then(account => {
                   vm.loadedAccount = account
 
@@ -417,7 +417,7 @@
                       return
                     }
 
-                    return StellarServer.accounts()
+                    return StellarServer().accounts()
                       .accountId(this.resolvedRecipient)
                       .call()
                       .catch(err => {
@@ -428,7 +428,7 @@
                   }
                 })
                 .then(() => {
-                    return StellarServer.loadAccount(this.resolvedRecipient)
+                    return StellarServer().loadAccount(this.resolvedRecipient)
                       .catch(() => {
                         if (this.recipient.indexOf('@') !== -1) {
                           if (new BigNumber(this.amount).lt(STARTING_BALANCE + (BASE_RESERVE * 2))) {
@@ -462,7 +462,7 @@
           issuer = this.assetIssuer
         }
 
-        StellarServer.accounts()
+        StellarServer().accounts()
           .accountId(this.resolvedRecipient)
           .call()
           .then(() => {
@@ -555,7 +555,7 @@
         this.recipient = data
       })
 
-      StellarServer.loadAccount(this.$store.getters.keypair.publicKey())
+      StellarServer().loadAccount(this.$store.getters.keypair.publicKey())
         .then((account) => {
           this.availableAssets = ['XLM']
 

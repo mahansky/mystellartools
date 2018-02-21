@@ -87,7 +87,7 @@
           this.isLoading = true
           this.result = null
 
-          StellarServer.submitTransaction(new Stellar.Transaction(this.tx))
+          StellarServer().submitTransaction(new Stellar.Transaction(this.tx))
             .then(response => {
               return response
             })

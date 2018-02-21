@@ -175,7 +175,7 @@
 
         vm.loaded = false
 
-        return StellarServer.accounts()
+        return StellarServer().accounts()
           .accountId(vm.$store.getters.keypair.publicKey())
           .call()
           .then(account => {

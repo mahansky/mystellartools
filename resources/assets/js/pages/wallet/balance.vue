@@ -106,7 +106,7 @@
       fetchData () {
         let vm = this
 
-        StellarServer.accounts()
+        StellarServer().accounts()
           .accountId(this.$store.getters.keypair.publicKey())
           .call()
           .then(function (account) {
@@ -123,7 +123,7 @@
       startListening() {
         let vm = this
 
-        vm.eventSource = StellarServer.payments()
+        vm.eventSource = StellarServer().payments()
           .forAccount(this.$store.getters.keypair.publicKey())
           .cursor('now')
           .stream({

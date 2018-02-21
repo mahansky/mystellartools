@@ -4,7 +4,7 @@ export const state = {
   network: {
     type: 'main',
     horizonUrl: null,
-    passphrase: null,
+    passphrase: 'Public Global Stellar Network ; September 2015',
   },
   timeBounds: null,
   memo: null,
@@ -14,8 +14,8 @@ export const mutations = {
   [types.STORE_TRANSACTIONS_NETWORK] (state, {type, horizonUrl, passphrase}) {
     state.network = {
       type,
+      passphrase,
       horizonUrl: type === 'custom' ? horizonUrl : null,
-      passphrase: type === 'custom' ? passphrase : null,
     }
   },
 

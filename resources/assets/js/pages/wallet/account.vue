@@ -276,7 +276,7 @@
     },
 
     created () {
-      StellarServer.loadAccount(this.$store.getters.keypair.publicKey())
+      StellarServer().loadAccount(this.$store.getters.keypair.publicKey())
         .then(account => {
           let promises = []
 

@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import { Stellar } from '~/stellar'
+import { Stellar, HorizonURL } from '~/stellar'
 
 const MAIN_HORIZON = window.config.horizon_url
 const MAIN_PASSPHRASE = Stellar.Networks.PUBLIC
@@ -61,7 +61,8 @@ export default {
           passphrase: this.networkPassphrase,
         })
 
-        // TOOD: update lib settings
+        HorizonURL(this.horizonUrl)
+        Stellar.Network.use(new Stellar.Network(this.networkPassphrase))
       }
     },
 

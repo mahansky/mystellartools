@@ -1,4 +1,4 @@
-import { StellarServer } from './index'
+import { StellarServer, Stellar } from './index'
 import { Asset, Operation, StrKey, TransactionBuilder, Keypair } from 'stellar-sdk'
 import { flash, events } from '~/utils'
 import store from '~/store'
@@ -10,8 +10,21 @@ const xdr = require('stellar-base').xdr
 function _submitTx (keypair, operation, memo) {
   return transactions.loadAccount(keypair)
     .then(account => {
-      let transaction = new TransactionBuilder(account)
+      const opts = {}
+
+      if (store.getters.transactionsTimeBounds) {
+        opts.timebounds = {
+          minTime: store.getters.transactionsTimeBounds.from,
+          maxTime: store.getters.transactionsTimeBounds.to,
+        }
+      }
+
+      let transaction = new TransactionBuilder(account, opts)
         .addOperation(operation)
+
+      if (!memo && store.getters.transactionsMemo) {
+        memo = new Stellar.Memo(store.getters.transactionsMemo.type.split('_')[1].toLowerCase(), store.getters.transactionsMemo.value)
+      }
 
       if (memo) {
         transaction.addMemo(memo)
@@ -39,14 +52,14 @@ function _submitTx (keypair, operation, memo) {
 
           transaction.signatures.push(decorated)
 
-          return StellarServer.submitTransaction(transaction)
+          return StellarServer().submitTransaction(transaction)
         }).catch(err => {
           throw new Error('Problem with signing the transaction with Ledger: ' + err)
         })
       } else {
         transaction.sign(keypair)
 
-        return StellarServer.submitTransaction(transaction)
+        return StellarServer().submitTransaction(transaction)
       }
     })
 }
@@ -54,7 +67,7 @@ function _submitTx (keypair, operation, memo) {
 // Transactions
 export const transactions = {
   loadAccount: (keypair) => {
-    return StellarServer.loadAccount(keypair.publicKey())
+    return StellarServer().loadAccount(keypair.publicKey())
   },
 
   payment: (keypair, {destination, code, issuer, amount, memo}) => {
