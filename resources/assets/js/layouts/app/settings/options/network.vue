@@ -10,12 +10,14 @@
             label="Horizon URL"
             v-model="horizonUrl"
             :readonly="!isCustom"
+            @blur="save"
         ></v-text-field>
 
         <v-text-field
             label="Network Passphrase"
             v-model="networkPassphrase"
             :readonly="!isCustom"
+            @blur="save"
         ></v-text-field>
     </v-form>
 </template>
@@ -33,7 +35,9 @@ export default {
     valid: false,
     network: 'main',
     horizonUrl: MAIN_HORIZON,
+    horizonUrlRules: [v => !!v || 'Horizon URL is required'],
     networkPassphrase: MAIN_PASSPHRASE,
+    networkPassphraseRules: [v => !!v || 'Network Passphrase is required']
   }),
 
   computed: {
@@ -44,16 +48,51 @@ export default {
 
   watch: {
     network (type) {
+      this.fillWithDefaults(type)
+    }
+  },
+
+  methods: {
+    save () {
+      if (this.$refs.form.validate()) {
+        this.$store.commit('STORE_TRANSACTIONS_NETWORK', {
+          type: this.network,
+          horizonUrl: this.horizonUrl,
+          passphrase: this.networkPassphrase,
+        })
+
+        // TOOD: update lib settings
+      }
+    },
+
+    fillWithDefaults (type) {
       if (type === 'main') {
         this.horizonUrl = MAIN_HORIZON
         this.networkPassphrase = MAIN_PASSPHRASE
+        this.save()
       } else if (type === 'testnet') {
         this.horizonUrl = TESTNET_HORIZON
         this.networkPassphrase = TESTNET_PASSPHRASE
+        this.save()
       } else {
         this.horizonUrl = ''
         this.networkPassphrase = ''
       }
+    }
+  },
+
+  mounted () {
+    const txSettings = this.$store.getters.transactionsNetwork
+
+    this.network = txSettings.type
+
+    this.fillWithDefaults(this.network)
+
+    if (this.network === 'custom') {
+      this.$nextTick(() => {
+        this.horizonUrl = txSettings.horizonUrl
+        this.networkPassphrase = txSettings.passphrase
+      })
     }
   },
 }

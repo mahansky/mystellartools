@@ -95,17 +95,33 @@
 </template>
 
 <script>
+import moment from 'moment'
+
 export default {
   data: () => ({
     enabled: false,
     date1: '',
     date1m: false,
+    date1r: [v => !!v || 'Date is required'],
     time1: '',
     time1m: false,
+    time1r: [v => !!v || 'Time is required'],
     date2: '',
     date2m: false,
+    date2r: [
+      v => !!v || 'Date is required',
+      v => {
+        
+      },
+    ],
     time2: '',
     time2m: false,
+    time2r: [
+      v => !!v || 'Time is required',
+      v => {
+        
+      },
+    ],
   })
 }
 </script>

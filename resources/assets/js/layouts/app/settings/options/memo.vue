@@ -22,41 +22,45 @@
 </template>
 
 <script>
+import { Stellar } from '~/stellar'
+
 export default {
-  data: () => ({
-    enabled: false,
-    memoType: '',
-    memoValue: '',
-    memoPlaceholder: '',
-    memoValueRules: [(v) => {
-      let memoError = ''
+  data: (vm) => {
+    return {
+      enabled: false,
+      memoType: '',
+      memoValue: '',
+      memoPlaceholder: '',
+      memoValueRules: [(v) => {
+        let memoError = ''
 
-      try {
-        switch (this.memoType) {
-          case 'MEMO_TEXT':
-            memoError = 'MEMO_TEXT must contain a maximum of 28 characters'
-            Stellar.Memo.text(v)
-            break
-          case 'MEMO_ID':
-            memoError = 'MEMO_ID must be a valid 64 bit unsigned integer'
-            Stellar.Memo.id(v)
-            break
-          case 'MEMO_HASH':
-            memoError = 'MEMO_HASH must be a 32 byte hash represented in hexadecimal (A-Z0-9)'
-            Stellar.Memo.hash(v)
-            break
-          case 'MEMO_RETURN':
-            memoError = 'MEMO_RETURN must be a 32 byte hash represented in hexadecimal (A-Z0-9)'
-            Stellar.Memo.returnHash(v)
-            break
+        try {
+          switch (vm.memoType) {
+            case 'MEMO_TEXT':
+              memoError = 'MEMO_TEXT must contain a maximum of 28 characters'
+              Stellar.Memo.text(v)
+              break
+            case 'MEMO_ID':
+              memoError = 'MEMO_ID must be a valid 64 bit unsigned integer'
+              Stellar.Memo.id(v)
+              break
+            case 'MEMO_HASH':
+              memoError = 'MEMO_HASH must be a 32 byte hash represented in hexadecimal (A-Z0-9)'
+              Stellar.Memo.hash(v)
+              break
+            case 'MEMO_RETURN':
+              memoError = 'MEMO_RETURN must be a 32 byte hash represented in hexadecimal (A-Z0-9)'
+              Stellar.Memo.returnHash(v)
+              break
+          }
+        } catch (error) {
+          return memoError
         }
-      } catch (error) {
-        return memoError
-      }
 
-      return true
-    }],
-  }),
+        return true
+      }],
+    }
+  },
 
   watch: {
     memoType (type) {

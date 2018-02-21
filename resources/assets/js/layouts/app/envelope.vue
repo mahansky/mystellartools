@@ -12,7 +12,7 @@
                   so we can not sign your transaction and submit it to the network.</b>
                   <br>
                   You can sign it on your own using the following details with 
-                  <router-link :to="{name: 'txsigner'}">Transaction Signer</router-link>.
+                  <router-link :to="{name: 'txsigner'}" target="_blank">Transaction Signer</router-link>.
               </p>
 
               <v-text-field
