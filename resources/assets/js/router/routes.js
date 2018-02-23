@@ -5,6 +5,8 @@ export default ({ keypairGuard }) => [
   { path: '/paper-wallet', name: 'paper', component: require('~/pages/paper.vue') },
   { path: '/help', name: 'help', component: require('~/pages/help.vue') },
 
+  { path: '/explorer/network', name: 'explorer.network', component: require('~/pages/explorer/network.vue') },
+
   ...keypairGuard([
     { path: '/balance', name: 'balance', component: require('~/pages/wallet/balance.vue') },
     { path: '/payments', name: 'payments', component: require('~/pages/wallet/payments.vue') },
