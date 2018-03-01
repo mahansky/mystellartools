@@ -217,7 +217,7 @@
             </v-layout>
         </v-container>
 
-        <v-dialog v-model="contactsSelector" lazy absolute>
+        <v-dialog v-model="contactsSelector" width="400px" lazy absolute>
             <v-card>
                 <v-card-text>
                     <v-text-field
@@ -341,7 +341,20 @@
 
     computed: {
       contacts () {
-        return this.$store.getters.contacts
+        let contacts = JSON.parse(JSON.stringify(this.$store.getters.contacts))
+
+        for (let acc in knownAccounts) {
+          if (knownAccounts.hasOwnProperty(acc)) {
+            contacts.push({
+              public_key: acc,
+              name: knownAccounts[acc].name,
+              memo_type: knownAccounts[acc].requiredMemoType,
+              memo: '',
+            })
+          }
+        }
+
+        return contacts
       },
     },
 
@@ -378,7 +391,6 @@
               if (this.memoValue === '' && this.resolvedRecipient in knownAccounts && knownAccounts[this.resolvedRecipient].requiredMemoType) {
                 this.memo = true
                 this.memoType = knownAccounts[this.resolvedRecipient].requiredMemoType
-                this.memoValue = ''
 
                 throw new Error(knownAccounts[this.resolvedRecipient].name + ' requires MEMO to be set!')
               }

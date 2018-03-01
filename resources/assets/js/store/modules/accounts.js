@@ -40,7 +40,7 @@ export const actions = {
   },
 
   removeAccounts ({commit}) {
-    commit(types.REMOVE_ACCOUNT)
+    commit(types.REMOVE_ACCOUNTS)
   },
 }
 

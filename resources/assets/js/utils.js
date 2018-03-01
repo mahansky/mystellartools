@@ -28,8 +28,6 @@ export function getQueryParameter (name, url) {
 
 export function logout () {
   store.dispatch('removeKeypair')
-  store.dispatch('removeAccounts')
-  store.dispatch('removeContacts')
 
   router.push({name: 'welcome'})
 }
