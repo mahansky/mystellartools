@@ -13,3 +13,9 @@ Route::get('prices', 'PriceController')->name('prices');
 
 Route::get('claim', 'ClaimController')->middleware('throttle:10,1');
 Route::post('revoke', 'RevokeController')->middleware('throttle:10,1');
+
+Route::get('peers', 'PeersController@index');
+Route::post('peers', 'PeersController@store');
+
+Route::get('peers/{public_key}/ledgers', 'PeerLedgersController@index');
+Route::post('peers/{public_key}/ledgers', 'PeerLedgersController@store');
