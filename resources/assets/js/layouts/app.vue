@@ -221,7 +221,7 @@
   import Settings from './app/settings.vue'
   import Envelope from './app/envelope.vue'
   import axios from 'axios'
-  import { flash, logout } from '~/utils'
+  import { flash, logout, events } from '~/utils'
   import { Stellar } from '~/stellar'
   import { find } from 'lodash'
 
@@ -340,6 +340,10 @@
       if (this.keypair === null || this.keypair === undefined) {
         this.dialog = true
       }
+
+      events.$on('contacts:add-contact', () => {
+        this.openDialog()
+      })
     },
   }
 </script>
