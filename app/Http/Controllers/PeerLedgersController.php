@@ -7,6 +7,11 @@ use App\PeerLedger;
 
 class PeerLedgersController extends Controller
 {
+    public function index($publicKey)
+    {
+        return Peer::wherePublicKey($publicKey)->firstOrFail()->ledgers()->limit(6)->get();
+    }
+
     public function store($publicKey)
     {
         $this->middleware('api.token');
