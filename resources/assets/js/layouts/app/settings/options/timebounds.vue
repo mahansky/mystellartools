@@ -49,7 +49,7 @@
             </v-layout>
 
             <v-layout row wrap>
-                <v-flex xs6>
+                <v-flex xs4>
                     <v-menu
                       lazy
                       :close-on-content-click="false"
@@ -67,6 +67,9 @@
                         ></v-text-field>
                         <v-date-picker v-model="date2" autosave></v-date-picker>
                     </v-menu>
+                </v-flex>
+                <v-flex xs2 class="text-xs-center">
+                    <v-btn flat @click="clear">Unset</v-btn>
                 </v-flex>
                 <v-flex xs6>
                     <v-menu
@@ -109,10 +112,10 @@ export default {
     time1r: [v => !!v || 'Time is required'],
     date2: '',
     date2m: false,
-    date2r: [v => !!v || 'Date is required'],
+    date2r: [],
     time2: '',
     time2m: false,
-    time2r: [v => !!v || 'Time is required'],
+    time2r: [v => (vm.date2 && !!v) || 'Time is required'],
   }),
 
   computed: {
@@ -123,7 +126,6 @@ export default {
 
   watch: {
     fields () {
-      console.log('asd')
       this.save()
     },
   },
@@ -133,11 +135,16 @@ export default {
       if (this.enabled && this.$refs.form.validate()) {
         this.$store.commit('STORE_TRANSACTIONS_TIMEBOUNDS', {
           from: moment(this.date1 + ' ' + this.time1).unix(),
-          to: moment(this.date2 + ' ' + this.time2).unix(),
+          to: this.date2 ? moment(this.date2 + ' ' + this.time2).unix() : 0,
         })
       } else {
         this.$store.commit('REMOVE_TRANSACTIONS_TIMEBOUNDS')
       }
+    },
+
+    clear () {
+      this.date2 = ''
+      this.time2 = ''
     },
   },
 
@@ -148,8 +155,8 @@ export default {
       this.enabled = true
       this.date1 = moment.unix(timeBounds.from).format('YYYY-MM-DD')
       this.time1 = moment.unix(timeBounds.from).format('HH:mm')
-      this.date2 = moment.unix(timeBounds.to).format('YYYY-MM-DD')
-      this.time2 = moment.unix(timeBounds.to).format('HH:mm')
+      this.date2 = timeBounds.to === 0 ? '' : moment.unix(timeBounds.to).format('YYYY-MM-DD')
+      this.time2 = timeBounds.to === 0 ? '' : moment.unix(timeBounds.to).format('HH:mm')
     }
   },
 }
