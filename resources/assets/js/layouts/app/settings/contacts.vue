@@ -83,7 +83,7 @@
 <script>
   import axios from 'axios'
   import Vue from 'vue'
-  import { flash } from '~/utils'
+  import { flash, events } from '~/utils'
   import { ruleAccountIsValid, resolveAccountId, Stellar } from '~/stellar/index'
   import { map } from 'lodash'
 
@@ -194,5 +194,11 @@
         }
       },
     },
+
+    created () {
+      events.$on('contacts:add-contact', publicKey => {
+        this.contactForm.publicKey = publicKey
+      })
+    }
   }
 </script>

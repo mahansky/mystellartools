@@ -34,26 +34,10 @@ export const actions = {
   },
 
   removeContacts ({commit}) {
-    commit(types.REMOVE_CONTACT)
+    commit(types.REMOVE_CONTACTS)
   },
 }
 
 export const getters = {
   contacts: state => state.contacts,
 }
-
-// TODO: Load it using a proper callback
-setTimeout(function () {
-  if (store.getters.contacts.length === 0) {
-    for (let acc in knownAccounts) {
-      if (knownAccounts.hasOwnProperty(acc)) {
-        store.dispatch('storeContact', {
-          public_key: acc,
-          name: knownAccounts[acc].name,
-          memo_type: knownAccounts[acc].requiredMemoType,
-          memo: '',
-        })
-      }
-    }
-  }
-}, 10)

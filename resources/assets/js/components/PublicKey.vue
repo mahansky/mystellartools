@@ -23,9 +23,27 @@
                     </v-card-text>
                     <v-card-actions>
                         <v-spacer></v-spacer>
-                        <v-btn flat class="grey--text" @click.stop="info = false">Close</v-btn>
-                        <v-btn flat class="blue--text" :data-clipboard-text="value" ref="copybtn">Copy</v-btn>
-                        <!--<v-btn primary flat>Explore</v-btn>-->
+                        <v-btn flat icon class="grey--text" @click.stop="info = false"
+                               v-tooltip:top="{ html: 'Close' }"
+                        >
+                            <v-icon>close</v-icon>
+                        </v-btn>
+                        <v-btn flat icon class="blue--text"
+                               v-tooltip:top="{ html: 'Add to contacts' }"
+                               @click="addToContacts(value)"
+                        >
+                            <v-icon>person_add</v-icon>
+                        </v-btn>
+                        <!--<v-btn flat icon class="blue&#45;&#45;text"-->
+                               <!--v-tooltip:top="{ html: 'Explore' }"-->
+                        <!--&gt;-->
+                            <!--<v-icon>search</v-icon>-->
+                        <!--</v-btn>-->
+                        <v-btn flat icon class="blue--text" :data-clipboard-text="value" ref="copybtn"
+                               v-tooltip:top="{ html: 'Copy' }"
+                        >
+                            <v-icon>content_copy</v-icon>
+                        </v-btn>
                     </v-card-actions>
                 </v-card>
             </v-menu>
@@ -43,6 +61,7 @@
   import Clipboard from 'clipboard'
   import knownAccounts from '~/stellar/known_accounts'
   import { find } from 'lodash'
+  import { events } from '~/utils'
 
   export default {
     props: {
@@ -77,6 +96,14 @@
         }
 
         return null
+      },
+    },
+
+    methods: {
+      addToContacts (publicKey) {
+        this.info = false
+        
+        events.$emit('contacts:add-contact', publicKey)
       },
     },
 

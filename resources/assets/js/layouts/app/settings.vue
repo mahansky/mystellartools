@@ -17,7 +17,7 @@
                 <v-tabs-content id="accounts" key="accounts" lazy>
                     <accounts></accounts>
                 </v-tabs-content>
-                <v-tabs-content id="contacts" key="contacts" lazy>
+                <v-tabs-content id="contacts" key="contacts">
                     <contacts></contacts>
                 </v-tabs-content>
                 <v-tabs-content id="options" key="options" lazy>
@@ -34,6 +34,7 @@
   import Accounts from './settings/accounts.vue'
   import Contacts from './settings/contacts.vue'
   import Transactions from './settings/transactions.vue'
+  import { events } from '~/utils'
 
   export default {
     components: {
@@ -53,5 +54,11 @@
         this.$emit('close-dialog')
       },
     },
+
+    created () {
+      events.$on('contacts:add-contact', () => {
+        this.active = 'contacts'
+      })
+    }
   }
 </script>
