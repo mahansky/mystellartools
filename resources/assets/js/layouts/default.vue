@@ -1,11 +1,11 @@
 <template>
-    <v-app id="frontpage">
-        <header class="white">
+    <v-app>
+        <header>
             <v-container class="px-lg-0">
                 <v-layout>
-                    <v-flex xs12>
-                        <v-toolbar dense class="white front-toolbar">
-                            <v-toolbar-title @click="$router.push({name: 'welcome'})">My<span class="blue--text">Stellar</span>.Tools</v-toolbar-title>
+                    <v-flex lg12 xl10 offset-xl1>
+                        <v-toolbar dense class="transparent front-toolbar">
+                            <v-toolbar-title class="ml-0" @click="$router.push({name: 'welcome'})">My<span class="blue--text">Stellar</span>.Tools</v-toolbar-title>
                             <v-spacer></v-spacer>
                             <v-toolbar-side-icon class="hidden-md-and-up" @click="isNavbarOpen = !isNavbarOpen"></v-toolbar-side-icon>
                             <v-toolbar-items class="hidden-sm-and-down">
