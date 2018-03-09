@@ -9,9 +9,10 @@
                             <v-spacer></v-spacer>
                             <v-toolbar-side-icon class="hidden-md-and-up" @click="isNavbarOpen = !isNavbarOpen"></v-toolbar-side-icon>
                             <v-toolbar-items class="hidden-sm-and-down">
+                                <v-btn flat @click="$router.push({name: 'explorer'})">Explorer</v-btn>
                                 <v-btn flat @click="$router.push({name: 'txsigner'})">Transaction signer</v-btn>
                                 <v-btn flat @click="$router.push({name: 'paper'})">Paper wallet</v-btn>
-                                <v-btn flat @click="$router.push({name: 'help'})">Get started</v-btn>
+                                <v-btn flat @click="$router.push({name: 'help'})" icon><v-icon>help</v-icon></v-btn>
                             </v-toolbar-items>
                         </v-toolbar>
 
@@ -19,6 +20,7 @@
                             <v-expansion-panel-content v-model="isNavbarOpen">
                                 <div class="mobile-nav">
                                     <ul>
+                                        <li><router-link :to="{name: 'explorer'}">Explorer</router-link></li>
                                         <li><router-link :to="{name: 'txsigner'}">Transaction signer</router-link></li>
                                         <li><router-link :to="{name: 'paper'}">Paper wallet</router-link></li>
                                         <li><router-link :to="{name: 'help'}">Get started</router-link></li>
