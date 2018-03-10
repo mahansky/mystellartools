@@ -210,12 +210,8 @@
 </template>
 
 <script>
-  import { getQueryParameter, logout } from '~/utils'
+  import { getQueryParameter } from '~/utils'
   import { Stellar } from '~/stellar'
-
-  import Ledger from './welcome/ledger'
-  import Key from './welcome/key'
-  import Create from './welcome/create'
 
   export default {
     metaInfo: () => ({
@@ -224,28 +220,9 @@
 
     layout: 'default',
 
-    components: {
-      Ledger,
-      Key,
-      Create,
-    },
-
     data: () => ({
       donateDialog: false,
-      differentAccount: false,
     }),
-
-    computed: {
-      hasKeypair () {
-        return !!this.$store.getters.keypair
-      }
-    },
-
-    methods: {
-      logout () {
-        logout()
-      },
-    },
 
     created () {
       let publicKey = getQueryParameter('public_key')
@@ -255,7 +232,7 @@
           let keypair = Stellar.Keypair.fromPublicKey(publicKey)
 
           this.$store.dispatch('storeKeypair', {keypair})
-          this.$router.push('balance')
+          this.$router.push({name: 'balance'})
         }
       }
     },
