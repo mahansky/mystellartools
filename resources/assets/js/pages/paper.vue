@@ -3,66 +3,59 @@
         <div class="pattern py-5">
             <v-container>
                 <v-layout>
-                    <v-flex>
+                    <v-flex lg12 xl8 offset-xl2>
                         <div class="display-2">Paper wallet</div>
                     </v-flex>
                 </v-layout>
             </v-container>
         </div>
 
-        <!--<v-container class="mt-3">-->
-        <!--<v-layout>-->
-        <!--<v-flex xs12>-->
-        <!--<v-alert warning value="true">-->
-        <!--It's recommended to use this tool in offline mode.-->
-        <!--You can download this website (CTRL+S) and run it on a computer without internet access.-->
-        <!--</v-alert>-->
-        <!--</v-flex>-->
-        <!--</v-layout>-->
-        <!--</v-container>-->
-
         <v-container grid-list-lg class="mt-3">
             <v-layout>
-                <v-flex md6>
-                    <v-card class="white">
-                        <v-toolbar card color="white" dense>
-                            <v-toolbar-title class="body-2 grey--text text--darken-2">
-                                Generate paper wallet
-                            </v-toolbar-title>
-                        </v-toolbar>
-                        <v-card-text>
-                            <v-form ref="form" v-model="valid">
-                                <v-text-field
-                                        label="Stellar Public or Private Key"
-                                        v-model="key"
-                                        :rules="keyRules"
-                                        append-icon="autorenew"
-                                        :append-icon-cb="generateNewKeypair"
-                                ></v-text-field>
-                                <v-select
-                                        label="Design"
-                                        v-model="design"
-                                        :items="designs"
-                                        :hint="designHint"
-                                        permanent-hint
-                                ></v-select>
-                            </v-form>
-                        </v-card-text>
-                        <v-card-actions>
-                            <v-spacer></v-spacer>
-                            <small class="grey--text pr-1">It might take a few seconds</small>
-                            <v-btn
-                                    info
-                                    flat
-                                    @click="generate"
-                                    :class="{'blue--text': valid, 'red--text': !valid}"
-                            >Generate PDF
-                            </v-btn>
-                        </v-card-actions>
-                    </v-card>
-                </v-flex>
-                <v-flex md6>
-                    <iframe :src="iframe" frameborder="0" width="100%" height="350"></iframe>
+                <v-flex lg12 xl8 offset-xl2>
+                    <v-layout row wrap>
+                        <v-flex lg6 xs12>
+                            <v-card class="white">
+                                <v-toolbar card color="white" dense>
+                                    <v-toolbar-title class="body-2 grey--text text--darken-2">
+                                        Generate paper wallet
+                                    </v-toolbar-title>
+                                </v-toolbar>
+                                <v-card-text>
+                                    <v-form ref="form" v-model="valid">
+                                        <v-text-field
+                                                label="Stellar Public or Private Key"
+                                                v-model="key"
+                                                :rules="keyRules"
+                                                append-icon="autorenew"
+                                                :append-icon-cb="generateNewKeypair"
+                                        ></v-text-field>
+                                        <v-select
+                                                label="Design"
+                                                v-model="design"
+                                                :items="designs"
+                                                :hint="designHint"
+                                                permanent-hint
+                                        ></v-select>
+                                    </v-form>
+                                </v-card-text>
+                                <v-card-actions>
+                                    <v-spacer></v-spacer>
+                                    <small class="grey--text pr-1">It might take a few seconds</small>
+                                    <v-btn
+                                            info
+                                            flat
+                                            @click="generate"
+                                            :class="{'blue--text': valid, 'red--text': !valid}"
+                                    >Generate PDF
+                                    </v-btn>
+                                </v-card-actions>
+                            </v-card>
+                        </v-flex>
+                        <v-flex lg6 xs12>
+                            <iframe :src="iframe" frameborder="0" width="100%" height="350"></iframe>
+                        </v-flex>
+                    </v-layout>
                 </v-flex>
             </v-layout>
         </v-container>
