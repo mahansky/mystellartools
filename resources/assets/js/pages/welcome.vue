@@ -5,28 +5,28 @@
                 <v-flex lg12 xl10 offset-xl1>
 
                     <v-layout row wrap class="intro mb-5">
-                        <v-flex lg5 class="text">
+                        <v-flex lg5 order-xs2 order-lg1 class="text text-xs-center text-sm-left">
                             <div>
-                                <div class="display-2 mb-4">Secure and easy to use <br> Stellar Wallet</div>
+                                <div class="display-3 mb-4">Secure and easy to use Stellar Wallet</div>
                                 <div>
                                     MyStellar.Tools is a universal tool and wallet that gives users a one-stop web-based application
                                     to take advantage of all the features the Stellar network has to offer.
                                 </div>
-                                <v-btn class="blue mt-5 mx-0" dark large>LOGIN</v-btn>
+                                <v-btn class="blue mt-5 mx-0" dark large @click="$router.push({name: 'login'})">LOGIN</v-btn>
                             </div>
                         </v-flex>
-                        <v-flex lg1></v-flex>
-                        <v-flex lg6 class="image">
-                            <img src="/img/laptop.png" alt="MyStellar.Tools Wallet" class="img-fluid">
+                        <v-flex lg1 order-lg2 class="hidden-md-and-down"></v-flex>
+                        <v-flex lg6 order-xs1 order-lg3 class="image">
+                            <img src="/img/laptop.png" alt="MyStellar.Tools Wallet" class="img-fluid hidden-lg-and-up">
                         </v-flex>
                     </v-layout>
 
-                    <v-layout row wrap>
-                        <v-flex lg6>
-                            <img src="/img/features.png" alt="MyStellar.Tools Features" class="img-fluid">
+                    <v-layout row wrap class="features1">
+                        <v-flex lg6 order-xs2 order-lg1 class="image">
+                            <img src="/img/features.png" alt="MyStellar.Tools Features" class="img-fluid hidden-lg-and-up mt-4">
                         </v-flex>
-                        <v-flex lg1></v-flex>
-                        <v-flex lg5>
+                        <v-flex lg1 order-lg2 class="hidden-md-and-down"></v-flex>
+                        <v-flex lg5 order-xs1 order-lg3>
                             <div class="blue--text ml-5">WHY SHOULD YOU USE IT?</div>
                             <div class="display-1 my-4 ml-5">Main features</div>
                             <div class="feature">
@@ -72,7 +72,7 @@
             </v-layout>
         </v-container>
 
-        <div class="advanced-features">
+        <div class="features2">
             <v-container>
                 <v-layout>
                     <v-flex lg12 xl10 offset-xl1>
@@ -128,8 +128,8 @@
                                 </div>
                             </v-flex>
                             <v-flex lg1></v-flex>
-                            <v-flex lg6 class="hidden-lg-and-up">
-                                <img src="/img/features2.png" alt="MyStellar.Tools Features" class="img-fluid">
+                            <v-flex lg6 class="image hidden-lg-and-up">
+                                <img src="/img/features2.png" alt="MyStellar.Tools Features" class="img-fluid mt-4">
                             </v-flex>
                         </v-layout>
 
@@ -141,25 +141,26 @@
         <div class="blue lighten-5 text-xs-center py-5">
             <div class="display-1">Want to give it a try?</div>
             <div class="my-3">No registration or secret key required.</div>
-            <v-btn class="blue" dark>LOGIN</v-btn>
+            <v-btn class="blue" dark @click="$router.push({name: 'login'})">LOGIN</v-btn>
         </div>
 
-        <footer class="mt-5">
+        <footer>
             <v-container>
                 <v-layout>
                     <v-flex lg12 xl10 offset-xl1>
 
                         <v-layout wrap row class="py-5">
-                            <v-flex lg6 xs12>
+                            <v-flex md6 xs12>
                                 <div class="title">My<span class="blue--text">Stellar</span>.Tools</div>
                             </v-flex>
-                            <v-flex lg3 xs12>
+                            <v-flex md3 xs12>
                                 <div class="subheading mb-3">MyStellar.Tools</div>
                                 <ul>
                                     <li><router-link :to="{name: 'login'}">Stellar Wallet</router-link></li>
                                     <li><router-link :to="{name: 'explorer'}">Blockchain explorer</router-link></li>
                                     <li><router-link :to="{name: 'explorer.network'}">Network explorer</router-link></li>
                                     <li><router-link :to="{name: 'txsigner'}">Transaction signer</router-link></li>
+                                    <li><router-link :to="{name: 'paper'}">Paper wallet</router-link></li>
 
                                     <li class="mt-3"><router-link :to="{name: 'help'}">Get started</router-link></li>
                                     <li><a href="https://github.com/mahansky/mystellartools" target="_blank" rel="noreferrer nofollow">Source code</a></li>
@@ -168,7 +169,7 @@
                                     <li class="mt-3"><a href="mailto:contact@mystellar.tools">contact@mystellar.tools</a></li>
                                 </ul>
                             </v-flex>
-                            <v-flex lg3 xs12>
+                            <v-flex md3 xs12>
                                 <div class="subheading mb-3">Useful links</div>
                                 <ul>
                                     <li><a href="https://stellar.org" target="_blank" rel="noreferrer nofollow">Stellar.org</a></li>
@@ -260,72 +261,3 @@
     },
   }
 </script>
-
-<style lang="scss">
-    .application {
-        background: url(/img/bg.png) top right no-repeat;
-    }
-
-    .img-fluid {
-        max-width: 100%;
-    }
-
-    .intro {
-        height: calc(100vh - 120px);
-
-        .text {
-            display: flex;
-            align-items: center;
-        }
-
-        .image {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-    }
-
-    .feature {
-        display: flex;
-
-        .icon {
-            display: flex;
-            align-items: start;
-            width: 48px;
-        }
-    }
-
-    .advanced-features {
-        @media (min-width: 1264px) {
-            background: url(/img/features2.png) center right no-repeat;
-        }
-    }
-
-    footer {
-        .subheading {
-            text-transform: uppercase;
-            font-size: 12px !important;
-            color: #999;
-        }
-
-        ul {
-            padding-left: 0;
-            list-style: none;
-
-            li {
-                margin-bottom: 5px;
-
-                a {
-                    color: #888;
-                    text-decoration: none;
-                }
-            }
-        }
-
-        @media (max-width: 500px) {
-            .flex:not(:last-child) {
-                margin-bottom: 30px;
-            }
-        }
-    }
-</style>
