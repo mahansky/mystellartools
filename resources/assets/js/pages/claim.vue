@@ -3,7 +3,7 @@
         <div class="pattern py-5">
             <v-container>
                 <v-layout>
-                    <v-flex lg12 xl8 offset-xl2>
+                    <v-flex lg12 xl10 offset-xl1>
                         <div class="display-2">Claim your Lumens</div>
                     </v-flex>
                 </v-layout>
@@ -12,7 +12,7 @@
 
         <v-container grid-list-lg class="mt-3">
             <v-layout>
-                <v-flex lg12 xl8 offset-xl2>
+                <v-flex lg12 xl10 offset-xl1>
                     <v-layout class="mt-3">
                         <v-flex xs12>
                             <v-btn flat loading info v-if="!secret"></v-btn>

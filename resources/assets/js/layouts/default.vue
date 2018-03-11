@@ -3,7 +3,7 @@
         <header>
             <v-container class="px-lg-0">
                 <v-layout>
-                    <v-flex lg12 :class="{xl10: isLanding, 'offset-xl1': isLanding, xl8: !isLanding, 'offset-xl2': !isLanding}">
+                    <v-flex lg12 xl10 offset-xl1>
                         <v-toolbar dense class="transparent front-toolbar">
                             <v-toolbar-title class="ml-0 pointer" @click="$router.push({name: 'welcome'})">
                                 My<span class="blue--text">Stellar</span>.Tools

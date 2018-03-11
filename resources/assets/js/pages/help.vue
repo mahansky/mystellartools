@@ -3,7 +3,7 @@
         <div class="pattern py-5">
             <v-container>
                 <v-layout>
-                    <v-flex lg12 xl8 offset-xl2>
+                    <v-flex xl10 offset-xl1>
                         <div class="display-2">Get started</div>
                     </v-flex>
                 </v-layout>
@@ -12,7 +12,7 @@
 
         <v-container class="mt-3">
             <v-layout>
-                <v-flex lg12 xl8 offset-xl2>
+                <v-flex lg12 xl10 offset-xl1>
                     <v-layout row wrap>
                         <v-flex xs12>
                             <div class="textblock">

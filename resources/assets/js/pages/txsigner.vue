@@ -3,7 +3,7 @@
         <div class="pattern py-5">
             <v-container>
                 <v-layout>
-                    <v-flex lg12 xl8 offset-xl2>
+                    <v-flex lg12 xl10 offset-xl1>
                         <div class="display-2">Transaction Signer</div>
                     </v-flex>
                 </v-layout>
@@ -12,7 +12,7 @@
 
         <v-container grid-list-lg class="mt-3">
             <v-layout>
-                <v-flex lg12 xl8 offset-xl2>
+                <v-flex lg12 xl10 offset-xl1>
                     <v-layout wrap row>
                         <v-flex lg6 xs12>
                             <div class="headline mb-3">Features</div>

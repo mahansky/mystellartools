@@ -3,7 +3,7 @@
         <v-toolbar class="blue" dark fixed>
             <v-container class="explorer-nav">
                 <v-layout>
-                    <v-flex lg12 xl8 offset-xl2 style="display: flex; align-items: center;">
+                    <v-flex lg12 xl10 offset-xl1>
                         <v-btn dark icon @click="$router.push({name: 'welcome'})" class="back">
                             <v-icon>arrow_back</v-icon>
                         </v-btn>
@@ -23,7 +23,7 @@
         <main>
             <v-container>
                 <v-layout>
-                    <v-flex lg12 xl8 offset-xl2>
+                    <v-flex lg12 xl10 offset-xl1>
                         <router-view></router-view>
                     </v-flex>
                 </v-layout>
