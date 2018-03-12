@@ -19,7 +19,7 @@
                 <v-card>
                     <v-card-text>
                         <div class="body-2 break-all" v-text="value"></div>
-                        <div class="body-1" v-text="contact" v-if="contact"></div>
+                        <div class="body-1" v-text="contact" v-if="contact && !explorer"></div>
                     </v-card-text>
                     <v-card-actions>
                         <v-spacer></v-spacer>
@@ -31,14 +31,16 @@
                         <v-btn flat icon class="blue--text"
                                v-tooltip:top="{ html: 'Add to contacts' }"
                                @click="addToContacts(value)"
+                               v-if="!explorer"
                         >
                             <v-icon>person_add</v-icon>
                         </v-btn>
-                        <!--<v-btn flat icon class="blue&#45;&#45;text"-->
-                               <!--v-tooltip:top="{ html: 'Explore' }"-->
-                        <!--&gt;-->
-                            <!--<v-icon>search</v-icon>-->
-                        <!--</v-btn>-->
+                        <v-btn flat icon class="blue--text"
+                               v-tooltip:top="{ html: 'Explore' }"
+                               @click="$router.push({name: 'explorer.account', params: {account: value}})"
+                        >
+                            <v-icon>search</v-icon>
+                        </v-btn>
                         <v-btn flat icon class="blue--text" :data-clipboard-text="value" ref="copybtn"
                                v-tooltip:top="{ html: 'Copy' }"
                         >
@@ -51,7 +53,7 @@
             <small
                     class="contact-name blue blue--text"
                     v-text="contact"
-                    v-if="!hideContactName && contact"
+                    v-if="!explorer && !hideContactName && contact"
             ></small>
         </div>
     </div>
@@ -72,6 +74,10 @@
         type: Boolean,
         default: false,
       },
+      explorer: {
+        type: Boolean,
+        default: false,
+      }
     },
 
     data: () => ({
@@ -81,6 +87,10 @@
 
     computed: {
       contact () {
+        if (this.explorer) {
+          return
+        }
+
         let contact = find(this.$store.getters.contacts, {public_key: this.value})
 
         if (contact) {
