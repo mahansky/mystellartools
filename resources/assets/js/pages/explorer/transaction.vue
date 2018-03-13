@@ -4,7 +4,7 @@
             <div class="headline">
                 <span class="inline-block">Transaction</span>
                 <span v-text="transaction.hash" v-if="transaction" class="txhash inline-block"></span>
-                <v-btn :loading="loading" flat class="blue--text" v-else></v-btn>
+                <v-btn :loading="loading" flat small class="blue--text" v-else></v-btn>
             </div>
         </v-flex>
         <v-flex sm12 md7 v-if="transaction">

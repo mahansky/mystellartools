@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <v-card class="full-height">
         <v-card-text>
             <div class="mb-2">
                 <amount class="title" :amount="asset.balance" :suffix="' ' + suffix(asset)"></amount>
@@ -12,8 +12,7 @@
                 Limit: <span v-text="asset.limit"></span>
             </div>
         </v-card-text>
-        <v-divider></v-divider>
-    </div>
+    </v-card>
 </template>
 
 <script>
@@ -27,3 +26,9 @@
     },
   }
 </script>
+
+<style>
+    .full-height {
+        height: 100% !important;
+    }
+</style>
