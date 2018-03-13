@@ -120,7 +120,9 @@
       },
     },
 
-    created () {
+    beforeRouteUpdate (to, from, next) {
+      next()
+
       StellarServer().transactions()
         .transaction(this.$route.params.transaction)
         .call()

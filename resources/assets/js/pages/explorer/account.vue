@@ -44,7 +44,7 @@
                             </div>
                             <v-card>
                                 <v-card-text class="grey lighten-3 px-4">
-                                    <operation :operation="operation" :link="false"></operation>
+                                    <operation :operation="operation"></operation>
                                 </v-card-text>
                             </v-card>
                         </v-expansion-panel-content>
@@ -123,7 +123,9 @@
       }
     },
 
-    created () {
+    beforeRouteUpdate (to, from, next) {
+      next()
+
       this.operationsPaginator = new HorizonPaginator(
         HorizonURL() + '/accounts/' + this.$route.params.account + '/operations',
         10

@@ -21,11 +21,15 @@
                                     <table class="first-padding">
                                         <tr>
                                             <td><b>Source account</b></td>
-                                            <td><public-key :value="transaction.source_account"></public-key></td>
+                                            <td>
+                                                <public-key :value="transaction.source_account"></public-key>
+                                            </td>
                                         </tr>
                                         <tr>
                                             <td><b>Created at</b></td>
-                                            <td><date-time :value="transaction.created_at"></date-time></td>
+                                            <td>
+                                                <date-time :value="transaction.created_at"></date-time>
+                                            </td>
                                         </tr>
                                         <tr>
                                             <td><b>Operations</b></td>
@@ -37,7 +41,9 @@
                                     <v-btn icon
                                            @click="$router.push({name: 'explorer.transaction', params: {transaction: transaction.hash}})"
                                            class="my-0 mx-0"
-                                    ><v-icon class="blue--text">search</v-icon></v-btn>
+                                    >
+                                        <v-icon class="blue--text">search</v-icon>
+                                    </v-btn>
                                 </v-flex>
                             </v-layout>
                         </v-card-text>
@@ -128,8 +134,8 @@
 </template>
 
 <script>
-  import { StellarServer } from '~/stellar'
-  import { flash } from '~/utils'
+  import {StellarServer} from '~/stellar'
+  import {flash} from '~/utils'
 
   export default {
     layout: 'explorer',
@@ -140,23 +146,25 @@
       transactions: [],
     }),
 
-    created () {
-        StellarServer().ledgers()
-          .ledger(this.$route.params.ledger)
-          .call()
-          .then(ledger => {
-            console.log(ledger)
-            this.ledger = ledger
+    beforeRouteUpdate(to, from, next) {
+      next()
 
-            return ledger.transactions()
-          })
-          .then(response => {
-            this.transactions = response._embedded.records
-          })
-          .catch(flash)
-          .then(() => {
-            this.loading = false
-          })
+      StellarServer().ledgers()
+        .ledger(this.$route.params.ledger)
+        .call()
+        .then(ledger => {
+          console.log(ledger)
+          this.ledger = ledger
+
+          return ledger.transactions()
+        })
+        .then(response => {
+          this.transactions = response._embedded.records
+        })
+        .catch(flash)
+        .then(() => {
+          this.loading = false
+        })
     },
   }
 </script>

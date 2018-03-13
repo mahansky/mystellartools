@@ -1,23 +1,25 @@
 <template>
-    <div>
-        <div class="grey--text mb-3">
-            <span v-text="operation.type.toUpperCase() + ' operation'"></span>
-            <span v-if="operation.created_at" v-text="'@ ' + operation.created_at"></span>
-        </div>
+    <v-layout>
+        <v-flex xs12 sm10>
+            <div class="grey--text mb-3">
+                <span v-text="operation.type.toUpperCase() + ' operation'"></span>
+                <span v-if="operation.created_at" v-text="'@ ' + operation.created_at"></span>
+            </div>
 
-        <component :is="operation.type" :operation="operation"></component>
+            <component :is="operation.type" :operation="operation"></component>
 
-        <div class="grey--text mt-3">
-            <b>Source Account</b>
-            <public-key :value="operation.source_account"></public-key>
-        </div>
-
-        <div class="mt-3" v-if="link">
-            <router-link :to="{name: 'explorer.transaction', params: {transaction: txHash}}">
-                <small v-text="txHash"></small>
-            </router-link>
-        </div>
-    </div>
+            <div class="grey--text mt-3">
+                <b>Source Account</b>
+                <public-key :value="operation.source_account"></public-key>
+            </div>
+        </v-flex>
+        <v-flex xs12 sm2 class="text-sm-right">
+            <v-btn icon
+                   @click="$router.push({name: 'explorer.transaction', params: {transaction: txHash}})"
+                   class="my-0 mx-0"
+            ><v-icon class="blue--text">search</v-icon></v-btn>
+        </v-flex>
+    </v-layout>
 </template>
 
 <script>

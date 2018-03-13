@@ -14,8 +14,11 @@
                             placeholder="Transaction hash / Account ID / Ledger number"
                             dark
                             hide-details
-                            append-icon="search"
                             class="hidden-sm-and-down"
+                            v-model="input"
+                            append-icon="search"
+                            :append-icon-cb="search"
+                            @keydown.enter.prevent="search"
                         ></v-text-field>
                     </v-flex>
                 </v-layout>
@@ -32,8 +35,11 @@
                                     <v-text-field
                                             placeholder="Transaction hash / Account ID / Ledger number"
                                             hide-details
-                                            append-icon="search"
                                             class="pt-0"
+                                            v-model="input"
+                                            append-icon="search"
+                                            :append-icon-cb="search"
+                                            @keydown.enter.prevent="search"
                                     ></v-text-field>
                                 </v-flex>
                             </v-layout>
@@ -54,10 +60,31 @@
 </template>
 
 <script>
+  import { Stellar } from '~/stellar'
+
   export default {
     data: () => ({
       isNavbarOpen: false,
-    })
+      input: '',
+    }),
+
+    methods: {
+      search (event) {
+        if (event !== undefined) {
+          event.preventDefault()
+        }
+
+        if (Stellar.StrKey.isValidEd25519PublicKey(this.input)) {
+          this.$router.push({name: 'explorer.account', params: {account: this.input}})
+        } else if (! isNaN(parseInt(this.input))) {
+          this.$router.push({name: 'explorer.ledger', params: {ledger: this.input}})
+        } else {
+          this.$router.push({name: 'explorer.transaction', params: {transaction: this.input}})
+        }
+
+        this.input = ''
+      },
+    },
   }
 </script>
 
