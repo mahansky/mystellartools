@@ -4,14 +4,14 @@
             <div class="headline">
                 <span class="inline-block">Transaction</span>
                 <span v-text="transaction.hash" v-if="transaction" class="txhash inline-block"></span>
-                <v-btn loading flat class="blue--text" v-else></v-btn>
+                <v-btn :loading="loading" flat class="blue--text" v-else></v-btn>
             </div>
         </v-flex>
         <v-flex sm12 md7 v-if="transaction">
             <div class="caption grey--text mb-4 mt-4">SIGNATURES</div>
 
-            <div v-for="signature in signatures" class="mb-3 elevation-2 py-2.5 px-4">
-                <span v-text="publicKeyHint(signature._attributes.hint)"></span><br>
+            <div v-for="signature in signatures" class="mb-3 elevation-2 py-2.5 px-4 break-all">
+                <pre v-html="publicKeyHint(signature._attributes.hint)" class="break-all pre-wrap"></pre>
                 <span v-text="signature._attributes.signature.toString('base64')" class="grey--text"></span>
             </div>
 
@@ -24,8 +24,8 @@
                         <span v-text="operation.type.toUpperCase()"></span>
                     </div>
                     <v-card>
-                        <v-card-text class="grey lighten-3">
-
+                        <v-card-text class="grey lighten-3 px-4">
+                            <operation :operation="operation" :link="false"></operation>
                         </v-card-text>
                     </v-card>
                 </v-expansion-panel-content>
@@ -45,7 +45,10 @@
                 <v-flex xs12 md6>
                     <div class="info-block">
                         <b>Ledger</b>
-                        <div v-text="transaction.ledger_attr"></div>
+                        <router-link :to="{name: 'explorer.ledger', params: {ledger: transaction.ledger_attr}}"
+                                     v-text="transaction.ledger_attr"
+                                     class="no-decor"
+                        ></router-link>
                     </div>
                 </v-flex>
                 <v-flex xs12 md6>
@@ -57,7 +60,7 @@
                 <v-flex xs12 md6>
                     <div class="info-block">
                         <b>Source Account</b>
-                        <public-key :value="transaction.source_account" explorer></public-key>
+                        <public-key :value="transaction.source_account"></public-key>
                     </div>
                 </v-flex>
                 <v-flex xs12 md6>
@@ -85,11 +88,17 @@
 </template>
 
 <script>
-  import { Stellar, StellarServer } from '~/stellar';
+  // TODO: link to Horizon, verify button
+  import { Stellar, StellarServer } from '~/stellar'
   import { flash } from '~/utils'
+  import Operation from '~/pages/tools/operations/operation'
 
   export default {
     layout: 'explorer',
+
+    components: {
+      Operation,
+    },
 
     data: () => ({
       loading: true,
@@ -105,9 +114,9 @@
           publicKey: Buffer.concat([Buffer.alloc(28).fill(0), hint])
         })
 
-        let dots = Buffer.alloc(46).fill('.').toString()
+        let dots = Buffer.alloc(46).fill('-').toString()
 
-        return `G${dots}${keypair.publicKey().substr(47, 5)}....`
+        return `G${dots}${keypair.publicKey().substr(47, 5)}----`
       },
     },
 
@@ -135,18 +144,6 @@
 </script>
 
 <style lang="scss" scoped>
-    .info-block {
-        margin-bottom: 16px;
-
-        b {
-            display: block;
-        }
-
-        code:before, code:after {
-            content: '';
-        }
-    }
-
     .py-2\.5 {
         padding-top: 12px;
         padding-bottom: 12px;

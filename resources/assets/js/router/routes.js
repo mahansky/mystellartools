@@ -15,7 +15,7 @@ export default ({ keypairGuard }) => [
   { path: '/explorer', name: 'explorer', component: require('~/pages/explorer/index.vue') },
   { path: '/explorer/ledgers/:ledger', name: 'explorer.ledger', component: require('~/pages/explorer/ledger.vue') },
   { path: '/explorer/transactions/:transaction', name: 'explorer.transaction', component: require('~/pages/explorer/transaction.vue') },
-  { path: '/explorer/accounts/:account', name: 'explorer.account', component: require('~/pages/explorer/ledger.vue') },
+  { path: '/explorer/accounts/:account', name: 'explorer.account', component: require('~/pages/explorer/account.vue') },
   { path: '/explorer/network', name: 'explorer.network', component: require('~/pages/explorer/network.vue') },
 
   ...keypairGuard([

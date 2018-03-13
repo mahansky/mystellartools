@@ -7,10 +7,15 @@
 
         <component :is="operation.type" :operation="operation"></component>
 
-        <div class="mt-3">
-            <a :href="operation._links.self.href" target="_blank" rel="noreferrer nofollow">
-                <small>#{{ operation.id }}</small>
-            </a>
+        <div class="grey--text mt-3">
+            <b>Source Account</b>
+            <public-key :value="operation.source_account"></public-key>
+        </div>
+
+        <div class="mt-3" v-if="link">
+            <router-link :to="{name: 'explorer.transaction', params: {transaction: txHash}}">
+                <small v-text="txHash"></small>
+            </router-link>
         </div>
     </div>
 </template>
@@ -32,7 +37,14 @@
   import set_options from './set_options'
 
   export default {
-    props: ['operation'],
+    props: {
+      operation: {
+        type: Object,
+      },
+      link: {
+        default: true,
+      },
+    },
 
     components: {
       account_merge,
@@ -47,9 +59,15 @@
       set_options,
     },
 
+    computed: {
+      txHash () {
+        return this.operation._links.transaction.href.split('/').pop()
+      },
+    },
+
     created () {
       StellarServer().transactions()
-        .transaction(this.operation._links.transaction.href.split('/').pop())
+        .transaction(this.txHash)
         .call()
         .then((tx) => {
           Vue.set(this.operation, 'created_at', moment(tx.created_at).format('DD.MM.YYYY HH:mm:ss'))

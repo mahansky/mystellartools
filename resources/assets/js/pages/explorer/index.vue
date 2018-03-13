@@ -18,7 +18,7 @@
                                 <table class="first-padding">
                                     <tr>
                                         <td class="grey--text">Source account</td>
-                                        <td><public-key :value="tx.source_account" explorer></public-key></td>
+                                        <td><public-key :value="tx.source_account"></public-key></td>
                                     </tr>
                                     <tr>
                                         <td class="grey--text">Created at</td>

@@ -19,7 +19,7 @@
                 <v-card>
                     <v-card-text>
                         <div class="body-2 break-all" v-text="value"></div>
-                        <div class="body-1" v-text="contact" v-if="contact && !explorer"></div>
+                        <div class="body-1" v-text="contact" v-if="contact"></div>
                     </v-card-text>
                     <v-card-actions>
                         <v-spacer></v-spacer>
@@ -31,7 +31,7 @@
                         <v-btn flat icon class="blue--text"
                                v-tooltip:top="{ html: 'Add to contacts' }"
                                @click="addToContacts(value)"
-                               v-if="!explorer"
+                               v-if="isLoggedIn"
                         >
                             <v-icon>person_add</v-icon>
                         </v-btn>
@@ -53,7 +53,7 @@
             <small
                     class="contact-name blue blue--text"
                     v-text="contact"
-                    v-if="!explorer && !hideContactName && contact"
+                    v-if="!hideContactName && contact"
             ></small>
         </div>
     </div>
@@ -74,10 +74,6 @@
         type: Boolean,
         default: false,
       },
-      explorer: {
-        type: Boolean,
-        default: false,
-      }
     },
 
     data: () => ({
@@ -86,19 +82,19 @@
     }),
 
     computed: {
-      contact () {
-        if (this.explorer) {
-          return
-        }
+      isLoggedIn () {
+        return !!this.$store.getters.keypair
+      },
 
+      contact () {
         let contact = find(this.$store.getters.contacts, {public_key: this.value})
 
         if (contact) {
           return contact.name
         }
 
-        if (this.value === this.$store.getters.keypair.publicKey()) {
-          return 'This account'
+        if (this.isLoggedIn && this.value === this.$store.getters.keypair.publicKey()) {
+          return 'Your account'
         }
 
         if (this.value in knownAccounts) {
