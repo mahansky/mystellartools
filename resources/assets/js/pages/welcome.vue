@@ -12,7 +12,9 @@
                                     MyStellar.Tools is a universal tool and wallet that gives users a one-stop web-based application
                                     to take advantage of all the features the Stellar network has to offer.
                                 </div>
-                                <v-btn class="blue mt-5 mx-0" dark large @click="$router.push({name: 'login'})">LOGIN</v-btn>
+                                <v-btn class="blue mt-5 mx-0" dark large @click="$router.push({name: 'login'})">WALLET LOGIN</v-btn>
+                                <v-btn class="white mt-5 mx-0" large @click="$router.push({name: 'explorer'})">BLOCKCHAIN</v-btn>
+                                <v-btn class="white mt-5 mx-0" large @click="$router.push({name: 'explorer.network'})">NETWORK</v-btn>
                             </div>
                         </v-flex>
                         <v-flex lg1 order-lg2 class="hidden-md-and-down"></v-flex>

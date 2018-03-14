@@ -3,9 +3,11 @@
         <div class="pattern py-5">
             <v-container>
                 <v-layout>
-                    <v-flex>
-                        <div class="display-2">Stellar Network</div>
-                        <span @click="helpDialog = true" class="grey--text pointer">Add your node</span>
+                    <v-flex lg12 xl10 offset-xl1>
+                        <div class="display-2">
+                            Stellar Network
+                        </div>
+                        <div @click="helpDialog = true" class="grey--text pointer mt-2">Add your node</div>
                     </v-flex>
                 </v-layout>
             </v-container>
@@ -13,11 +15,11 @@
 
         <v-container class="mt-3">
             <v-layout>
-                <v-flex xs12>
+                <v-flex lg12 xl10 offset-xl1>
                     <v-btn loading flat class="blue--text" v-if="loading"></v-btn>
                     <template v-else>
                         <span v-if="nodes.length === 0" class="grey--text">
-                            Node watching over the network is currently offline.
+                            Node watching the network is currently offline.
                         </span>
                         <div v-else ref="network"></div>
                     </template>
