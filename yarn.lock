@@ -2974,6 +2974,10 @@ good-listener@^1.2.2:
   dependencies:
     delegate "^3.1.2"
 
+google-charts@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/google-charts/-/google-charts-1.0.0.tgz#a7c49ae8940f35ad21182757e6552c99a5e44632"
+
 got@^5.0.0:
   version "5.7.1"
   resolved "https://registry.yarnpkg.com/got/-/got-5.7.1.tgz#5f81635a61e4a6589f180569ea4e381680a51f35"

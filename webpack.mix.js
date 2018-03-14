@@ -25,6 +25,7 @@ if (mix.inProduction()) {
     'vue-analytics',
     'qrious',
     'vis',
+    'google-charts',
   ])
 }
 
