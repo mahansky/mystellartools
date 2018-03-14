@@ -2,7 +2,7 @@
     <v-layout row wrap>
         <v-flex xs12>
             <div class="headline">
-                Account <span v-text="$route.params.account"></span>
+                Account <span v-text="$route.params.account" class="break-all"></span>
                 <v-btn v-if="loading" loading flat small class="blue--text my-0 mx-0"></v-btn>
             </div>
         </v-flex>

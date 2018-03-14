@@ -17,7 +17,7 @@
                             <div class="inline-block">
                                 <public-key :value="operation.source_account"></public-key>
                             </div>
-                            <code v-text="operation.transaction_hash" class="pointer"
+                            <code v-text="operation.transaction_hash" class="pointer break-all"
                                   @click="$router.push({name: 'explorer.transaction', params: {transaction: operation.transaction_hash}})"
                             ></code>
                         </v-card-text>

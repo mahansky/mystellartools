@@ -12,7 +12,7 @@
             <v-expansion-panel expand>
                 <v-expansion-panel-content v-for="transaction in transactions" :key="transaction.id">
                     <div slot="header">
-                        <code v-text="transaction.hash"></code>
+                        <code v-text="transaction.hash" class="break-all"></code>
                     </div>
                     <v-card>
                         <v-card-text class="grey lighten-3 px-4">

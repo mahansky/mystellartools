@@ -1,5 +1,5 @@
 <template>
-    <v-layout>
+    <v-layout row wrap>
         <v-flex xs12 sm10>
             <div class="grey--text mb-3">
                 <span v-text="operation.type.toUpperCase() + ' operation'"></span>
