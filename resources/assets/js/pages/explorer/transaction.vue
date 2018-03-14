@@ -118,30 +118,36 @@
 
         return `G${dots}${keypair.publicKey().substr(47, 5)}----`
       },
+
+      fetch () {
+        StellarServer().transactions()
+          .transaction(this.$route.params.transaction)
+          .call()
+          .then(tx => {
+            this.transaction = tx
+            this.signatures = new Stellar.Transaction(tx.envelope_xdr).signatures
+
+            return tx.operations()
+          })
+          .then(ops => {
+            console.log(ops)
+            this.operations = ops._embedded.records
+          })
+          .catch(flash)
+          .then(() => {
+            this.loading = false
+          })
+      },
     },
 
     beforeRouteUpdate (to, from, next) {
       next()
+      this.fetch()
+    },
 
-      StellarServer().transactions()
-        .transaction(this.$route.params.transaction)
-        .call()
-        .then(tx => {
-          console.log(tx)
-          this.transaction = tx
-          this.signatures = new Stellar.Transaction(tx.envelope_xdr).signatures
-
-          return tx.operations()
-        })
-        .then(ops => {
-          console.log(ops)
-          this.operations = ops._embedded.records
-        })
-        .catch(flash)
-        .then(() => {
-          this.loading = false
-        })
-    }
+    created () {
+      this.fetch()
+    },
   }
 </script>
 

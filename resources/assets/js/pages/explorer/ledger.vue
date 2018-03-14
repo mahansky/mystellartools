@@ -146,25 +146,34 @@
       transactions: [],
     }),
 
+    methods: {
+      fetch () {
+        StellarServer().ledgers()
+          .ledger(this.$route.params.ledger)
+          .call()
+          .then(ledger => {
+            console.log(ledger)
+            this.ledger = ledger
+
+            return ledger.transactions()
+          })
+          .then(response => {
+            this.transactions = response._embedded.records
+          })
+          .catch(flash)
+          .then(() => {
+            this.loading = false
+          })
+      },
+    },
+
     beforeRouteUpdate(to, from, next) {
       next()
+      this.fetch()
+    },
 
-      StellarServer().ledgers()
-        .ledger(this.$route.params.ledger)
-        .call()
-        .then(ledger => {
-          console.log(ledger)
-          this.ledger = ledger
-
-          return ledger.transactions()
-        })
-        .then(response => {
-          this.transactions = response._embedded.records
-        })
-        .catch(flash)
-        .then(() => {
-          this.loading = false
-        })
+    created () {
+      this.fetch()
     },
   }
 </script>

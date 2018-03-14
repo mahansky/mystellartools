@@ -120,33 +120,40 @@
       prev () {
         this.operationsPaginator.prev()
           .then(operations => this.operations = operations)
-      }
+      },
+
+      fetch () {
+        this.operationsPaginator = new HorizonPaginator(
+          HorizonURL() + '/accounts/' + this.$route.params.account + '/operations',
+          10
+        )
+
+        StellarServer().accounts()
+          .accountId(this.$route.params.account)
+          .call()
+          .then(account => {
+            console.log(account)
+            this.account = account
+
+            return this.operationsPaginator.fetch()
+          })
+          .then(operations => {
+            this.operations = operations
+          })
+          .catch(flash)
+          .then(() => {
+            this.loading = false
+          })
+      },
     },
 
     beforeRouteUpdate (to, from, next) {
       next()
+      this.fetch()
+    },
 
-      this.operationsPaginator = new HorizonPaginator(
-        HorizonURL() + '/accounts/' + this.$route.params.account + '/operations',
-        10
-      )
-
-      StellarServer().accounts()
-        .accountId(this.$route.params.account)
-        .call()
-        .then(account => {
-          console.log(account)
-          this.account = account
-
-          return this.operationsPaginator.fetch()
-        })
-        .then(operations => {
-          this.operations = operations
-        })
-        .catch(flash)
-        .then(() => {
-          this.loading = false
-        })
+    created () {
+      this.fetch()
     },
   }
 </script>
