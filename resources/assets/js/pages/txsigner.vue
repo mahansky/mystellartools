@@ -3,7 +3,7 @@
         <div class="pattern py-5">
             <v-container>
                 <v-layout>
-                    <v-flex>
+                    <v-flex lg12 xl10 offset-xl1>
                         <div class="display-2">Transaction Signer</div>
                     </v-flex>
                 </v-layout>
@@ -11,39 +11,43 @@
         </div>
 
         <v-container grid-list-lg class="mt-3">
-            <v-layout wrap row>
-                <v-flex lg6 md12>
-                    <div class="headline mb-3">Features</div>
+            <v-layout>
+                <v-flex lg12 xl10 offset-xl1>
+                    <v-layout wrap row>
+                        <v-flex lg6 xs12>
+                            <div class="headline mb-3">Features</div>
 
-                    <ul class="mb-5">
-                        <li>crossplatform (Windows, Mac/OSX, Linux)</li>
-                        <li>different networks (public, testnet, custom)</li>
-                        <li>multi-sig</li>
-                        <li>secret key or Ledger</li>
-                        <li>detailed description of transaction</li>
-                        <li>open source</li>
-                    </ul>
+                            <ul class="mb-5">
+                                <li>crossplatform (Windows, Mac/OSX, Linux)</li>
+                                <li>different networks (public, testnet, custom)</li>
+                                <li>multi-sig</li>
+                                <li>secret key or Ledger</li>
+                                <li>detailed description of transaction</li>
+                                <li>open source</li>
+                            </ul>
 
-                    <div>
-                        <v-btn class="blue" dark target="_blank" rel="noreferrer nofollow"
-                            href="https://github.com/mahansky/mystellartools-txsigner/releases"
-                        >
-                            Download
-                            <v-icon right>file_download</v-icon>
-                        </v-btn>
-                        <v-btn flat target="_blank" rel="noreferrer nofollow"
-                            href="https://github.com/mahansky/mystellartools-txsigner"
-                        >
-                            Source code
-                            <v-icon right>code</v-icon>
-                        </v-btn>
-                        <v-spacer></v-spacer>
-                    </div>
-                </v-flex>
-                <v-flex lg6 md12>
-                    <v-carousel icon="stop">
-                        <v-carousel-item v-for="(img, i) in images" :src="img" :key="i"></v-carousel-item>
-                    </v-carousel>
+                            <div>
+                                <v-btn class="blue" dark target="_blank" rel="noreferrer nofollow"
+                                       href="https://github.com/mahansky/mystellartools-txsigner/releases"
+                                >
+                                    Download
+                                    <v-icon right>file_download</v-icon>
+                                </v-btn>
+                                <v-btn flat target="_blank" rel="noreferrer nofollow"
+                                       href="https://github.com/mahansky/mystellartools-txsigner"
+                                >
+                                    Source code
+                                    <v-icon right>code</v-icon>
+                                </v-btn>
+                                <v-spacer></v-spacer>
+                            </div>
+                        </v-flex>
+                        <v-flex lg6 xs12>
+                            <v-carousel icon="stop">
+                                <v-carousel-item v-for="(img, i) in images" :src="img" :key="i"></v-carousel-item>
+                            </v-carousel>
+                        </v-flex>
+                    </v-layout>
                 </v-flex>
             </v-layout>
         </v-container>

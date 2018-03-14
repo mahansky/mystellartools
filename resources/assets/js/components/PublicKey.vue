@@ -31,14 +31,16 @@
                         <v-btn flat icon class="blue--text"
                                v-tooltip:top="{ html: 'Add to contacts' }"
                                @click="addToContacts(value)"
+                               v-if="isLoggedIn"
                         >
                             <v-icon>person_add</v-icon>
                         </v-btn>
-                        <!--<v-btn flat icon class="blue&#45;&#45;text"-->
-                               <!--v-tooltip:top="{ html: 'Explore' }"-->
-                        <!--&gt;-->
-                            <!--<v-icon>search</v-icon>-->
-                        <!--</v-btn>-->
+                        <v-btn flat icon class="blue--text"
+                               v-tooltip:top="{ html: 'Explore' }"
+                               @click="$router.push({name: 'explorer.account', params: {account: value}})"
+                        >
+                            <v-icon>search</v-icon>
+                        </v-btn>
                         <v-btn flat icon class="blue--text" :data-clipboard-text="value" ref="copybtn"
                                v-tooltip:top="{ html: 'Copy' }"
                         >
@@ -80,6 +82,10 @@
     }),
 
     computed: {
+      isLoggedIn () {
+        return !!this.$store.getters.keypair
+      },
+
       contact () {
         let contact = find(this.$store.getters.contacts, {public_key: this.value})
 
@@ -87,8 +93,8 @@
           return contact.name
         }
 
-        if (this.value === this.$store.getters.keypair.publicKey()) {
-          return 'This account'
+        if (this.isLoggedIn && this.value === this.$store.getters.keypair.publicKey()) {
+          return 'Your account'
         }
 
         if (this.value in knownAccounts) {

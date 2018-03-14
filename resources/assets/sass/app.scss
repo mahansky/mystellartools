@@ -8,6 +8,7 @@
 @import 'tables';
 @import 'error';
 @import 'front';
+@import 'explorer';
 
 @import 'account';
 
@@ -40,6 +41,10 @@
 
 .pointer {
   cursor: pointer;
+}
+
+.no-decor {
+  text-decoration: none;
 }
 
 .setoptions {
@@ -98,4 +103,8 @@
     margin-top: 1px;
     padding: 0 5px;
   }
+}
+
+.input-group--selection-controls label {
+  line-height: 25px;
 }
