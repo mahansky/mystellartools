@@ -151,11 +151,6 @@
         padding-bottom: 12px;
     }
 
-    .inline-block {
-        display: inline-block;
-        vertical-align: top;
-    }
-
     .txhash {
         overflow: hidden;
         text-overflow: ellipsis;

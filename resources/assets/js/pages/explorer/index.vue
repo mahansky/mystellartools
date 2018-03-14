@@ -1,44 +1,32 @@
 <template>
     <v-layout row wrap>
-        <v-flex lg8 xs12>
-            <div class="headline mb-4">Latest transactions</div>
+        <v-flex lg7 xs12>
+            <div class="headline mb-4">Stellar Blockchain Explorer</div>
 
             <v-btn loading class="blue--text" flat v-if="loading"></v-btn>
             <transition-group name="txlist" tag="div" v-else>
-                <div v-for="tx in transactions" :key="tx.hash" class="mb-4">
-                    <div style="display: inline-block;">
-                        <router-link
-                                :to="{name: 'explorer.transaction', params: {transaction: tx.hash}}"
-                                v-text="tx.hash"
-                                class="pointer blue--text"
-                                tag="pre"
-                        ></router-link>
-                        <v-layout class="mt-1">
-                            <v-flex md8 xs12>
-                                <table class="first-padding">
-                                    <tr>
-                                        <td class="grey--text">Source account</td>
-                                        <td><public-key :value="tx.source_account"></public-key></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="grey--text">Created at</td>
-                                        <td><date-time :value="tx.created_at"></date-time></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="grey--text">Operations</td>
-                                        <td v-text="tx.operation_count"></td>
-                                    </tr>
-                                </table>
-                            </v-flex>
-                            <v-flex md4 xs12 class="text-xs-right">
-                                <v-btn flat icon><v-icon>search</v-icon></v-btn>
-                                <v-btn flat icon class="mx-0"><v-icon>code</v-icon></v-btn>
-                            </v-flex>
-                        </v-layout>
+                <div class="caption grey--text mb-4 mt-4" key="title">LATEST OPERATIONS</div>
+
+                <v-card key="transactions">
+                    <div v-for="operation in operations" :key="operation.id">
+                        <v-card-text>
+                            <div class="inline-block">
+                                <span v-text="operation.type.toUpperCase()"></span>
+                                <span class="grey--text">created by</span>
+                            </div>
+                            <div class="inline-block">
+                                <public-key :value="operation.source_account"></public-key>
+                            </div>
+                            <code v-text="operation.transaction_hash" class="pointer"
+                                  @click="$router.push({name: 'explorer.transaction', params: {transaction: operation.transaction_hash}})"
+                            ></code>
+                        </v-card-text>
+                        <v-divider></v-divider>
                     </div>
-                </div>
+                </v-card>
             </transition-group>
         </v-flex>
+        <v-flex lg1></v-flex>
         <v-flex lg4 xs12>
             <v-btn large block outline class="blue blue--text tall"
                    @click="$router.push({name: 'explorer.network'})"
@@ -91,7 +79,7 @@
 
     data: () => ({
       loading: true,
-      transactions: [],
+      operations: [],
       ledgers: [],
       lastClose: null,
       lctChartOptions: {
@@ -165,10 +153,9 @@
     }),
 
     methods: {
-      newTransaction(transaction) {
-        console.log(transaction)
-        this.transactions.unshift(transaction)
-        this.transactions.splice(10)
+      newOperation(operation) {
+        this.operations.unshift(operation)
+        this.operations.splice(10)
       },
 
       drawCharts () {
@@ -218,19 +205,19 @@
     },
 
     mounted () {
-      StellarServer().transactions()
+      StellarServer().operations()
         .cursor('now')
         .order('desc')
         .limit(10)
         .call()
         .then(response => {
-          this.transactions = response.records
+          this.operations = response.records
 
-          // this.stream = StellarServer().transactions()
-          //   .cursor('now')
-          //   .stream({
-          //     onmessage: this.newTransaction,
-          //   })
+          this.stream = StellarServer().operations()
+            .cursor('now')
+            .stream({
+              onmessage: this.newOperation,
+            })
 
           return StellarServer().ledgers()
             .order('desc')
