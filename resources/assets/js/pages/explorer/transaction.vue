@@ -10,7 +10,7 @@
         <v-flex sm12 md7 v-if="transaction">
             <div class="caption grey--text mb-4 mt-4">SIGNATURES</div>
 
-            <div v-for="signature in signatures" class="mb-3 elevation-2 py-2.5 px-4 break-all">
+            <div v-for="signature in signatures" class="mb-3 elevation-2 py-2.5 px-4 break-all white">
                 <pre v-html="publicKeyHint(signature._attributes.hint)" class="break-all pre-wrap"></pre>
                 <span v-text="signature._attributes.signature.toString('base64')" class="grey--text"></span>
             </div>
