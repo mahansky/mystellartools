@@ -1,6 +1,7 @@
 <template>
     <main class="setoptions">
-        <v-container grid-list-lg>
+        <v-btn info loading flat v-if="!loaded"></v-btn>
+        <v-container grid-list-lg v-else>
             <v-layout row wrap>
                 <v-flex lg6>
                     <v-card class="white">
@@ -38,12 +39,12 @@
                                 ></v-text-field>
 
                                 <v-layout row wrap>
-                                    <v-flex lg6>
-                                        <b>Set flags</b>
+                                    <v-flex lg12>
+                                        <b>Flags</b>
                                         <v-checkbox
                                                 color="blue"
                                                 hide-details
-                                                v-model="setFlags.required"
+                                                v-model="flags.required"
                                         >
                                             <div slot="label">
                                                 Authorization required
@@ -52,7 +53,7 @@
                                         <v-checkbox
                                                 color="blue"
                                                 hide-details
-                                                v-model="setFlags.revocable"
+                                                v-model="flags.revocable"
                                         >
                                             <div slot="label">
                                                 Authorization revocable
@@ -61,37 +62,7 @@
                                         <v-checkbox
                                                 color="blue"
                                                 hide-details
-                                                v-model="setFlags.immutable"
-                                        >
-                                            <div slot="label">
-                                                Authorization immutable
-                                            </div>
-                                        </v-checkbox>
-                                    </v-flex>
-                                    <v-flex lg6>
-                                        <b>Clear flags</b>
-                                        <v-checkbox
-                                                color="blue"
-                                                hide-details
-                                                v-model="clearFlags.required"
-                                        >
-                                            <div slot="label">
-                                                Authorization required
-                                            </div>
-                                        </v-checkbox>
-                                        <v-checkbox
-                                                color="blue"
-                                                hide-details
-                                                v-model="clearFlags.revocable"
-                                        >
-                                            <div slot="label">
-                                                Authorization revocable
-                                            </div>
-                                        </v-checkbox>
-                                        <v-checkbox
-                                                color="blue"
-                                                hide-details
-                                                v-model="clearFlags.immutable"
+                                                v-model="flags.immutable"
                                         >
                                             <div slot="label">
                                                 Authorization immutable
@@ -100,7 +71,17 @@
                                     </v-flex>
                                 </v-layout>
 
-                                <b>Signer</b>
+                                <b>Signers</b>
+
+                                <v-layout row wrap v-for="signer in account.signers" :key="signer.key" class="break-all">
+                                    <v-flex xs10>
+                                        <span v-text="signer.public_key"></span>
+                                    </v-flex>
+                                    <v-flex xs2>
+                                        Weight: <span v-text="signer.weight"></span>
+                                    </v-flex>
+                                </v-layout>
+
                                 <v-select
                                         label="Signer type"
                                         :items="signerTypes"
@@ -191,7 +172,7 @@
 </template>
 
 <script>
-  import { ruleAccountIsValid, resolveAccountId, Stellar } from '~/stellar'
+  import { ruleAccountIsValid, resolveAccountId, Stellar, StellarServer } from '~/stellar'
   import { flash } from '~/utils'
   import { submitTransaction } from '~/stellar/internal'
   import isString from 'lodash'
@@ -205,6 +186,7 @@
 
     data () {
       return {
+        loaded: false,
         isLoading: false,
         valid: false,
 
@@ -213,13 +195,7 @@
         medThreshold: '',
         highThreshold: '',
 
-        setFlags: {
-          required: false,
-          revocable: false,
-          immutable: false,
-        },
-
-        clearFlags: {
+        flags: {
           required: false,
           revocable: false,
           immutable: false,
@@ -353,8 +329,8 @@
             if (this.homeDomain)
               attributes.homeDomain = this.homeDomain
 
-            attributes.clearFlags = this.calcFlags(this.clearFlags)
-            attributes.setFlags = this.calcFlags(this.setFlags)
+            attributes.clearFlags = this.calcFlags('clear')
+            attributes.setFlags = this.calcFlags('set')
 
             if (this.signerType) {
               attributes.signer = {}
@@ -382,20 +358,68 @@
         }
       },
 
-      calcFlags (flags) {
+      calcFlags (type) {
         let result = 0
 
-        if (flags.required)
-          result += 1
+        if (type === 'clear') {
+          if (this.account.flags.auth_required && !this.flags.required) {
+            result += 1
+          }
 
-        if (flags.revocable)
-          result += 2
+          if (this.account.flags.auth_revocable && !this.flags.revocable) {
+            result += 2
+          }
 
-        if (flags.immutable)
-          result += 4
+          if (this.account.flags.auth_immutable && !this.flags.immutable) {
+            result += 4
+          }
+        } else if (type === 'set') {
+          if (!this.account.flags.auth_required && this.flags.required) {
+            result += 1
+          }
+
+          if (!this.account.flags.auth_revocable && this.flags.revocable) {
+            result += 2
+          }
+
+          if (!this.account.flags.auth_immutable && this.flags.immutable) {
+            result += 4
+          }
+        }
 
         return result
       },
-    }
+    },
+
+    created () {
+      StellarServer().accounts()
+        .accountId(this.$store.getters.keypair.publicKey())
+        .call()
+        .then(account => {
+          console.log(account)
+
+          let masterSigner = account.signers.find(signer => {
+            return signer.public_key === this.$store.getters.keypair.publicKey()
+          })
+
+          this.masterWeight = masterSigner ? masterSigner.weight : ''
+
+          this.lowThreshold = account.thresholds.low_threshold
+          this.medThreshold = account.thresholds.med_threshold
+          this.highThreshold = account.thresholds.high_threshold
+
+          this.inflationDest = account.inflation_destination
+          this.homeDomain = account.home_domain
+
+          this.flags.required = !!account.flags.auth_required
+          this.flags.revocable = !!account.flags.auth_revocable
+          this.flags.immutable = !!account.flags.auth_immutable
+
+          this.account = account
+
+          this.loaded = true
+        })
+        .catch(flash)
+    },
   }
 </script>
