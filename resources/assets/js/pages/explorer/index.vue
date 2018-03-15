@@ -75,6 +75,10 @@
   import TransactionsChart from './index/transactions_chart'
 
   export default {
+    metaInfo: () => ({
+      title: 'Blockchain explorer',
+    }),
+
     layout: 'explorer',
 
     components: {
