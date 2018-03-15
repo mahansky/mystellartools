@@ -4,6 +4,7 @@
 
 <script>
   import { GoogleCharts } from 'google-charts'
+  import { each } from 'lodash'
 
   export default {
     props: ['ledgers'],
@@ -29,7 +30,7 @@
         this.data.addColumn('number', 'Transactions')
         this.data.addColumn('number', 'Operations')
 
-        _(this.ledgers).each(ledger => {
+        each(this.ledgers, ledger => {
           this.data.addRow([
             ledger.sequence,
             ledger.transaction_count,
@@ -39,7 +40,7 @@
       },
 
       draw () {
-        this.chart.draw(this.data, this.options);
+        this.chart.draw(this.data, this.options)
       },
     },
 

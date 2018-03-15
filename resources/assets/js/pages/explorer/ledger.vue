@@ -152,7 +152,6 @@
           .ledger(this.$route.params.ledger)
           .call()
           .then(ledger => {
-            console.log(ledger)
             this.ledger = ledger
 
             return ledger.transactions()

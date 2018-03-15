@@ -132,7 +132,6 @@
           .accountId(this.$route.params.account)
           .call()
           .then(account => {
-            console.log(account)
             this.account = account
 
             return this.operationsPaginator.fetch()

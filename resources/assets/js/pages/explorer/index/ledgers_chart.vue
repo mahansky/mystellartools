@@ -4,6 +4,7 @@
 
 <script>
   import { GoogleCharts } from 'google-charts'
+  import { each } from 'lodash'
   import moment from 'moment'
 
   export default {
@@ -34,7 +35,7 @@
 
         this.lastClose = moment(this.ledgers[0].closed_at)
 
-        _(this.ledgers).each(ledger => {
+        each(this.ledgers, ledger => {
           this.data.addRow([
             ledger.sequence,
             -moment(ledger.closed_at).diff(this.lastClose, 'seconds')
@@ -45,7 +46,7 @@
       },
 
       draw () {
-        this.chart.draw(this.data, this.options);
+        this.chart.draw(this.data, this.options)
       },
     },
 

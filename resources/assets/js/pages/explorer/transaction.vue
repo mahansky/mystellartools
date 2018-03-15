@@ -130,7 +130,6 @@
             return tx.operations()
           })
           .then(ops => {
-            console.log(ops)
             this.operations = ops._embedded.records
           })
           .catch(flash)
