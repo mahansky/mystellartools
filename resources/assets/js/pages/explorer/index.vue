@@ -123,7 +123,7 @@
         .then(response => {
           this.ledgers = response.records
 
-          this.stream = StellarServer().ledgers()
+          this.stream2 = StellarServer().ledgers()
             .cursor('now')
             .stream({
               onmessage: this.newLedger,
@@ -138,6 +138,10 @@
     destroyed () {
       if (this.stream) {
         this.stream()
+      }
+
+      if (this.stream2) {
+        this.stream2()
       }
     },
   }
