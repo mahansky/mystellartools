@@ -253,7 +253,7 @@
         this.ledgersLoading = true
         this.ledgers = []
 
-        axios.get('/api/peers/' + this.selectedNode.public_key + '/ledgers')
+        axios.get('/api/peers/' + this.selectedNode.public_key)
           .then(response => {
             this.ledgers = response.data
           })
