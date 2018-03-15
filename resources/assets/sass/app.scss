@@ -1,12 +1,14 @@
 @import 'fonts';
 @import 'variables';
 @import '~vuetify/dist/vuetify.min.css';
+@import '~vis/dist/vis.css';
 
 @import 'toolbar';
 @import 'navbar';
 @import 'tables';
 @import 'error';
 @import 'front';
+@import 'explorer';
 
 @import 'account';
 
@@ -39,6 +41,10 @@
 
 .pointer {
   cursor: pointer;
+}
+
+.no-decor {
+  text-decoration: none;
 }
 
 .setoptions {
@@ -97,4 +103,8 @@
     margin-top: 1px;
     padding: 0 5px;
   }
+}
+
+.input-group--selection-controls label {
+  line-height: 25px;
 }

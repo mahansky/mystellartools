@@ -217,7 +217,7 @@
             </v-layout>
         </v-container>
 
-        <v-dialog v-model="contactsSelector" lazy absolute>
+        <v-dialog v-model="contactsSelector" width="400px" lazy absolute>
             <v-card>
                 <v-card-text>
                     <v-text-field
@@ -341,7 +341,20 @@
 
     computed: {
       contacts () {
-        return this.$store.getters.contacts
+        let contacts = JSON.parse(JSON.stringify(this.$store.getters.contacts))
+
+        for (let acc in knownAccounts) {
+          if (knownAccounts.hasOwnProperty(acc)) {
+            contacts.push({
+              public_key: acc,
+              name: knownAccounts[acc].name,
+              memo_type: knownAccounts[acc].requiredMemoType,
+              memo: '',
+            })
+          }
+        }
+
+        return contacts
       },
     },
 
@@ -378,12 +391,11 @@
               if (this.memoValue === '' && this.resolvedRecipient in knownAccounts && knownAccounts[this.resolvedRecipient].requiredMemoType) {
                 this.memo = true
                 this.memoType = knownAccounts[this.resolvedRecipient].requiredMemoType
-                this.memoValue = ''
 
                 throw new Error(knownAccounts[this.resolvedRecipient].name + ' requires MEMO to be set!')
               }
 
-              return StellarServer.loadAccount(this.$store.getters.keypair.publicKey())
+              return StellarServer().loadAccount(this.$store.getters.keypair.publicKey())
                 .then(account => {
                   vm.loadedAccount = account
 
@@ -417,7 +429,7 @@
                       return
                     }
 
-                    return StellarServer.accounts()
+                    return StellarServer().accounts()
                       .accountId(this.resolvedRecipient)
                       .call()
                       .catch(err => {
@@ -428,7 +440,7 @@
                   }
                 })
                 .then(() => {
-                    return StellarServer.loadAccount(this.resolvedRecipient)
+                    return StellarServer().loadAccount(this.resolvedRecipient)
                       .catch(() => {
                         if (this.recipient.indexOf('@') !== -1) {
                           if (new BigNumber(this.amount).lt(STARTING_BALANCE + (BASE_RESERVE * 2))) {
@@ -462,7 +474,7 @@
           issuer = this.assetIssuer
         }
 
-        StellarServer.accounts()
+        StellarServer().accounts()
           .accountId(this.resolvedRecipient)
           .call()
           .then(() => {
@@ -555,7 +567,7 @@
         this.recipient = data
       })
 
-      StellarServer.loadAccount(this.$store.getters.keypair.publicKey())
+      StellarServer().loadAccount(this.$store.getters.keypair.publicKey())
         .then((account) => {
           this.availableAssets = ['XLM']
 
@@ -572,6 +584,12 @@
           this.loaded = true
         })
         .catch(flash)
+
+      if (this.$store.getters.transactionsMemo) {
+        this.memo = true
+        this.memoType = this.$store.getters.transactionsMemo.type
+        this.memoValue = this.$store.getters.transactionsMemo.value
+      }
     },
   }
 </script>

@@ -3,7 +3,7 @@
         <div class="pattern py-5">
             <v-container>
                 <v-layout>
-                    <v-flex>
+                    <v-flex lg12 xl8 offset-xl2>
                         <div class="display-2">Page not found</div>
                     </v-flex>
                 </v-layout>
@@ -12,8 +12,8 @@
 
         <v-container>
             <v-layout>
-                <v-flex xs12>
-                    You can go <a href="#" @click="$router.go(-1)">back</a> or to the
+                <v-flex lg12 xl8 offset-xl2>
+                    You can go <a href="#" @click="$router.go(-1)">back</a> or go to the
                     <a href="#" @click="$router.push({name:'welcome'})">homepage</a>.
                 </v-flex>
             </v-layout>

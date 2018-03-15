@@ -83,12 +83,12 @@
 <script>
   import axios from 'axios'
   import Vue from 'vue'
-  import { flash } from '~/utils'
+  import { flash, events } from '~/utils'
   import { ruleAccountIsValid, resolveAccountId, Stellar } from '~/stellar/index'
   import { map } from 'lodash'
 
   export default {
-    data () {
+    data: (vm) => {
       return {
         loaded: false,
         headers: [
@@ -111,7 +111,7 @@
             let memoError = ''
 
             try {
-              switch (this.memoType) {
+              switch (vm.contactForm.memoType) {
                 case 'MEMO_TEXT':
                   memoError = 'MEMO_TEXT must contain a maximum of 28 characters'
                   Stellar.Memo.text(v)
@@ -194,5 +194,11 @@
         }
       },
     },
+
+    created () {
+      events.$on('contacts:add-contact', publicKey => {
+        this.contactForm.publicKey = publicKey
+      })
+    }
   }
 </script>

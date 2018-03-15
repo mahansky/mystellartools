@@ -24,6 +24,8 @@ if (mix.inProduction()) {
     'bignumber.js',
     'vue-analytics',
     'qrious',
+    'vis',
+    'google-charts',
   ])
 }
 

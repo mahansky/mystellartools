@@ -1,18 +1,25 @@
 <template>
-    <div>
-        <div class="grey--text mb-3">
-            <span v-text="operation.type.toUpperCase() + ' operation'"></span>
-            <span v-if="operation.created_at" v-text="'@ ' + operation.created_at"></span>
-        </div>
+    <v-layout row wrap>
+        <v-flex xs12 sm10>
+            <div class="grey--text mb-3">
+                <span v-text="operation.type.toUpperCase() + ' operation'"></span>
+                <span v-if="operation.created_at" v-text="'@ ' + operation.created_at"></span>
+            </div>
 
-        <component :is="operation.type" :operation="operation"></component>
+            <component :is="operation.type" :operation="operation"></component>
 
-        <div class="mt-3">
-            <a :href="operation._links.self.href" target="_blank" rel="noreferrer nofollow">
-                <small>#{{ operation.id }}</small>
-            </a>
-        </div>
-    </div>
+            <div class="grey--text mt-3">
+                <b>Source Account</b>
+                <public-key :value="operation.source_account"></public-key>
+            </div>
+        </v-flex>
+        <v-flex xs12 sm2 class="text-sm-right">
+            <v-btn icon
+                   @click="$router.push({name: 'explorer.transaction', params: {transaction: txHash}})"
+                   class="my-0 mx-0"
+            ><v-icon class="blue--text">search</v-icon></v-btn>
+        </v-flex>
+    </v-layout>
 </template>
 
 <script>
@@ -32,7 +39,14 @@
   import set_options from './set_options'
 
   export default {
-    props: ['operation'],
+    props: {
+      operation: {
+        type: Object,
+      },
+      link: {
+        default: true,
+      },
+    },
 
     components: {
       account_merge,
@@ -47,9 +61,15 @@
       set_options,
     },
 
+    computed: {
+      txHash () {
+        return this.operation._links.transaction.href.split('/').pop()
+      },
+    },
+
     created () {
-      StellarServer.transactions()
-        .transaction(this.operation._links.transaction.href.split('/').pop())
+      StellarServer().transactions()
+        .transaction(this.txHash)
         .call()
         .then((tx) => {
           Vue.set(this.operation, 'created_at', moment(tx.created_at).format('DD.MM.YYYY HH:mm:ss'))

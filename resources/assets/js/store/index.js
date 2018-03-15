@@ -25,6 +25,7 @@ export default new Vuex.Store({
       'accounts',
       'contacts',
       'keypair',
+      'transactions',
     ],
     getState: function (key, storage, value) {
       try {

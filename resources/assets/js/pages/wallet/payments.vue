@@ -100,7 +100,7 @@
     created () {
       let vm = this
 
-      StellarServer.payments()
+      StellarServer().payments()
         .forAccount(this.$store.getters.keypair.publicKey())
         .limit(50)
         .order('desc')
@@ -142,7 +142,7 @@
           cursor = this.payments[0].paging_token
         }
 
-        vm.eventSource = StellarServer.payments()
+        vm.eventSource = StellarServer().payments()
           .forAccount(this.$store.getters.keypair.publicKey())
           .cursor(cursor)
           .stream({
@@ -158,7 +158,7 @@
       },
 
       fetchAdditionalInfo (payment) {
-        return StellarServer.transactions()
+        return StellarServer().transactions()
           .transaction(this.parseTransactionHash(payment))
           .call()
           .then(tx => this.processAdditionalInfo(payment, tx))

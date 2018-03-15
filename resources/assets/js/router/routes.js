@@ -1,8 +1,22 @@
 export default ({ keypairGuard }) => [
   { path: '/', name: 'welcome', component: require('~/pages/welcome.vue') },
   { path: '/claim', name: 'claim', component: require('~/pages/claim.vue') },
+  { path: '/transaction-signer', name: 'txsigner', component: require('~/pages/txsigner.vue') },
   { path: '/paper-wallet', name: 'paper', component: require('~/pages/paper.vue') },
   { path: '/help', name: 'help', component: require('~/pages/help.vue') },
+
+  { path: '/login', name: 'login', component: require('~/pages/login.vue'), children: [
+    { path: 'hw-wallet', name: 'login.hw', component: require('~/pages/login/hw.vue') },
+    { path: 'public-key', name: 'login.public', component: require('~/pages/login/public.vue') },
+    { path: 'secret-key', name: 'login.secret', component: require('~/pages/login/secret.vue') },
+    { path: 'create', name: 'login.create', component: require('~/pages/login/create.vue') },
+  ] },
+
+  { path: '/explorer', name: 'explorer', component: require('~/pages/explorer/index.vue') },
+  { path: '/explorer/ledgers/:ledger', name: 'explorer.ledger', component: require('~/pages/explorer/ledger.vue') },
+  { path: '/explorer/transactions/:transaction', name: 'explorer.transaction', component: require('~/pages/explorer/transaction.vue') },
+  { path: '/explorer/accounts/:account', name: 'explorer.account', component: require('~/pages/explorer/account.vue') },
+  { path: '/explorer/network', name: 'explorer.network', component: require('~/pages/explorer/network.vue') },
 
   ...keypairGuard([
     { path: '/balance', name: 'balance', component: require('~/pages/wallet/balance.vue') },

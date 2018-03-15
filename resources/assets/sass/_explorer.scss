@@ -1,0 +1,16 @@
+.info-block {
+  margin-bottom: 16px;
+
+  b {
+    display: block;
+  }
+
+  code:before, code:after {
+    content: '';
+  }
+}
+
+.inline-block {
+  display: inline-block;
+  vertical-align: top;
+}

@@ -1,5 +1,11 @@
 # Changelog
 
+### 15 March 2018
+- **Added** blockchain explorer
+- **Added** network explorer
+- **Added** support for creating transactions for custom networks
+- **Changed** frontpage design
+
 ### 30 January 2018
 - **Added** support for manual transaction signing and submitting
 - **Changed** the looks of application after entering with public key (everything is accessible now)

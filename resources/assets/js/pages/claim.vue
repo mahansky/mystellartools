@@ -3,7 +3,7 @@
         <div class="pattern py-5">
             <v-container>
                 <v-layout>
-                    <v-flex>
+                    <v-flex lg12 xl10 offset-xl1>
                         <div class="display-2">Claim your Lumens</div>
                     </v-flex>
                 </v-layout>
@@ -11,26 +11,30 @@
         </div>
 
         <v-container grid-list-lg class="mt-3">
-            <v-layout class="mt-3">
-                <v-flex xs12>
-                    <v-btn flat loading info v-if="!secret"></v-btn>
+            <v-layout>
+                <v-flex lg12 xl10 offset-xl1>
+                    <v-layout class="mt-3">
+                        <v-flex xs12>
+                            <v-btn flat loading info v-if="!secret"></v-btn>
 
-                    <template v-if="secret">
-                        <div class="subheading grey--text text--darken-2 mb-2">Public Key</div>
-                        <code v-text="keypair.publicKey()"></code>
+                            <template v-if="secret">
+                                <div class="subheading grey--text text--darken-2 mb-2">Public Key</div>
+                                <code v-text="keypair.publicKey()"></code>
 
-                        <div class="subheading grey--text text--darken-2 mb-2 mt-4">Secret Key</div>
-                        <code v-text="keypair.secret()"></code>
+                                <div class="subheading grey--text text--darken-2 mb-2 mt-4">Secret Key</div>
+                                <code v-text="keypair.secret()"></code>
 
-                        <v-alert error value="true" class="my-5">
-                            You have to store your Secret key, because you won't be able to load this page again!
-                        </v-alert>
+                                <v-alert error value="true" class="my-5">
+                                    You have to store your Secret key, because you won't be able to load this page again!
+                                </v-alert>
 
-                        <p>
-                            If you need any help, contact us
-                            <a href="mailto:contact@mystellar.tools">contact@mystellar.tools</a>
-                        </p>
-                    </template>
+                                <p>
+                                    If you need any help, contact us
+                                    <a href="mailto:contact@mystellar.tools">contact@mystellar.tools</a>
+                                </p>
+                            </template>
+                        </v-flex>
+                    </v-layout>
                 </v-flex>
             </v-layout>
         </v-container>

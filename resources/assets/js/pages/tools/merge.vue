@@ -56,7 +56,7 @@
 </template>
 
 <script>
-  import { ruleAccountIsValid, resolveAccountId, Stellar, StellarServer } from '~/stellar'
+  import { ruleAccountIsValid, resolveAccountId, Stellar } from '~/stellar'
   import { flash, logout } from '~/utils'
   import { submitTransaction } from '~/stellar/internal'
   import knownAccounts from '~/stellar/known_accounts'

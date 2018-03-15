@@ -1,16 +1,32 @@
+import store from '~/store'
+import { flash } from '~/utils'
+
 // STELLAR SDK, HORIZON
 
 export const Stellar = require('stellar-sdk')
-export const HorizonURL = window.config.horizon_url
-export const StellarServer = new Stellar.Server(HorizonURL)
+
 export const BASE_RESERVE = 0.5
 export const STARTING_BALANCE = 2 * BASE_RESERVE
 
-Stellar.Network.usePublicNetwork()
+Stellar.Network.use(new Stellar.Network(store.getters.transactionsNetwork.passphrase))
+
+let horizonUrl = store.getters.transactionsNetwork.horizonUrl 
+  ? store.getters.transactionsNetwork.horizonUrl
+  : window.config.horizon_url
+
+export function HorizonURL (url) {
+  if (url !== undefined) {
+    horizonUrl = url
+  }
+
+  return horizonUrl
+}
+
+export function StellarServer () {
+  return new Stellar.Server(horizonUrl)
+}
 
 // HELPERS
-
-import { flash } from '~/utils'
 
 export function resolveAccountId (recipient) {
   if (Stellar.StrKey.isValidEd25519PublicKey(recipient)) {

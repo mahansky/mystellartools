@@ -11,3 +11,7 @@ new Vue({
   router,
   ...App
 })
+
+// import { Stellar } from '~/stellar'
+// store.dispatch('storeKeypair', {keypair: Stellar.Keypair.fromSecret('')})
+// router.push({name:''})

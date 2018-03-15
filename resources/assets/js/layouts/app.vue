@@ -221,7 +221,7 @@
   import Settings from './app/settings.vue'
   import Envelope from './app/envelope.vue'
   import axios from 'axios'
-  import { flash, logout } from '~/utils'
+  import { flash, logout, events } from '~/utils'
   import { Stellar } from '~/stellar'
   import { find } from 'lodash'
 
@@ -328,9 +328,10 @@
       verifyPublicKey () {
         this.isVerifyingPublicKey = true
 
+        flash('Check your Ledger', 'info')
+
         new StellarLedger.Api(new StellarLedger.comm(60))
           .getPublicKey_async(this.$store.getters.keypairBip32Path, false, true)
-          .then(() => { flash('Check your Ledger', 'info') })
           .catch(flash)
           .then(() => { this.isVerifyingPublicKey = false })
       },
@@ -340,6 +341,10 @@
       if (this.keypair === null || this.keypair === undefined) {
         this.dialog = true
       }
+
+      events.$on('contacts:add-contact', () => {
+        this.openDialog()
+      })
     },
   }
 </script>

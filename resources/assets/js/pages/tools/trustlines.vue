@@ -344,7 +344,7 @@
       fetchData () {
         this.loaded = false
 
-        return StellarServer.loadAccount(this.$store.getters.keypair.publicKey())
+        return StellarServer().loadAccount(this.$store.getters.keypair.publicKey())
           .then(account => {
             this.balances = account.balances
             this.loaded = true

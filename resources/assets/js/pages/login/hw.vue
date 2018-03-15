@@ -1,29 +1,20 @@
 <template>
-    <v-dialog v-model="dialog" lazy absolute width="400">
-        <a
-                slot="activator"
-                @mouseover="ledgerActive = true"
-                @mouseleave="ledgerActive = false"
-                class="grey--text"
-        >
-            <span>Sign in with</span><br>
-            <img
-                    src="/img/ledger_logo.png"
-                    alt="Ledger"
-                    style="opacity: 0.5;"
-                    class="pointer"
-            >
-        </a>
+    <v-card class="white">
+        <v-toolbar card color="white" dense>
+            <v-toolbar-title class="body-2 grey--text text--darken-2">
+                Login using hardware wallet
+            </v-toolbar-title>
+        </v-toolbar>
+        <v-card-text>
+            <img src="/img/ledger_logo.png" alt="Ledger" class="pb-3">
 
-        <v-card>
-            <v-card-title>
-                <div class="headline">Sign in with Ledger</div>
-            </v-card-title>
-            <v-card-text>
-                <p>
-                    Supported on latest browsers.
-                    Install the Stellar app from Ledger and enable browser support in the app settings.
-                </p>
+            <ul class="pb-3">
+                <li>Supported only on latest browsers</li>
+                <li>Install Stellar app using Ledger Manager</li>
+                <li>Enable browser support in Stellar app setting</li>
+            </ul>
+
+            <v-form v-model="valid" ref="form" @submit.prevent="">
                 <v-checkbox
                         label="Use default account"
                         v-model="defaultAccount"
@@ -41,25 +32,18 @@
                         v-html="error"
                         v-if="error"
                 ></div>
-            </v-card-text>
-            <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn
-                        class="grey--text"
-                        flat
-                        @click.native="dialog = false"
-                >Close
-                </v-btn>
-                <v-btn
-                        flat
-                        :class="{'blue--text': isConnected, 'grey--text': !isConnected}"
-                        @click="proceedWithLedger"
-                        :loading="loading"
-                >Sign in
-                </v-btn>
-            </v-card-actions>
-        </v-card>
-    </v-dialog>
+            </v-form>
+        </v-card-text>
+        <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn
+                    flat
+                    :class="{'blue--text': isConnected, 'grey--text': !isConnected}"
+                    @click="proceedWithLedger"
+                    :loading="loading"
+            >Login</v-btn>
+        </v-card-actions>
+    </v-card>
 </template>
 
 <script>
@@ -69,8 +53,8 @@
 
   export default {
     data: () => ({
+      valid: false,
       loading: false,
-      dialog: false,
       isConnected: false,
       defaultAccount: true,
       error: 'Failed to connect',
@@ -90,13 +74,13 @@
             this.error = ''
             this.ledgerAppVersion = result.version
           })
-          .catch(err => {
-            this.error = 'Problem with connecting to Ledger: ' + err
+          .catch(() => {
+            this.error = 'Problem with connecting to Ledger'
           })
       },
 
       proceedWithLedger() {
-        if (!this.isConnected) {
+        if (!this.isConnected || !this.$refs.form.validate()) {
           return
         }
 
