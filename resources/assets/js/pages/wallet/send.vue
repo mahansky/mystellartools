@@ -584,6 +584,12 @@
           this.loaded = true
         })
         .catch(flash)
+
+      if (this.$store.getters.transactionsMemo) {
+        this.memo = true
+        this.memoType = this.$store.getters.transactionsMemo.type
+        this.memoValue = this.$store.getters.transactionsMemo.value
+      }
     },
   }
 </script>
