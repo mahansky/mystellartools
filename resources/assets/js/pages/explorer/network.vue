@@ -181,7 +181,10 @@
         nodes: {
           shape: 'square',
           size: 10,
-          borderWidth: 3,
+          borderWidth: 5,
+          font: {
+            size: 10,
+          },
         },
         groups: knownGroups,
       },
@@ -239,23 +242,27 @@
 
         return edges
       },
+    },
 
+    methods: {
       getConnectedNodes (qset) {
         let nodes = []
 
         qset.forEach(peer => {
           if (typeof peer === 'string') {
-            nodes.push(this.findNodeByPublicKey(peer))
+            let key = this.findNodeByPublicKey(peer)
+
+            if (key) {
+              nodes.push(key)
+            }
           } else {
             nodes.push(...this.getConnectedNodes(peer.v))
           }
         })
 
         return nodes
-      }
-    },
+      },
 
-    methods: {
       findNodeByPublicKey (publicKey) {
         return this.nodes.find(node => node.public_key === publicKey)
       },
