@@ -328,9 +328,10 @@
       verifyPublicKey () {
         this.isVerifyingPublicKey = true
 
+        flash('Check your Ledger', 'info')
+
         new StellarLedger.Api(new StellarLedger.comm(60))
           .getPublicKey_async(this.$store.getters.keypairBip32Path, false, true)
-          .then(() => { flash('Check your Ledger', 'info') })
           .catch(flash)
           .then(() => { this.isVerifyingPublicKey = false })
       },

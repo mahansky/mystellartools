@@ -10,8 +10,10 @@
 
     watch: {
       ledgers () {
-        this.setupData()
-        this.draw()
+        if (this.chart) {
+          this.setupData()
+          this.draw()
+        }
       },
     },
 
