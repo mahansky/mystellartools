@@ -217,7 +217,7 @@
 
   export default {
     metaInfo: () => ({
-      title: 'Stellar Wallet and Tools to operate with Stellar network',
+      title: 'Secure and easy to use Stellar Wallet',
     }),
 
     layout: 'default',

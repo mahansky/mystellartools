@@ -7,7 +7,11 @@
                         <div class="display-2">
                             Stellar Network
                         </div>
-                        <div @click="helpDialog = true" class="grey--text pointer mt-2">Add your node</div>
+                        <div  class="grey--text mt-2">
+                            <span>Early version</span> -
+                            <span>Data is updated every 5 minutes</span> -
+                            <span class="pointer" @click="helpDialog = true">Add your node</span>
+                        </div>
                     </v-flex>
                 </v-layout>
             </v-container>
