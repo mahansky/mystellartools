@@ -7,6 +7,14 @@ export const groups = {
       },
     },
   },
+  ibm: {
+    color: {
+      background: '#E8DAEF',
+      highlight: {
+        background: '#E8DAEF',
+      },
+    },
+  }
 }
 
 export const nodes = {
