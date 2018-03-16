@@ -9,8 +9,7 @@ class PeersController extends Controller
 {
     public function index()
     {
-//        return Peer::with('ledger')->where('updated_at', '>', now()->subMinutes(10))->get();
-        return Peer::with('ledger')->get();
+        return Peer::with('ledger')->where('updated_at', '>', now()->subMinutes(10))->get();
     }
 
     public function store()

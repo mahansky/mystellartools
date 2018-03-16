@@ -181,7 +181,10 @@
         nodes: {
           shape: 'square',
           size: 10,
-          borderWidth: 3,
+          borderWidth: 5,
+          font: {
+            size: 10,
+          },
         },
         groups: knownGroups,
       },
@@ -228,17 +231,11 @@
 
         this.nodes.forEach(node => {
           if (node.ledger && node.ledger.quorum) {
-            node.ledger.quorum.v.forEach(peer => {
-              if (typeof peer === 'string') {
-                let otherNode = this.findNodeByPublicKey(peer)
-
-                if (otherNode) {
-                  edges.push({
-                    from: node.id,
-                    to: otherNode.id
-                  })
-                }
-              }
+            this.getConnectedNodes(node.ledger.quorum.v).forEach(otherNode => {
+              edges.push({
+                from: node.id,
+                to: otherNode.id
+              })
             })
           }
         })
@@ -248,6 +245,24 @@
     },
 
     methods: {
+      getConnectedNodes (qset) {
+        let nodes = []
+
+        qset.forEach(peer => {
+          if (typeof peer === 'string') {
+            let key = this.findNodeByPublicKey(peer)
+
+            if (key) {
+              nodes.push(key)
+            }
+          } else {
+            nodes.push(...this.getConnectedNodes(peer.v))
+          }
+        })
+
+        return nodes
+      },
+
       findNodeByPublicKey (publicKey) {
         return this.nodes.find(node => node.public_key === publicKey)
       },
@@ -295,25 +310,15 @@
           return statuses[3]
         }
 
-        if (ledger.fail_at) {
-          let problematic = 0
-
-          if (ledger.missing) {
-            problematic += ledger.missing.length
-          }
-
-          if (ledger.disagree) {
-            problematic += ledger.disagree.length
-          }
-
-          if (problematic === 0) {
-            return statuses[0]
-          } else if (problematic < ledger.fail_at) {
-            return statuses[1]
-          }
+        if (ledger.phase === 'expired') {
+          return statuses[2]
         }
 
-        return statuses[2]
+        if ((ledger.fail_at && ledger.fail_at === 1) || (ledger.missing && ledger.missing.length > 1)) {
+          return statuses[1]
+        }
+
+        return statuses[0]
       },
     },
 
@@ -336,7 +341,7 @@
   }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
     .left-and-right {
         td:first-child {
             text-align: left !important;
