@@ -67,7 +67,7 @@
                         </div>
                         <v-card>
                             <v-card-text class="grey lighten-3 pl-5 pr-5">
-                                <table width="100%" class="left-and-right">
+                                <table width="100%" class="left-and-right" cellspacing="0">
                                     <tr v-if="ledger.hash">
                                         <td><b>Hash</b></td>
                                         <td v-text="ledger.hash"></td>
@@ -93,14 +93,14 @@
                             <template v-if="ledger.disagree || ledger.missing">
                                 <v-divider></v-divider>
                                 <v-card-text class="grey lighten-3 pl-5 pr-5">
-                                    <table width="100%" class="left-and-right">
+                                    <table width="100%" class="left-and-right" cellspacing="0">
                                         <template v-if="ledger.disagree">
                                             <tr>
                                                 <td class="mb-1"><b>Disagree</b></td>
                                                 <td class="mb-1" v-text="ledger.disagree.length"></td>
                                             </tr>
                                             <tr v-for="pk in ledger.disagree">
-                                                <td colspan="2" class="dense" v-text="pk"></td>
+                                                <td colspan="2" class="small-public-key" v-text="pk"></td>
                                             </tr>
                                         </template>
                                         <template v-if="ledger.missing">
@@ -109,10 +109,18 @@
                                                 <td class="mb-1" v-text="ledger.missing.length"></td>
                                             </tr>
                                             <tr v-for="pk in ledger.missing">
-                                                <td colspan="2" class="dense" v-text="pk"></td>
+                                                <td colspan="2" class="small-public-key" v-text="pk"></td>
                                             </tr>
                                         </template>
                                     </table>
+                                </v-card-text>
+                            </template>
+                            <template v-if="ledger.quorum">
+                                <v-divider></v-divider>
+                                <v-card-text class="grey lighten-3 pl-5 pr-5 qsets">
+                                    <b>Quorum set</b>
+                                    <div class="pb-3"></div>
+                                    <qset :quorum="ledger.quorum"></qset>
                                 </v-card-text>
                             </template>
                         </v-card>
@@ -157,12 +165,17 @@
 <script>
   import axios from 'axios'
   import vis from 'vis'
+  import Qset from './network/qset'
   import { nodes as knownNodes, groups as knownGroups } from '~/stellar/network_nodes'
 
   export default {
     metaInfo: () => ({
       title: 'Stellar Network',
     }),
+
+    components: {
+      Qset,
+    },
 
     layout: 'default',
 
@@ -174,12 +187,12 @@
           smooth: false,
           selfReferenceSize: 10,
           color: {
-            color: '#EEE',
+            color: '#ddd',
             inherit: false,
           }
         },
         nodes: {
-          shape: 'square',
+          shape: 'dot',
           size: 10,
           borderWidth: 5,
           font: {
@@ -340,21 +353,3 @@
     }
   }
 </script>
-
-<style lang="scss" scoped>
-    .left-and-right {
-        td:first-child {
-            text-align: left !important;
-        }
-
-        td:last-child {
-            text-align: right;
-        }
-    }
-
-    td.dense {
-        font-size: 10px;
-        line-height: 14px;
-        word-break: break-all;
-    }
-</style>

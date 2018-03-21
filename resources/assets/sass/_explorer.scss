@@ -14,3 +14,37 @@
   display: inline-block;
   vertical-align: top;
 }
+
+.left-and-right {
+  td:first-child {
+    text-align: left !important;
+  }
+
+  td:last-child {
+    text-align: right;
+  }
+}
+
+.small-public-key {
+  font-size: 10px;
+  line-height: 16px;
+  word-break: break-all;
+}
+
+.qsets {
+  ul {
+    list-style: none;
+
+    & > li:first-child {
+      font-weight: bold;
+    }
+  }
+
+  & > ul {
+    padding-left: 0;
+  }
+
+  li > ul {
+    margin: 10px 0;
+  }
+}
