@@ -100,7 +100,10 @@
                                                 <td class="mb-1" v-text="ledger.disagree.length"></td>
                                             </tr>
                                             <tr v-for="pk in ledger.disagree">
-                                                <td colspan="2" class="small-public-key" v-text="pk"></td>
+                                                <td colspan="2" class="small-public-key">
+                                                    <public-key :value="pk" v-if="pk.length > 5"></public-key>
+                                                    <span v-else v-text="pk"></span>
+                                                </td>
                                             </tr>
                                         </template>
                                         <template v-if="ledger.missing">
@@ -109,7 +112,10 @@
                                                 <td class="mb-1" v-text="ledger.missing.length"></td>
                                             </tr>
                                             <tr v-for="pk in ledger.missing">
-                                                <td colspan="2" class="small-public-key" v-text="pk"></td>
+                                                <td colspan="2" class="small-public-key">
+                                                    <public-key :value="pk" v-if="pk.length > 5"></public-key>
+                                                    <span v-else v-text="pk"></span>
+                                                </td>
                                             </tr>
                                         </template>
                                     </table>

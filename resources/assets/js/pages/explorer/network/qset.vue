@@ -18,13 +18,25 @@
 
           quorum.v.forEach(node => {
             if (typeof node === 'string') {
-              nodes.push(h('li', {attrs: {'class': 'small-public-key'}}, node))
+              nodes.push(h(
+                'li',
+                {attrs: {'class': 'small-public-key'}},
+                this.publicKeyComponent(h, node)
+              ))
             } else {
               nodes.push(h('li', [h('ul', this.createChildrenElements(h, node))]))
             }
           })
 
           return [main, ...nodes]
+        },
+
+        publicKeyComponent (h, key) {
+          if (key.length > 5) {
+            return [h('public-key', {props: {value: key}})]
+          }
+
+          return key
         },
       },
     }
