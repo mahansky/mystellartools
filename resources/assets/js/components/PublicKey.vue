@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="public-key">
-            <span v-text="value.slice(0, 6)"></span>
+            <pre v-text="value.slice(0, 6)"></pre>
             <v-menu
                     offset-x
                     :close-on-content-click="false"
@@ -49,7 +49,7 @@
                     </v-card-actions>
                 </v-card>
             </v-menu>
-            <span v-text="value.slice(50)"></span>
+            <pre v-text="value.slice(50)"></pre>
             <small
                     class="contact-name blue blue--text"
                     v-text="contact"
@@ -62,6 +62,7 @@
 <script>
   import Clipboard from 'clipboard'
   import knownAccounts from '~/stellar/known_accounts'
+  import { nodes } from '~/stellar/network_nodes'
   import { find } from 'lodash'
   import { events } from '~/utils'
 
@@ -99,6 +100,10 @@
 
         if (this.value in knownAccounts) {
           return knownAccounts[this.value].name
+        }
+
+        if (this.value in nodes) {
+          return nodes[this.value].label
         }
 
         return null

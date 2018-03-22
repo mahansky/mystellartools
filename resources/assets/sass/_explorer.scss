@@ -14,3 +14,65 @@
   display: inline-block;
   vertical-align: top;
 }
+
+.left-and-right {
+  td:first-child {
+    text-align: left !important;
+  }
+
+  td:last-child {
+    text-align: right;
+  }
+}
+
+.small-public-key {
+  font-size: 10px;
+  line-height: 16px;
+  word-break: break-all;
+
+  i.icon {
+    font-size: 18px;
+    line-height: 18px;
+    height: 16px;
+  }
+
+  .contact-name {
+    font-size: 100% !important;
+    border: none !important;
+  }
+}
+
+.qsets {
+  ul {
+    list-style: none;
+    padding-left: 0;
+
+    > li:first-child {
+      font-weight: bold;
+    }
+
+    > li {
+      position: relative;
+
+      p {
+        position: relative;
+        top: 10px;
+        background: #eee;
+        margin: 0;
+        padding-left: 5px;
+      }
+    }
+
+    > li:not(:first-child) {
+      padding-left: 20px;
+      border: 1px dotted black;
+      border-width: 0 0 1px 1px;
+    }
+  }
+
+  li > ul {
+    padding-top: 10px;
+    position: relative;
+    top: 1px;
+  }
+}
