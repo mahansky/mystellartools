@@ -11,7 +11,7 @@
           let main = h(
             'li',
             {attrs: {'class': 'small-public-key'}},
-            `Nodes: ${quorum.v.length} (must agree: ${quorum.t})`
+            [h('p', `Nodes: ${quorum.v.length} (must agree: ${quorum.t})`)]
           )
 
           let nodes = []
@@ -33,10 +33,10 @@
 
         publicKeyComponent (h, key) {
           if (key.length > 5) {
-            return [h('public-key', {props: {value: key}})]
+            return [h('p', [h('public-key', {props: {value: key}})])]
           }
 
-          return key
+          return [h('p', key)]
         },
       },
     }

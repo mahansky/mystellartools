@@ -125,8 +125,7 @@
                                 <v-divider></v-divider>
                                 <v-card-text class="grey lighten-3 pl-5 pr-5 qsets">
                                     <b>Quorum set</b>
-                                    <div class="pb-3"></div>
-                                    <qset :quorum="ledger.quorum"></qset>
+                                    <qset :quorum="ledger.quorum" class="mt-1 mb-3"></qset>
                                 </v-card-text>
                             </template>
                         </v-card>
