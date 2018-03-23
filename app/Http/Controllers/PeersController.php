@@ -17,11 +17,13 @@ class PeersController extends Controller
         $this->middleware('api.token');
 
         foreach (request()->all() as $peer) {
+            [$ip, $port] = explode(':', $peer['address']);
+
             Peer::updateOrCreate([
                 'public_key' => $peer['id']
             ], [
-                'ip'         => $peer['ip'],
-                'port'       => $peer['port'],
+                'ip'         => $ip,
+                'port'       => $port,
                 'version'    => $peer['ver'],
                 'olver'      => $peer['olver'],
                 'updated_at' => now(),
