@@ -1,35 +1,56 @@
 <template>
-    <div>
-        <div class="pattern py-5">
-            <v-container>
-                <v-layout>
-                    <v-flex lg12 xl10 offset-xl1>
-                        <div class="display-2">
-                            Stellar Network
-                        </div>
-                        <div  class="grey--text mt-2">
-                            <span>Early version</span> -
-                            <span>Data is updated every 5 minutes</span> -
-                            <span class="pointer" @click="helpDialog = true">Add your node</span>
-                        </div>
-                    </v-flex>
-                </v-layout>
-            </v-container>
-        </div>
+    <v-layout row wrap>
+        <v-flex xs12>
+            <div class="headline">
+                Stellar Network
+                <v-btn loading v-if="loading" flat class="blue--text my-0 mx-0" small></v-btn>
+            </div>
+        </v-flex>
+        <v-flex sm12 md8>
+            <div class="caption grey--text mb-4 mt-4">MAP OF STELLAR-CORE NODES</div>
+        </v-flex>
+        <v-flex sm12 md4>
+            <div class="caption grey--text mb-4 mt-4 pointer"
+                 @click="infoVisible = !infoVisible"
+                 v-tooltip:left="{ html: 'Toggle information panel' }"
+            >
+                INFORMATION
+                <v-icon class="pl-2 grey--text caption">remove_red_eye</v-icon>
+            </div>
+        </v-flex>
+        <v-flex sm12 :class="{md8: infoVisible}">
+            <template v-if="!loading">
+                <span v-if="nodes.length === 0" class="grey--text">
+                    Node watching the network is currently offline.
+                </span>
+                <div v-else ref="network"></div>
+            </template>
+        </v-flex>
+        <v-flex sm12 md4 v-if="infoVisible">
+            <div>
+                <a href="#" @click="helpDialog = true">Add your node</a>
 
-        <v-container class="mt-3">
-            <v-layout>
-                <v-flex lg12 xl10 offset-xl1>
-                    <v-btn loading flat class="blue--text" v-if="loading"></v-btn>
-                    <template v-else>
-                        <span v-if="nodes.length === 0" class="grey--text">
-                            Node watching the network is currently offline.
-                        </span>
-                        <div v-else ref="network"></div>
-                    </template>
-                </v-flex>
-            </v-layout>
-        </v-container>
+                <table class="mt-4 mb-4 map-legend" cellpadding="0">
+                    <tr>
+                        <td><v-icon class="green--text">fiber_manual_record</v-icon></td>
+                        <td>No problems</td>
+                    </tr>
+                    <tr>
+                        <td><v-icon class="orange--text">fiber_manual_record</v-icon></td>
+                        <td>Node will fail after one more node goes missing or disagrees with it OR node is missing two or more nodes from its quorum set</td>
+                    </tr>
+                    <tr>
+                        <td><v-icon class="red--text">fiber_manual_record</v-icon></td>
+                        <td>Node is not synced with the network</td>
+                    </tr>
+                </table>
+
+                <p class="grey--text">
+                    Disclaimer: This map is based on the data from one stellar-core node.
+                    It may not reflect the actual state of the network.
+                </p>
+            </div>
+        </v-flex>
 
         <v-dialog v-model="nodeDialog" v-if="selectedNode" width="500px" lazy absolute>
             <v-card>
@@ -41,8 +62,8 @@
                         <tr>
                             <td width="100"><b>Status</b></td>
                             <td
-                                :style="ledgerStatus(selectedNode.ledger).style"
-                                v-text="ledgerStatus(selectedNode.ledger).text"
+                                    :style="ledgerStatus(selectedNode.ledger).style"
+                                    v-text="ledgerStatus(selectedNode.ledger).text"
                             ></td>
                         </tr>
                         <tr>
@@ -164,7 +185,7 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
-    </div>
+    </v-layout>
 </template>
 
 <script>
@@ -182,10 +203,11 @@
       Qset,
     },
 
-    layout: 'default',
+    layout: 'explorer',
 
     data: (vm) => ({
       loading: true,
+      infoVisible: true,
       peers: [],
       options: {
         edges: {
