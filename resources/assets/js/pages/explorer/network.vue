@@ -209,25 +209,6 @@
       loading: true,
       infoVisible: true,
       peers: [],
-      options: {
-        edges: {
-          smooth: false,
-          selfReferenceSize: 10,
-          color: {
-            color: '#ddd',
-            inherit: false,
-          }
-        },
-        nodes: {
-          shape: 'dot',
-          size: 10,
-          borderWidth: 5,
-          font: {
-            size: 10,
-          },
-        },
-        groups: knownGroups,
-      },
       nodeDialog: false,
       selectedNode: null,
       helpDialog: false,
@@ -363,6 +344,33 @@
     },
 
     mounted () {
+      this.options = {
+        edges: {
+          smooth: false,
+          selfReferenceSize: 10,
+          color: {
+            color: '#ddd',
+            inherit: false,
+          },
+          arrows: {
+            to: {
+              enabled: true,
+              scaleFactor: .4,
+            },
+          },
+        },
+        nodes: {
+          shape: 'dot',
+          size: 10,
+          borderWidth: 5,
+          font: {
+            size: 10,
+          },
+        },
+        groups: knownGroups,
+      }
+
+
       axios.get('/api/peers')
         .then(response => {
           this.peers = response.data
