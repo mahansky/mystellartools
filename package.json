@@ -18,6 +18,8 @@
         "laravel-mix": "^1.0"
     },
     "dependencies": {
+        "@ledgerhq/hw-app-str": "^4.14.0",
+        "@ledgerhq/hw-transport-u2f": "^4.13.0",
         "axios": "^0.16.2",
         "bignumber.js": "^4.1.0",
         "clipboard": "^1.7.1",
@@ -29,7 +31,6 @@
         "moment": "^2.18.1",
         "qrious": "^4.0.2",
         "shebang-loader": "^0.0.1",
-        "stellar-ledger-api": "^2.0.2",
         "stellar-sdk": "^0.7.3",
         "vform": "^0.8.1",
         "vis": "^4.21.0",

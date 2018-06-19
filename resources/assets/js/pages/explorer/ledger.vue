@@ -91,14 +91,14 @@
                 </v-flex>
                 <v-flex xs12 md6>
                     <div class="info-block">
-                        <b>Base Fee</b>
-                        <span v-text="ledger.base_fee"></span>
+                        <b>Base Fee <small class="grey--text">(in stroops)</small></b>
+                        <span v-text="ledger.base_fee_in_stroops"></span>
                     </div>
                 </v-flex>
                 <v-flex xs12 md6>
                     <div class="info-block">
-                        <b>Base Reserve</b>
-                        <span v-text="ledger.base_reserve"></span>
+                        <b>Base Reserve <small class="grey--text">(in stroops)</small></b>
+                        <span v-text="ledger.base_reserve_in_stroops"></span>
                     </div>
                 </v-flex>
                 <v-flex xs12 md6>

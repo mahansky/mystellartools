@@ -27,15 +27,20 @@
                     </v-flex>
                 </v-layout>
             </template>
-            <v-layout row wrap v-else>
-                <v-flex xs12>
-                    <v-alert info value="true">
-                        This account doesn't exist on the Stellar network.
-                        <br>
-                        If you want to create it, send 1 XLM to its address.
-                    </v-alert>
-                </v-flex>
-            </v-layout>
+            <div v-else id="noaccount">
+                <v-container>
+                    <v-layout>
+                        <v-flex>
+                            <v-alert error value="true" class="mt-5">
+                                This account doesn't exist on the Stellar network.
+                                <br>
+                                If you want to create it, send 1 XLM to its address:
+                                <b v-text="publicKey"></b>
+                            </v-alert>
+                        </v-flex>
+                    </v-layout>
+                </v-container>
+            </div>
         </v-container>
     </main>
 </template>
@@ -113,7 +118,9 @@
             vm.balances = account.balances
           })
           .catch(function (error) {
-            flash(error, 'error')
+            if (error.name !== 'NotFoundError') {
+              flash(error, 'error')
+            }
           })
           .then(() => {
             this.loaded = true
@@ -125,7 +132,7 @@
 
         vm.eventSource = StellarServer().payments()
           .forAccount(this.$store.getters.keypair.publicKey())
-          .cursor('now')
+          .cursor((new Date).getTime())
           .stream({
             onmessage: () => {
               vm.fetchData()
@@ -148,3 +155,15 @@
     },
   }
 </script>
+
+<style>
+    #noaccount {
+        width: 100%;
+        height: calc(100% - 64px);
+        background: #fafafa;
+        position: absolute;
+        top: 64px;
+        left: 0;
+        z-index: 3;
+    }
+</style>
