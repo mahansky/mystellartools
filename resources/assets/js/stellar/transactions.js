@@ -1,8 +1,8 @@
 import { StellarServer, Stellar } from './index'
 import { Asset, Operation, StrKey, TransactionBuilder, Keypair } from 'stellar-sdk'
 import { flash, events } from '~/utils'
+import { signTransaction } from './ledger';
 import store from '~/store'
-import StellarLedger from 'stellar-ledger-api'
 
 const xdr = require('stellar-base').xdr
 
@@ -44,18 +44,13 @@ function _submitTx (keypair, operation, memo) {
       if (store.getters.keypairLedger) {
         flash('Sign the transaction using your Ledger', 'info')
 
-        return new StellarLedger.Api(new StellarLedger.comm(120)).signTx_async(store.getters.keypairBip32Path, transaction).then(result => {
-          let signature = result['signature']
-          let keyPair = Keypair.fromPublicKey(keypair.publicKey())
-          let hint = keyPair.signatureHint()
-          let decorated = new xdr.DecoratedSignature({hint, signature})
-
-          transaction.signatures.push(decorated)
-
-          return StellarServer().submitTransaction(transaction)
-        }).catch(err => {
-          throw new Error('Problem with signing the transaction with Ledger: ' + err)
-        })
+        return signTransaction(transaction, store.getters.keypairBip32Path, keypair)
+          .catch(err => {
+            throw new Error('Problem with signing the transaction with Ledger: ' + err)
+          })
+          .then(transaction => {
+            return StellarServer().submitTransaction(transaction)
+          })
       } else {
         transaction.sign(keypair)
 

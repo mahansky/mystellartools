@@ -139,7 +139,7 @@
                 <v-btn
                         v-if="unlocked"
                         dark icon
-                        v-tooltip:bottom="{ html: 'Unlocked' }"
+                        v-tooltip:left="{ html: 'Unlocked' }"
                        :class="{ 'mr-0': canVerifyPublicKey }"
                 >
                     <v-icon>lock_open</v-icon>
@@ -147,7 +147,7 @@
                 <v-btn
                         v-else
                         dark icon
-                        v-tooltip:bottom="{ html: 'Click to unlock' }"
+                        v-tooltip:left="{ html: 'Click to unlock' }"
                         @click.stop="clickedLock">
                     <v-icon>https</v-icon>
                 </v-btn>
@@ -155,18 +155,18 @@
                         v-if="canVerifyPublicKey"
                         @click="verifyPublicKey"
                         :loading="isVerifyingPublicKey"
-                        v-tooltip:bottom="{ html: 'Verify public key on Ledger' }"
+                        v-tooltip:left="{ html: 'Verify public key on Ledger' }"
                         class="ml-0"
                         dark icon
                 >
                     <v-icon>desktop_windows</v-icon>
                 </v-btn>
             </div>
-            <v-btn icon @click.stop="openDialog" v-tooltip:bottom="{ html: 'Settings' }" class="hidden-md-and-down">
+            <v-btn icon @click.stop="openDialog" v-tooltip:left="{ html: 'Settings' }" class="hidden-md-and-down">
                 <v-icon>settings</v-icon>
             </v-btn>
             <v-spacer class="hidden-md-and-down"></v-spacer>
-            <v-btn icon @click="logout" v-tooltip:bottom="{ html: 'Exit' }">
+            <v-btn icon @click="logout" v-tooltip:left="{ html: 'Exit' }">
                 <v-icon>exit_to_app</v-icon>
             </v-btn>
         </v-toolbar>
@@ -212,18 +212,25 @@
             </v-card>
         </v-dialog>
 
+        <v-dialog width="500" v-model="switchDialog">
+            <v-card class="white">
+                <accountswitch @done="switchedAccount"></accountswitch>
+            </v-card>
+        </v-dialog>
+
         <envelope></envelope>
     </v-app>
 </template>
 
 <script>
-  import StellarLedger from 'stellar-ledger-api'
   import Settings from './app/settings.vue'
   import Envelope from './app/envelope.vue'
+  import Accountswitch from './app/settings/accounts/accountswitch.vue'
   import axios from 'axios'
   import { flash, logout, events } from '~/utils'
   import { Stellar } from '~/stellar'
   import { find } from 'lodash'
+  import { getPublicKey } from '~/stellar/ledger'
 
   const CryptoJS = require('crypto-js')
 
@@ -233,6 +240,7 @@
     components: {
       Settings,
       Envelope,
+      Accountswitch,
     },
 
     data () {
@@ -246,6 +254,7 @@
           password: '',
         },
         isVerifyingPublicKey: false,
+        switchDialog: false,
       }
     },
 
@@ -317,8 +326,14 @@
         if (account && account.secret_key) {
           this.passwordDialog = true
         } else {
-          this.dialog = !this.dialog
+          this.switchDialog = true
         }
+      },
+
+      switchedAccount () {
+        this.switchDialog = false
+
+        this.$router.push({name: 'balance'})
       },
 
       closeDialog () {
@@ -330,8 +345,7 @@
 
         flash('Check your Ledger', 'info')
 
-        new StellarLedger.Api(new StellarLedger.comm(60))
-          .getPublicKey_async(this.$store.getters.keypairBip32Path, false, true)
+        getPublicKey(this.$store.getters.keypairBip32Path, false, true)
           .catch(flash)
           .then(() => { this.isVerifyingPublicKey = false })
       },

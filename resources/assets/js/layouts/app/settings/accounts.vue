@@ -89,45 +89,7 @@
                 </v-card-text>
             </v-flex>
             <v-flex lg6>
-                <v-card-text>
-                    <b>Switch to another account</b>
-                    <p>
-                        You can input Public or Secret key.
-                        Using Secret, account will be automatically unlocked.
-                    </p>
-                    <p v-if="$store.getters.keypair && !unlocked" class="blue--text">
-                        Use this form to unlock your account (enter your Secret key).
-                    </p>
-                    <v-form v-model="viewForm.valid" ref="viewFormRef" @submit.prevent="">
-                        <v-checkbox
-                                label="Switching to Ledger Nano S account?"
-                                v-model="viewForm.ledger"
-                                light
-                                color="blue"
-                                hide-details
-                        ></v-checkbox>
-                        <v-text-field
-                                v-if="!viewForm.ledger"
-                                label="Public or Secret key"
-                                v-model="viewForm.key"
-                                :rules="viewForm.rules"
-                        ></v-text-field>
-                        <v-text-field
-                                v-if="viewForm.ledger"
-                                label="Bip 32 Path"
-                                v-model="viewForm.bip32Path"
-                                :rules="viewForm.bip32PathRules"
-                        ></v-text-field>
-                    </v-form>
-                    <v-layout row>
-                        <v-spacer></v-spacer>
-                        <v-btn
-                                flat
-                                :class="{'blue--text': viewForm.valid, 'red--text': !viewForm.valid}"
-                                @click="view"
-                        >Switch</v-btn>
-                    </v-layout>
-                </v-card-text>
+                <accountswitch @done="closeDialog"></accountswitch>
             </v-flex>
         </v-layout>
     </v-container>
@@ -138,48 +100,17 @@
   import { flash } from '~/utils'
   import { contains, filter, includes, map } from 'lodash'
   import { ruleBip32Path } from '~/stellar/index'
+  import { getPublicKey } from '~/stellar/ledger'
+  import Accountswitch from './accounts/accountswitch.vue'
   import Vue from 'vue'
-  import axios from 'axios'
-  import StellarLedger from 'stellar-ledger-api'
 
   export default {
+    components: {
+      Accountswitch,
+    },
+
     data () {
       return {
-        viewForm: {
-          valid: false,
-          ledger: false,
-          bip32Path: "44'/148'/0'",
-          bip32PathRules: [(v) => ruleBip32Path(v)],
-          key: '',
-          rules: [(v) => {
-            if (this.viewForm.ledger) {
-              return true
-            }
-
-            if (new RegExp('^.+\\*.+$').test(v)) {
-              return true
-            }
-
-            if (this.viewForm.key.startsWith('G')) {
-              try {
-                Stellar.Keypair.fromPublicKey(v)
-
-                return true
-              } catch (e) {
-                return 'Invalid key'
-              }
-            } else {
-              try {
-                Stellar.Keypair.fromSecret(v)
-
-                return true
-              } catch (e) {
-                return 'Invalid key'
-              }
-            }
-          }],
-        },
-
         addForm: {
           loading: false,
           pw: false,
@@ -251,57 +182,15 @@
     },
 
     methods: {
-      view () {
-        if (this.viewForm.ledger) {
-          try {
-            new StellarLedger.Api(new StellarLedger.comm(20)).getPublicKey_async(this.viewForm.bip32Path).then((result) => {
-              this.$store.dispatch('storeKeypair', {keypair: Stellar.Keypair.fromPublicKey(result['publicKey'])})
-              this.$store.dispatch('accessWithLedger', {bip32Path: this.viewForm.bip32Path})
-
-              this.closeDialog()
-
-              this.$router.push({name: 'balance'})
-            }).catch(() => {
-              flash('Failed to connect to Ledger', 'error')
-            })
-          } catch (err) {
-            flash('Failed to connect to Ledger', 'error')
-          }
-        } else {
-          if (this.$refs.viewFormRef.validate()) {
-            new Promise((r) => {
-              if (Stellar.StrKey.isValidEd25519SecretSeed(this.viewForm.key)) {
-                r(Stellar.Keypair.fromSecret(this.viewForm.key))
-              } else {
-                resolveAccountId(this.viewForm.key).then(({account_id}) => {
-                  r(Stellar.Keypair.fromPublicKey(account_id))
-                })
-              }
-            })
-              .then(keypair => {
-                this.$store.dispatch('storeKeypair', {keypair})
-
-                this.viewForm.key = ''
-
-                this.closeDialog()
-
-                this.$router.push({name: 'balance'})
-              })
-              .catch(flash)
-          }
-        }
-      },
-
       add () {
         if (this.$refs.addFormRef.validate()) {
           this.addForm.loading = true
 
           if (this.addForm.ledger) {
-            try {
-              new StellarLedger.Api(new StellarLedger.comm(20)).getPublicKey_async(this.addForm.bip32Path).then((result) => {
+              getPublicKey.then(publicKey => {
                 this.$store.dispatch('storeAccount', {
                   name: this.addForm.name,
-                  public_key: result['publicKey'],
+                  public_key: publicKey,
                   bip32Path: this.addForm.bip32Path,
                 })
 
@@ -313,11 +202,6 @@
               }).then(() => {
                 this.addForm.loading = false
               })
-            } catch (err) {
-              this.addForm.loading = false
-
-              flash('Problem with contacting Ledger Nano S', 'error')
-            }
           } else {
             new Promise((r) => {
               if (this.addForm.key.indexOf('*') !== -1) {
@@ -357,6 +241,7 @@
 
       closeDialog () {
         this.$parent.$parent.$parent.closeDialog()
+        this.$router.push({name: 'balance'})
       },
 
       use (account) {
@@ -377,8 +262,6 @@
         flash('Account switched', 'success')
 
         this.closeDialog()
-
-        this.$router.push({name: 'balance'})
       },
 
       remove (account) {

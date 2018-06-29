@@ -52,6 +52,10 @@
     background: url(/img/bg.png) top right no-repeat;
   }
 
+  &.application.whitebg {
+    background-color: white;
+  }
+
   .img-fluid {
     max-width: 100%;
   }

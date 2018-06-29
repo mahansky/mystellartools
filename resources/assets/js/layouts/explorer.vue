@@ -61,6 +61,7 @@
 
 <script>
   import { Stellar } from '~/stellar'
+  import { flash } from '~/utils'
 
   export default {
     data: () => ({
@@ -78,6 +79,10 @@
           this.$router.push({name: 'explorer.account', params: {account: this.input}})
         } else if (! isNaN(parseInt(this.input))) {
           this.$router.push({name: 'explorer.ledger', params: {ledger: this.input}})
+        } else if (this.input.indexOf('*') !== -1) {
+          Stellar.FederationServer.resolve(this.input).then(({account_id}) => {
+            this.$router.push({name: 'explorer.account', params: {account: account_id}})
+          }).catch(flash)
         } else {
           this.$router.push({name: 'explorer.transaction', params: {transaction: this.input}})
         }
