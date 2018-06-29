@@ -1,5 +1,5 @@
 <template>
-    <v-app id="frontpage" :class="{landingpage: isLanding}">
+    <v-app id="frontpage" :class="{landingpage: isLanding, whitebg: isWhiteBackground}">
         <header>
             <v-container class="px-lg-0">
                 <v-layout>
@@ -54,7 +54,11 @@
     computed: {
       isLanding () {
         return this.$route.name === 'welcome'
-      }
+      },
+
+      isWhiteBackground() {
+        return ['welcome', 'help', 'txsigner', 'paper', 'claim'].indexOf(this.$route.name)
+      },
     }
   }
 </script>

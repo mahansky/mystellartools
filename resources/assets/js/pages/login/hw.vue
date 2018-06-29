@@ -47,7 +47,7 @@
 </template>
 
 <script>
-  import StellarLedger from 'stellar-ledger-api'
+  import { getAppVersion, getPublicKey } from '~/stellar/ledger'
   import { Stellar, ruleBip32Path } from '~/stellar'
   import { isMobile } from '~/utils'
 
@@ -68,11 +68,11 @@
         this.isConnected = false
         this.error = 'Failed to connect'
 
-        new StellarLedger.Api(new StellarLedger.comm(Number.MAX_VALUE)).getAppConfiguration_async()
-          .then(result => {
+        getAppVersion()
+          .then(version => {
             this.isConnected = true
             this.error = ''
-            this.ledgerAppVersion = result.version
+            this.ledgerAppVersion = version
           })
           .catch(() => {
             this.error = 'Problem with connecting to Ledger'
@@ -86,10 +86,9 @@
 
         this.loading = true
 
-        try {
-          new StellarLedger.Api(new StellarLedger.comm(20)).getPublicKey_async(this.bip32Path).then((result) => {
+          getPublicKey(this.bip32Path).then(publicKey => {
             this.$store.dispatch('storeKeypair', {
-              keypair: Stellar.Keypair.fromPublicKey(result['publicKey'])
+              keypair: Stellar.Keypair.fromPublicKey(publicKey)
             })
 
             this.$store.dispatch('accessWithLedger', {
@@ -103,10 +102,6 @@
           }).then(() => {
             this.loading = false
           })
-        } catch (err) {
-          this.error = 'Failed to connect'
-          this.loading = false
-        }
       },
     },
 
