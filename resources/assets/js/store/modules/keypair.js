@@ -5,6 +5,7 @@ export const state = {
   ledger: false,
   ledgerAppVersion: '',
   bip32Path: '',
+  stellarGuard: false,
 }
 
 export const mutations = {
@@ -22,6 +23,10 @@ export const mutations = {
     state.bip32Path = bip32Path
     state.ledgerAppVersion = version
   },
+
+  [types.STELLAR_GUARD] (state, enabled) {
+    state.stellarGuard = enabled
+  }
 }
 
 export const actions = {

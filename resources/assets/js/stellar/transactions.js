@@ -6,31 +6,42 @@ import store from '~/store'
 
 const xdr = require('stellar-base').xdr
 
-// Submit Transaction
+function _buildTx (keypair) {
+  return transactions.loadAccount(keypair)
+    .then(account => {
+      
+    })
+}
+
 function _submitTx (keypair, operation, memo) {
   return transactions.loadAccount(keypair)
     .then(account => {
-      const opts = {}
+      let transaction
+      
+      if (typeof operation === 'string') {
+        transaction = new Stellar.Transaction(operation)
+      } else {
+        const opts = {}
 
-      if (store.getters.transactionsTimeBounds) {
-        opts.timebounds = {
-          minTime: store.getters.transactionsTimeBounds.from,
-          maxTime: store.getters.transactionsTimeBounds.to,
+        if (store.getters.transactionsTimeBounds) {
+          opts.timebounds = {
+            minTime: store.getters.transactionsTimeBounds.from,
+            maxTime: store.getters.transactionsTimeBounds.to,
+          }
         }
+        
+        transaction = new TransactionBuilder(account, opts).addOperation(operation)
+
+        if (!memo && store.getters.transactionsMemo) {
+          memo = new Stellar.Memo(store.getters.transactionsMemo.type.split('_')[1].toLowerCase(), store.getters.transactionsMemo.value)
+        }
+  
+        if (memo) {
+          transaction.addMemo(memo)
+        }
+  
+        transaction = transaction.build()
       }
-
-      let transaction = new TransactionBuilder(account, opts)
-        .addOperation(operation)
-
-      if (!memo && store.getters.transactionsMemo) {
-        memo = new Stellar.Memo(store.getters.transactionsMemo.type.split('_')[1].toLowerCase(), store.getters.transactionsMemo.value)
-      }
-
-      if (memo) {
-        transaction.addMemo(memo)
-      }
-
-      transaction = transaction.build()
 
       if (!store.getters.keypairLedger && !store.getters.keypairCanSign) {
         events.$emit('transactions:manual-signing', {
@@ -124,4 +135,8 @@ export const transactions = {
   setOptions: (keypair, attributes) => {
     return _submitTx(keypair, Operation.setOptions(attributes))
   },
+
+  raw: (keypair, transaction) => {
+    return _submitTx(keypair, transaction)
+  }
 }

@@ -8,11 +8,13 @@ export const Stellar = require('stellar-sdk')
 export const BASE_RESERVE = 0.5
 export const STARTING_BALANCE = 2 * BASE_RESERVE
 
-Stellar.Network.use(new Stellar.Network(store.getters.transactionsNetwork.passphrase))
+const networkSettings = store.getters.transactionsNetwork
 
-let horizonUrl = store.getters.transactionsNetwork.horizonUrl 
-  ? store.getters.transactionsNetwork.horizonUrl
-  : window.config.horizon_url
+Stellar.Network.use(new Stellar.Network(networkSettings.passphrase))
+
+let horizonUrl = networkSettings.horizonUrl 
+  ? networkSettings.horizonUrl
+  : window.config[networkSettings.type === 'main' ? 'horizon_url' : 'horizon_testnet_url']
 
 export function HorizonURL (url) {
   if (url !== undefined) {

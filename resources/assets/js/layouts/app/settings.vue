@@ -10,6 +10,7 @@
                     <v-tabs-item href="#accounts">Accounts</v-tabs-item>
                     <v-tabs-item href="#contacts">Contacts</v-tabs-item>
                     <v-tabs-item href="#options">Transactions</v-tabs-item>
+                    <v-tabs-item href="#stellarguard">StellarGuard</v-tabs-item>
                     <v-tabs-slider class="white"></v-tabs-slider>
                 </v-tabs-bar>
             </v-toolbar>
@@ -23,6 +24,9 @@
                 <v-tabs-content id="options" key="options" lazy>
                     <transactions></transactions>
                 </v-tabs-content>
+                <v-tabs-content id="stellarguard" key="stellarguard" lazy>
+                    <stellar-guard></stellar-guard>
+                </v-tabs-content>
             </v-tabs-items>
         </v-tabs>
 
@@ -34,6 +38,7 @@
   import Accounts from './settings/accounts.vue'
   import Contacts from './settings/contacts.vue'
   import Transactions from './settings/transactions.vue'
+  import StellarGuard from './settings/stellarguard.vue'
   import { events } from '~/utils'
 
   export default {
@@ -41,11 +46,12 @@
       Accounts,
       Contacts,
       Transactions,
+      StellarGuard,
     },
 
     data () {
       return {
-        active: 'accounts',
+        active: 'stellarguard',
       }
     },
 
