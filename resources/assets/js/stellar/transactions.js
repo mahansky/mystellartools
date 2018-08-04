@@ -1,23 +1,17 @@
 import { StellarServer, Stellar } from './index'
 import { Asset, Operation, StrKey, TransactionBuilder, Keypair } from 'stellar-sdk'
 import { flash, events } from '~/utils'
-import { signTransaction } from './ledger';
+import { signTransaction } from './ledger'
 import store from '~/store'
+import StellarGuardSdk from '@stellarguard/sdk'
 
 const xdr = require('stellar-base').xdr
 
-function _buildTx (keypair) {
-  return transactions.loadAccount(keypair)
-    .then(account => {
-      
-    })
-}
-
-function _submitTx (keypair, operation, memo) {
+function _buildTx (keypair, operation, memo) {
   return transactions.loadAccount(keypair)
     .then(account => {
       let transaction
-      
+
       if (typeof operation === 'string') {
         transaction = new Stellar.Transaction(operation)
       } else {
@@ -29,17 +23,17 @@ function _submitTx (keypair, operation, memo) {
             maxTime: store.getters.transactionsTimeBounds.to,
           }
         }
-        
+
         transaction = new TransactionBuilder(account, opts).addOperation(operation)
 
         if (!memo && store.getters.transactionsMemo) {
           memo = new Stellar.Memo(store.getters.transactionsMemo.type.split('_')[1].toLowerCase(), store.getters.transactionsMemo.value)
         }
-  
+
         if (memo) {
           transaction.addMemo(memo)
         }
-  
+
         transaction = transaction.build()
       }
 
@@ -59,12 +53,31 @@ function _submitTx (keypair, operation, memo) {
           .catch(err => {
             throw new Error('Problem with signing the transaction with Ledger: ' + err)
           })
-          .then(transaction => {
-            return StellarServer().submitTransaction(transaction)
-          })
       } else {
         transaction.sign(keypair)
 
+        return transaction
+      }
+    })
+}
+
+function _submitTx (keypair, operation, memo) {
+  return _buildTx(keypair, operation, memo)
+    .then(async transaction => {
+      if (store.getters.keypairStellarGuard === null && ['main', 'testnet'].indexOf(store.getters.transactionsNetwork.type) !== -1) {
+        try {
+          await StellarGuardSdk.getAccount(keypair.publicKey())
+          store.dispatch('setStellarGuard', true)
+        } catch (e) {
+          store.dispatch('setStellarGuard', false)
+        }
+      }
+
+      if (store.getters.keypairStellarGuard === true) {
+        setTimeout(() => { flash('Transaction submitted to StellarGuard', 'success') }, 10)
+
+        return StellarGuardSdk.submitTransaction(transaction)
+      } else {
         return StellarServer().submitTransaction(transaction)
       }
     })

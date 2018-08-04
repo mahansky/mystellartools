@@ -1,5 +1,5 @@
 import store from '~/store'
-import { flash } from '~/utils'
+import StellarGuardSdk from '@stellarguard/sdk'
 
 // STELLAR SDK, HORIZON
 
@@ -15,6 +15,12 @@ Stellar.Network.use(new Stellar.Network(networkSettings.passphrase))
 let horizonUrl = networkSettings.horizonUrl 
   ? networkSettings.horizonUrl
   : window.config[networkSettings.type === 'main' ? 'horizon_url' : 'horizon_testnet_url']
+
+if (networkSettings.type === 'main') {
+  StellarGuardSdk.usePublicNetwork()
+} else if (networkSettings.type === 'testnet') {
+  StellarGuardSdk.useTestNetwork()
+}
 
 export function HorizonURL (url) {
   if (url !== undefined) {

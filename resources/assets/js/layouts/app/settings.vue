@@ -51,7 +51,7 @@
 
     data () {
       return {
-        active: 'stellarguard',
+        active: 'accounts',
       }
     },
 

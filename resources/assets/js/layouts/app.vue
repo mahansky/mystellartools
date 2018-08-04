@@ -246,7 +246,7 @@
     data () {
       return {
         drawer: true,
-        dialog: true,
+        dialog: false,
         passwordDialog: false,
         passwordForm: {
           valid: false,

@@ -27,7 +27,7 @@ if (mix.inProduction()) {
     'qrious',
     'vis',
     'google-charts',
-    '@stellarguard/sdk',
+    'stellarguard/sdk',
   ])
 }
 
