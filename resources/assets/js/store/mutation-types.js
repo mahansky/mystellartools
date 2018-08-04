@@ -2,6 +2,7 @@
 export const STORE_KEYPAIR = 'STORE_KEYPAIR'
 export const REMOVE_KEYPAIR = 'REMOVE_KEYPAIR'
 export const ACCESS_WITH_LEDGER = 'ACCESS_WITH_LEDGER'
+export const STELLAR_GUARD = 'STELLAR_GUARD'
 
 // flash.js
 export const STORE_FLASH = 'STORE_FLASH'
