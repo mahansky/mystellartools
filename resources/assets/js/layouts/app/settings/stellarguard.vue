@@ -29,17 +29,19 @@
                                 </template>
 
                                 <template v-if="step === 2">
-                                    <v-text-field
-                                        label="StellarGuard Public Key"
-                                        v-model="stellarGuardKey"
-                                        :rules="stellarGuardKeyRules"
-                                        hint="Copied from StellarGuard site after registration"
-                                    ></v-text-field>
-                                    <v-text-field
-                                        label="Backup Public Key"
-                                        v-model="backupKey"
-                                        :rules="backupKeyRules"
-                                    ></v-text-field>
+                                    <v-form ref="form" v-model="valid">
+                                        <v-text-field
+                                            label="StellarGuard Public Key"
+                                            v-model="stellarGuardKey"
+                                            :rules="stellarGuardKeyRules"
+                                            hint="Copied from StellarGuard site after registration"
+                                        ></v-text-field>
+                                        <v-text-field
+                                            label="Backup Public Key"
+                                            v-model="backupKey"
+                                            :rules="backupKeyRules"
+                                        ></v-text-field>
+                                    </v-form>
 
                                     <v-layout>
                                         <v-flex xs6 class="pt-0">
@@ -54,7 +56,8 @@
                                <template v-if="step === 3">
                                    <p>Activate the StellarGuard protection by clicking the button.</p>
                                    <div class="text-xs-right">
-                                    <v-btn info class="mx-0" @click="activate" :loading="activateLoading">Activate</v-btn>
+                                       <v-btn flat @click="step = 2">Back</v-btn>
+                                       <v-btn info class="mx-0" @click="activate" :loading="activateLoading">Activate</v-btn>
                                    </div>
                                </template>
                             </template>
@@ -87,6 +90,7 @@ export default {
     stellarGuardKeyRules: [v => Stellar.StrKey.isValidEd25519PublicKey(v) || 'Invalid key'],
     backupKeyRules: [v => (v.length === 0 || Stellar.StrKey.isValidEd25519PublicKey(v)) || 'Invalid key'],
     disableLoading: false,
+    valid: false,
   }),
 
   watch: {
@@ -134,6 +138,10 @@ export default {
     },
 
     addSigner() {
+      if (!this.$refs.form.validate()) {
+        return
+      }
+
       this.addSignerLoading = true;
 
       StellarGuardSdk.getMultigSetup(
@@ -160,7 +168,10 @@ export default {
       this.activateLoading = true;
 
       StellarGuardSdk.activateAccount(this.$store.getters.keypair.publicKey())
-        .then(() => (this.step = 0))
+        .then(() => {
+          this.step = 0
+          this.init()
+        })
         .catch(() => flash('Complete previous step first!'))
         .then(() => (this.activateLoading = false));
     },
