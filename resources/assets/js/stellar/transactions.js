@@ -73,13 +73,16 @@ function _submitTx (keypair, operation, memo) {
         }
       }
 
+      return store.getters.keypairStellarGuard
+        ? StellarGuardSdk.submitTransaction(transaction)
+        : StellarServer().submitTransaction(transaction)
+    })
+    .then(response => {
       if (store.getters.keypairStellarGuard === true) {
-        setTimeout(() => { flash('Transaction submitted to StellarGuard', 'success') }, 10)
-
-        return StellarGuardSdk.submitTransaction(transaction)
-      } else {
-        return StellarServer().submitTransaction(transaction)
+        setTimeout(() => flash('Transaction submitted to StellarGuard', 'info'), 10)
       }
+
+      return response
     })
 }
 
