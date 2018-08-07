@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="dialog" width="600">
+    <v-dialog v-model="dialog" width="600" style="z-index: 10">
         <v-card class="white">
             <v-toolbar card color="white" dense>
                 <v-toolbar-title class="body-2 grey--text text--darken-2">

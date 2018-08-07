@@ -177,6 +177,8 @@
             </v-container>
         </main>
 
+        <envelope></envelope>
+
         <v-dialog
                 v-model="dialog"
                 fullscreen
@@ -217,8 +219,6 @@
                 <accountswitch @done="switchedAccount"></accountswitch>
             </v-card>
         </v-dialog>
-
-        <envelope></envelope>
     </v-app>
 </template>
 

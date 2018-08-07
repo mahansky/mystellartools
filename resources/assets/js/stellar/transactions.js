@@ -1,36 +1,41 @@
 import { StellarServer, Stellar } from './index'
 import { Asset, Operation, StrKey, TransactionBuilder, Keypair } from 'stellar-sdk'
 import { flash, events } from '~/utils'
-import { signTransaction } from './ledger';
+import { signTransaction } from './ledger'
 import store from '~/store'
+import StellarGuardSdk from '@stellarguard/sdk'
 
 const xdr = require('stellar-base').xdr
 
-// Submit Transaction
-function _submitTx (keypair, operation, memo) {
+function _buildTx (keypair, operation, memo) {
   return transactions.loadAccount(keypair)
     .then(account => {
-      const opts = {}
+      let transaction
 
-      if (store.getters.transactionsTimeBounds) {
-        opts.timebounds = {
-          minTime: store.getters.transactionsTimeBounds.from,
-          maxTime: store.getters.transactionsTimeBounds.to,
+      if (typeof operation === 'string') {
+        transaction = new Stellar.Transaction(operation)
+      } else {
+        const opts = {}
+
+        if (store.getters.transactionsTimeBounds) {
+          opts.timebounds = {
+            minTime: store.getters.transactionsTimeBounds.from,
+            maxTime: store.getters.transactionsTimeBounds.to,
+          }
         }
+
+        transaction = new TransactionBuilder(account, opts).addOperation(operation)
+
+        if (!memo && store.getters.transactionsMemo) {
+          memo = new Stellar.Memo(store.getters.transactionsMemo.type.split('_')[1].toLowerCase(), store.getters.transactionsMemo.value)
+        }
+
+        if (memo) {
+          transaction.addMemo(memo)
+        }
+
+        transaction = transaction.build()
       }
-
-      let transaction = new TransactionBuilder(account, opts)
-        .addOperation(operation)
-
-      if (!memo && store.getters.transactionsMemo) {
-        memo = new Stellar.Memo(store.getters.transactionsMemo.type.split('_')[1].toLowerCase(), store.getters.transactionsMemo.value)
-      }
-
-      if (memo) {
-        transaction.addMemo(memo)
-      }
-
-      transaction = transaction.build()
 
       if (!store.getters.keypairLedger && !store.getters.keypairCanSign) {
         events.$emit('transactions:manual-signing', {
@@ -48,12 +53,31 @@ function _submitTx (keypair, operation, memo) {
           .catch(err => {
             throw new Error('Problem with signing the transaction with Ledger: ' + err)
           })
-          .then(transaction => {
-            return StellarServer().submitTransaction(transaction)
-          })
       } else {
         transaction.sign(keypair)
 
+        return transaction
+      }
+    })
+}
+
+function _submitTx (keypair, operation, memo) {
+  return _buildTx(keypair, operation, memo)
+    .then(async transaction => {
+      if (store.getters.keypairStellarGuard === null && ['main', 'testnet'].indexOf(store.getters.transactionsNetwork.type) !== -1) {
+        try {
+          await StellarGuardSdk.getAccount(keypair.publicKey())
+          store.dispatch('setStellarGuard', true)
+        } catch (e) {
+          store.dispatch('setStellarGuard', false)
+        }
+      }
+
+      if (store.getters.keypairStellarGuard === true) {
+        setTimeout(() => { flash('Transaction submitted to StellarGuard', 'success') }, 10)
+
+        return StellarGuardSdk.submitTransaction(transaction)
+      } else {
         return StellarServer().submitTransaction(transaction)
       }
     })
@@ -124,4 +148,8 @@ export const transactions = {
   setOptions: (keypair, attributes) => {
     return _submitTx(keypair, Operation.setOptions(attributes))
   },
+
+  raw: (keypair, transaction) => {
+    return _submitTx(keypair, transaction)
+  }
 }

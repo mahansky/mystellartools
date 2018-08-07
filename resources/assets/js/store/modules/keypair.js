@@ -5,6 +5,7 @@ export const state = {
   ledger: false,
   ledgerAppVersion: '',
   bip32Path: '',
+  stellarGuard: null,
 }
 
 export const mutations = {
@@ -22,6 +23,10 @@ export const mutations = {
     state.bip32Path = bip32Path
     state.ledgerAppVersion = version
   },
+
+  [types.STELLAR_GUARD] (state, enabled) {
+    state.stellarGuard = enabled
+  }
 }
 
 export const actions = {
@@ -36,6 +41,10 @@ export const actions = {
   accessWithLedger({commit}, payload) {
     commit(types.ACCESS_WITH_LEDGER, payload)
   },
+
+  setStellarGuard({commit}, payload) {
+    commit(types.STELLAR_GUARD, payload)
+  },
 }
 
 export const getters = {
@@ -44,4 +53,5 @@ export const getters = {
   keypairLedger: state => state.ledger,
   keypairLedgerAppVersion: state => state.ledgerAppVersion,
   keypairBip32Path: state => state.bip32Path,
+  keypairStellarGuard: state => state.stellarGuard,
 }
